@@ -1,0 +1,146 @@
+[
+   {
+     "id": "5d8e1a6633cc2157d3407abd",
+     "img": "../../assets/images/a10.jpeg",
+     "address": "428 Auburn Place, Clay, Marshall Islands, 8412",
+     "phone": "+1 (871) 536-3481",
+     "weather": {
+       "title": "sun",
+       "water": 26,
+       "temperature": 15
+     },
+     "social_info": {
+       "title": "Pearlesex",
+       "img": "../../assets/images/a7.jpeg",
+       "followers": 2319,
+       "following": 2426
+     },
+     "type": "Arizona"
+   },
+   {
+     "id": "5d8e1a66befab7f7473f735d",
+     "img": "../../assets/images/a12.jpeg",
+     "address": "961 Dunne Place, Nadine, Palau, 5878",
+     "phone": "+1 (808) 400-2189",
+     "weather": {
+       "title": "sun",
+       "water": 22,
+       "temperature": 18
+     },
+     "social_info": {
+       "title": "Hometown",
+       "img": "../../assets/images/a5.jpeg",
+       "followers": 615,
+       "following": 2241
+     },
+     "type": "California"
+   },
+   {
+     "id": "5d8e1a669ec6450c232fdf10",
+     "img": "../../assets/images/a5.jpeg",
+     "address": "829 Willoughby Street, Grenelefe, Missouri, 4534",
+     "phone": "+1 (856) 591-3440",
+     "weather": {
+       "title": "rain",
+       "water": 23,
+       "temperature": 5
+     },
+     "social_info": {
+       "title": "Moltonic",
+       "img": "../../assets/images/a2.jpeg",
+       "followers": 2951,
+       "following": 2142
+     },
+     "type": "Tennessee"
+   },
+   {
+     "id": "5d8e1a666783f3f46efa3d7e",
+     "img": "../../assets/images/a11.jpeg",
+     "address": "522 Visitation Place, Takilma, Federated States Of Micronesia, 3253",
+     "phone": "+1 (939) 480-3361",
+     "weather": {
+       "title": "rain",
+       "water": 29,
+       "temperature": 17
+     },
+     "social_info": {
+       "title": "Sybixtex",
+       "img": "../../assets/images/a20.jpeg",
+       "followers": 2575,
+       "following": 1335
+     },
+     "type": "Arizona"
+   },
+   {
+     "id": "5d8e1a661472d79859dbecc9",
+     "img": "../../assets/images/a4.jpeg",
+     "address": "937 Kosciusko Street, Riceville, Nevada, 9468",
+     "phone": "+1 (879) 578-3944",
+     "weather": {
+       "title": "sun",
+       "water": 28,
+       "temperature": 12
+     },
+     "social_info": {
+       "title": "Insurety",
+       "img": "../../assets/images/a1.jpeg",
+       "followers": 2825,
+       "following": 913
+     },
+     "type": "California"
+   },
+   {
+     "id": "5d8e1a663106f5cf1fc65507",
+     "img": "../../assets/images/a12.jpeg",
+     "address": "251 Bancroft Place, Cleary, Nebraska, 5691",
+     "phone": "+1 (868) 409-3749",
+     "weather": {
+       "title": "sun",
+       "water": 25,
+       "temperature": 14
+     },
+     "social_info": {
+       "title": "Prowaste",
+       "img": "../../assets/images/a18.jpeg",
+       "followers": 2759,
+       "following": 2719
+     },
+     "type": "Connecticut"
+   },
+   {
+     "id": "5d8e1a66aa1f5fba0af0dd7b",
+     "img": "../../assets/images/a9.jpeg",
+     "address": "127 Landis Court, Thatcher, California, 5609",
+     "phone": "+1 (938) 437-2441",
+     "weather": {
+       "title": "sun",
+       "water": 20,
+       "temperature": 16
+     },
+     "social_info": {
+       "title": "Liquidoc",
+       "img": "../../assets/images/a19.jpeg",
+       "followers": 2000,
+       "following": 685
+     },
+     "type": "Arizona"
+   },
+   {
+     "id": "5d8e1a669396836990ee3b8f",
+     "img": "../../assets/images/a20.jpeg",
+     "address": "914 Arion Place, Cloverdale, Indiana, 782",
+     "phone": "+1 (850) 584-2517",
+     "weather": {
+       "title": "rain",
+       "water": 24,
+       "temperature": 14
+     },
+     "social_info": {
+       "title": "Comvene",
+       "img": "../../assets/images/a5.jpeg",
+       "followers": 2732,
+       "following": 784
+     },
+     "type": "California"
+   }
+ ]

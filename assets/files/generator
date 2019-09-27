@@ -1,0 +1,23 @@
+[
+  {
+    
+  'repeat(5, 10)': {
+    id: '{{objectId()}}',
+    img: '../../assets/images/{{random("a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13", "a14", "a15", "a16", "a17", "a18", "a19", "a20")}}.jpeg',
+    address: "{{integer(100, 999)}} {{street()}}, {{city()}}, {{state()}}, {{integer(100, 10000)}}",
+    phone:  '+1 {{phone()}}',
+    weather: {
+       title: '{{random("sun", "clouds", "rain")}}',
+       water:'{{integer(20, 30)}}',
+       temperature: '{{integer(5, 20)}}'
+    },
+    social_info:{ 
+       title: '{{company()}}',
+       img:'../../assets/images/{{random("a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13", "a14", "a15", "a16", "a17", "a18", "a19", "a20")}}.jpeg',
+       followers:'{{integer(500, 3000)}}',
+       following:'{{integer(500, 3000)}}'
+    }, 
+    type: '{{random("California", "Arizona", "Tennessee", "Connecticut")}}'
+ }
+  }
+]
