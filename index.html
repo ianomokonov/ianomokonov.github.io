@@ -1,13 +1,502 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>AngularCourse</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="stylesheet" href="styles.aa054fda98f4457bb888.css"></head>
-<body>
-  <app-root></app-root>
-<script src="polyfills-es5.a83ac866abc867bfd530.js" nomodule defer></script><script src="polyfills-es2015.0fe6949bc5ff4b784062.js" type="module"></script><script src="runtime-es2015.85f895af57b038f1e5b4.js" type="module"></script><script src="main-es2015.29ab460e9b6b368a482c.js" type="module"></script><script src="runtime-es5.85f895af57b038f1e5b4.js" nomodule defer></script><script src="main-es5.29ab460e9b6b368a482c.js" nomodule defer></script></body>
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Калькулятор</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container pt-5">
+      <div class="d-flex justify-content-between">
+        <div class="type pb-2 pointer" data-type="plotter">
+          <img src="./plotter.svg" class="w-100" />
+          <div class="text-center mt-2">Плотерная печать</div>
+        </div>
+        <div class="type pb-2 pointer" data-type="interior">
+          <img src="./plotter.svg" class="w-100" />
+          <div class="text-center mt-2">Интерьерная печать</div>
+        </div>
+        <div class="type pb-2 pointer" data-type="table">
+          <img src="./plotter.svg" class="w-100" />
+          <div class="text-center mt-2">Табличка</div>
+        </div>
+        <div class="type pb-2 pointer" data-type="stand">
+          <img src="./plotter.svg" class="w-100" />
+          <div class="text-center mt-2">Стенд</div>
+        </div>
+        <div class="type pb-2 pointer" data-type="letters">
+          <img src="./plotter.svg" class="w-100" />
+          <div class="text-center mt-2">Объемные буквы</div>
+        </div>
+      </div>
+      <ul class="nav pt-4" id="categoriesMenu"></ul>
+      <form id="calculatorForm">
+        <div class="row py-3">
+          <div class="col-4 width">
+            <div class="form-group mb-0 mr-3">
+              <label>Ширина</label>
+              <input type="number" class="form-control" name="width" />
+            </div>
+          </div>
+          <div class="col-4 height">
+            <div class="form-group mb-0">
+              <label>Высота</label>
+              <input type="number" class="form-control" name="height" />
+            </div>
+          </div>
+
+          <div class="col-4 d-flex flex-column justify-content-end">
+            <div class="form-check frame">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="frame"
+                name="frame"
+              />
+              <label class="form-check-label" for="frame"> Рамка </label>
+            </div>
+            <div class="form-check substrate">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="substrate"
+                name="substrate"
+              />
+              <label class="form-check-label" for="substrate"> Подложка </label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4 quality">
+            <div class="form-group">
+              <label>Качество изображение</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="quality"
+                  id="720dpi"
+                  value="1"
+                  checked
+                />
+                <label class="form-check-label" for="720dpi"> 720dpi </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="quality"
+                  id="1440dpi"
+                  value="1.2"
+                />
+                <label class="form-check-label" for="1440dpi"> 1440dpi </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 flexy">
+            <div class="form-group">
+              <label>Вид таблицы</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="flexy"
+                  id="flexy1"
+                  value="1"
+                  checked
+                />
+                <label class="form-check-label" for="flexy1">
+                  Табличка в обрез
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="flexy"
+                  id="flexy2"
+                  value="1.2"
+                />
+                <label class="form-check-label" for="flexy2">
+                  Табличка с подгибкой
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="form-check lamination">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="lamination"
+                name="lamination"
+              />
+              <label class="form-check-label" for="lamination">
+                Ламинация
+              </label>
+            </div>
+            <div class="form-check perimeterCut">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="perimeterCut"
+                name="perimeterCut"
+              />
+              <label class="form-check-label" for="perimeterCut">
+                Обрезка по периметру
+              </label>
+            </div>
+            <div class="form-check perimeterBonding">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="perimeterBonding"
+                name="perimeterBonding"
+              />
+              <label class="form-check-label" for="perimeterBonding">
+                Проклейка по периметру
+              </label>
+            </div>
+          </div>
+          <div class="col-4 plotter">
+            <div class="form-group">
+              <label>Плотерная резка</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="plotter"
+                  id="plotter1"
+                  value="1"
+                  checked
+                />
+                <label class="form-check-label" for="plotter1"> 1 цвет </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="plotter"
+                  id="plotter2"
+                  value="2"
+                />
+                <label class="form-check-label" for="plotter2"> 2 цвета </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 eyelets">
+            <div class="form-group">
+              <label>Люверсы</label>
+              <input type="number" class="form-control" name="eyelets" />
+            </div>
+          </div>
+          <div class="col-4 thikness">
+            <div class="form-group">
+              <label>Толщина</label>
+              <select class="form-control" name="thikness"></select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <div class="form-group mr-3 count">
+              <label>Количество</label>
+              <input type="number" class="form-control" name="count" />
+            </div>
+            <div class="d-flex align-items-center">
+              <button class="btn btn-primary" type="button" id="countBtn">
+                Рассчитать
+              </button>
+              <small class="text-muted ml-5" id="result"></small>
+            </div>
+            
+
+          </div>
+          <div class="col-4 substrate-width">
+            <div class="form-group mb-0 mr-3">
+              <label>Ширина подложки</label>
+              <input
+                type="number"
+                class="form-control"
+                name="substrate-width"
+              />
+            </div>
+          </div>
+          <div class="col-4 substrate-height">
+            <div class="form-group mb-0">
+              <label>Высота подложки</label>
+              <input
+                type="number"
+                class="form-control"
+                name="substrate-height"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <script src="./data.js"></script>
+    <script>
+      let currentType = null;
+      let currentCategory = null;
+      const fieldNames = [
+        "width",
+        "height",
+        "quality",
+        "flexy",
+        "lamination",
+        "perimeterCut",
+        "perimeterBonding",
+        "plotter",
+        "eyelets",
+        "thikness",
+        "count",
+        "frame",
+        "substrate",
+        "substrate-width",
+        "substrate-height",
+      ];
+
+      const fieldNodes = {};
+      fieldNames.forEach((name) => {
+        fieldNodes[name] = document.querySelector(`.${name}`);
+      });
+
+      let onTypeClick = ({ target }) => {
+        const typeNode = target.closest("[data-type]");
+        const item = data[typeNode.dataset.type];
+        currentType = item;
+        clearActiveItems("[data-type]");
+        typeNode.classList.add("active");
+        if (item.children) {
+          const categories = Object.keys(item.children).map((key) => {
+            return item.children[key].name;
+          });
+          setCategories(item.children);
+        } else {
+          setCategories([]);
+          clearFields();
+          showFields(Object.keys(currentType.fields));
+          clearFields(["substrate-width", "substrate-height"]);
+        }
+        result.innerHTML = ``;
+      };
+
+      let onCategoryClick = ({ target }) => {
+        const categoryNode = target.closest("[data-category]");
+        const item = currentType.children[categoryNode.dataset.category];
+        currentCategory = item;
+        clearActiveItems("[data-category]");
+        categoryNode.classList.add("active");
+        clearFields();
+        showFields(Object.keys(currentCategory.fields));
+        result.innerHTML = ``;
+      };
+
+      let onCountButtonClick = () => {
+        const value = getRawValue(
+          Object.keys(
+            currentType.fields ? currentType.fields : currentCategory.fields
+          )
+        );
+        const sum = getSum(value);
+        result.innerHTML = `Итого: ${sum.toFixed(2)} руб.`;
+      };
+
+      let onSubstrateChange = ({ target: { checked } }) => {
+        if (checked) {
+          showFields(["substrate-width", "substrate-height"]);
+        } else {
+          clearFields(["substrate-width", "substrate-height"]);
+        }
+      };
+
+      countBtn.addEventListener("click", onCountButtonClick);
+      document.forms[0].elements.substrate.addEventListener(
+        "change",
+        onSubstrateChange
+      );
+
+      document.querySelectorAll("[data-type]").forEach((node, index) => {
+        node.addEventListener("click", onTypeClick);
+        if (!index) {
+          node.click();
+        }
+      });
+
+      function clearActiveItems(selector) {
+        document.querySelectorAll(selector).forEach((node) => {
+          node.classList.remove("active");
+        });
+      }
+
+      function clearFields(fields = Object.keys(fieldNodes)) {
+        fields.forEach((key) => {
+          fieldNodes[key].classList.remove("d-block");
+          fieldNodes[key].classList.add("d-none");
+        });
+      }
+
+      function showFields(names) {
+        Object.keys(fieldNodes).forEach((key) => {
+          if (!!names.find((name) => name === key)) {
+            fieldNodes[key].classList.remove("d-none");
+            fieldNodes[key].classList.add("d-block");
+            if (key === "thikness") {
+              const select = fieldNodes[key].querySelector("select");
+              select.innerHTML = "";
+              currentCategory.fields.thikness.forEach((th, index) => {
+                const opt = document.createElement("option");
+                opt.value = index;
+                opt.textContent = `${th} мм`;
+                select.append(opt);
+              });
+            }
+          }
+        });
+      }
+
+      function getRawValue(fields) {
+        const value = {};
+        fields.forEach((field) => {
+          const elem = document.forms[0].elements[field];
+          if (elem) {
+            value[field] = elem.type === "checkbox" ? elem.checked : elem.value;
+          }
+        });
+        return value;
+      }
+
+      function getSum(value) {
+        let sum = 0;
+        let square = 0;
+        let perimeter = 0;
+
+        if (currentType.isLetters) {
+          return getLettersSum(value);
+        }
+
+        if (value.width && value.height) {
+          const width = value.width / 1000;
+          const height = value.height / 1000;
+          square = width * height;
+          perimeter = width * 2 + height * 2;
+          sum =
+            square *
+            (currentType.children ? currentCategory.price : currentType.price);
+        }
+        if (value.quality) {
+          sum *= value.quality;
+        }
+        if (value.plotter) {
+          sum +=
+            currentCategory.fields.plotter.values[+value.plotter - 1].price *
+            square;
+        }
+        if (value.flexy) {
+          sum *= value.flexy;
+        }
+        if (value.lamination) {
+          sum *= currentCategory.fields.lamination.koef;
+        }
+        if (value.perimeterCut) {
+          sum += perimeter * currentCategory.fields.perimeterCut.price;
+        }
+        if (value.thikness) {
+          sum += currentCategory.price * value.thikness + 1;
+        }
+        if (value.perimeterBonding) {
+          sum += perimeter * currentCategory.fields.perimeterBonding.price;
+        }
+        if (value.eyelets) {
+          sum +=
+            Math.ceil(perimeter / value.eyelets + 1) *
+            currentCategory.fields.eyelets.price;
+        }
+
+        if (value.count) {
+          const count = +value.count;
+          sum *= value.count;
+          if (count < 21 && count > 10) {
+            sum *= 0.98;
+          }
+          if (count < 31 && count > 20) {
+            sum *= 0.95;
+          }
+          if (count > 30) {
+            sum *= 0.93;
+          }
+        }
+        return sum;
+      }
+
+      function getLettersSum(value) {
+        let sum = 0;
+        if (value.height) {
+          value.height = +value.height;
+          if (value.height > 49 && value.height < 151) {
+            sum = (value.height / 10) * 150;
+          }
+          if (value.height > 150 && value.height < 401) {
+            sum = (value.height / 10) * 80;
+          }
+          if (value.height > 400 && value.height < 501) {
+            sum = (value.height / 10) * 100;
+          }
+        }
+        if (value.count) {
+          sum *= value.count;
+        }
+        if (value.frame) {
+          const count = +value.count;
+          if (count < 7) {
+            sum += 2 * currentType.fields.frame.price;
+          }
+          if (count > 6 && count < 15) {
+            sum += 4 * currentType.fields.frame.price;
+          }
+          if (count > 14 && count < 22) {
+            sum += 6 * currentType.fields.frame.price;
+          }
+        }
+        if (value.substrate) {
+          const square =
+            (value["substrate-width"] / 1000) *
+            (value["substrate-height"] / 1000);
+          sum += square * currentType.fields.substrate.price;
+        }
+
+        return sum;
+      }
+
+      function setCategories(categories) {
+        categoriesMenu.innerHTML = "";
+        Object.keys(categories)
+          .filter((key) => key !== "fields")
+          .forEach((key, i) => {
+            const node = document.createElement("div");
+
+            node.innerHTML = `
+          <li class="nav-item" data-category="${key}">
+            <a class="nav-link" href="javascript:;">${categories[
+              key
+            ].name.toUpperCase()}</a>
+          </li>`;
+            const category = node.firstElementChild;
+            category.addEventListener("click", onCategoryClick);
+            if (!i) {
+              category.click();
+            }
+            categoriesMenu.append(category);
+          });
+      }
+    </script>
+  </body>
 </html>

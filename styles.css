@@ -1,0 +1,25 @@
+.pointer {
+  cursor: pointer;
+}
+.type {
+  position: relative;
+}
+.type.active:after,
+.type:hover:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: blue;
+}
+
+.nav-item.active {
+  background-color: #0056b3;
+}
+.nav-item.active a{
+    color: #fff;
+    
+}
