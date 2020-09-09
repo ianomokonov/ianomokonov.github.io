@@ -19,7 +19,31 @@
 .nav-item.active {
   background-color: #0056b3;
 }
-.nav-item.active a{
-    color: #fff;
-    
+.nav-item.active a {
+  color: #fff;
+}
+
+.enabled-field {
+  background-color: rgb(52, 112, 224);
+  color: #fff;
+}
+
+.disabled-field {
+  position: relative;
+  cursor: pointer;
+}
+
+.disabled-field:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.363);
+}
+
+.disabled-field:hover:after {
+  display: none;
 }

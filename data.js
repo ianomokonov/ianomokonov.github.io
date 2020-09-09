@@ -86,11 +86,15 @@ const pvh = {
   fields: {
     height: {
       ...height,
-      max: 600,
     },
     width: {
       ...width,
-      max: 600,
+    },
+    "max-width-lable": {
+      value: 600,
+    },
+    "max-height-lable": {
+      value: 600,
     },
     quality: quality,
     lamination: lamination,
@@ -108,11 +112,15 @@ const composit = {
   fields: {
     height: {
       ...height,
-      max: 600,
     },
     width: {
       ...width,
-      max: 600,
+    },
+    "max-width-lable": {
+      value: 600,
+    },
+    "max-height-lable": {
+      value: 600,
     },
     quality: quality,
     lamination: lamination,
@@ -131,11 +139,15 @@ const akrile = {
   fields: {
     height: {
       ...height,
-      max: 600,
     },
     width: {
       ...width,
-      max: 600,
+    },
+    "max-width-lable": {
+      value: 600,
+    },
+    "max-height-lable": {
+      value: 600,
     },
     quality: quality,
     lamination: lamination,
@@ -252,18 +264,46 @@ const data = {
   stand: {
     name: "Стенд",
     children: {
-      pvh: pvh,
-      composit: composit,
+      pvh: {
+        ...pvh,
+        fields: {
+          height: {
+            ...height,
+          },
+          width: {
+            ...width,
+          },
+          quality: quality,
+          lamination: lamination,
+          plotter: plotter,
+          flexy: flexy,
+          thikness: [3, 5],
+        },
+      },
+      composit: {
+        ...composit,
+        fields: {
+          height: {
+            ...height,
+          },
+          width: {
+            ...width,
+          },
+          quality: quality,
+          lamination: lamination,
+          plotter: plotter,
+          flexy: flexy,
+          thikness: [3],
+        },
+      },
       akrile: {
         ...akrile,
         fields: {
           height: {
             ...height,
-            max: 600,
           },
           width: {
             ...width,
-            max: 600,
           },
           quality: quality,
           lamination: lamination,
