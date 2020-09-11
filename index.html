@@ -54,24 +54,30 @@
             </div>
           </div>
 
-          <div class="col-4 d-flex flex-column justify-content-end">
-            <div class="form-check frame">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="frame"
-                name="frame"
-              />
-              <label class="form-check-label" for="frame"> Рамка </label>
-            </div>
-            <div class="form-check substrate">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="substrate"
-                name="substrate"
-              />
-              <label class="form-check-label" for="substrate"> Подложка </label>
+          <div class="col-4 substrate">
+            <div class="form-group">
+              <label>Оформление</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="substrate"
+                  id="frame"
+                  value="1"
+                  checked
+                />
+                <label class="form-check-label" for="frame"> Рамка </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="substrate"
+                  id="substrate"
+                  value="2"
+                />
+                <label class="form-check-label" for="substrate"> Подложка </label>
+              </div>
             </div>
           </div>
         </div>
@@ -212,7 +218,7 @@
               <label>Количество</label>
               <input type="number" class="form-control" name="count" />
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center mt-3">
               <button class="btn btn-primary" type="button" id="countBtn">
                 Рассчитать
               </button>

@@ -6,13 +6,18 @@ const height = {
   type: "number",
   koef: 1,
 };
-const frame = {
-  type: "checkbox",
-  price: 300,
-};
 const substrate = {
-  type: "checkbox",
-  price: 3000,
+  type: "radio",
+  values: [
+    {
+      name: "Рамка",
+      price: 300,
+    },
+    {
+      name: "Подложка",
+      price: 3000,
+    },
+  ],
 };
 const quality = {
   type: "radio",
@@ -319,7 +324,6 @@ const data = {
     isLetters: true,
     fields: {
       height: height,
-      frame: frame,
       substrate: substrate,
       count: true,
       "substrate-width": true,

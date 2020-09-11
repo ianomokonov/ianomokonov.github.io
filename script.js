@@ -12,7 +12,6 @@ const fieldNames = [
   "eyelets",
   "thikness",
   "count",
-  "frame",
   "substrate",
   "substrate-width",
   "substrate-height",
@@ -78,11 +77,11 @@ let onCountButtonClick = () => {
     )
   );
   const sum = getSum(value);
-  result.innerHTML = `Итого: ${sum.toFixed(2)} руб.`;
+  result.innerHTML = `Итого: ${sum?.toFixed(2) | 0} руб.`;
 };
 
-let onSubstrateChange = ({ target: { checked } }) => {
-  if (checked) {
+let onSubstrateChange = ({ target }) => {
+  if (target.value == 2) {
     showFields(["substrate-width", "substrate-height"]);
   } else {
     clearFields(["substrate-width", "substrate-height"]);
@@ -90,7 +89,11 @@ let onSubstrateChange = ({ target: { checked } }) => {
 };
 
 countBtn.addEventListener("click", onCountButtonClick);
-document.forms[0].elements.substrate.addEventListener(
+document.forms[0].elements.substrate[1].addEventListener(
+  "change",
+  onSubstrateChange
+);
+document.forms[0].elements.substrate[0].addEventListener(
   "change",
   onSubstrateChange
 );
@@ -124,13 +127,13 @@ function maxValidator(max) {
 }
 
 const onQualityPlotterClick = ({ target }) => {
-  let field = target.closest("plotter");
+  let field = target.closest(".plotter");
   if (field) {
     setEnableClass(fieldNodes["plotter"], true);
     setEnableClass(fieldNodes["quality"], false);
     return;
   }
-  field = target.closest("quality");
+  field = target.closest(".quality");
   setEnableClass(fieldNodes["plotter"], false);
   setEnableClass(fieldNodes["quality"], true);
 };
@@ -225,6 +228,19 @@ function getRawValue(fields) {
   return value;
 }
 
+function setErrors(value) {
+  if (!value.width) {
+    document.forms[0].elements["width"].classList.add("border-danger");
+  } else {
+    document.forms[0].elements["width"].classList.remove("border-danger");
+  }
+  if (!value.height) {
+    document.forms[0].elements["height"].classList.add("border-danger");
+  } else {
+    document.forms[0].elements["height"].classList.remove("border-danger");
+  }
+}
+
 function getSum(value) {
   let sum = 0;
   let square = 0;
@@ -235,6 +251,7 @@ function getSum(value) {
   }
 
   if (value.width && value.height) {
+    setErrors(value);
     const width = value.width / 1000;
     const height = value.height / 1000;
     square = width * height;
@@ -242,11 +259,20 @@ function getSum(value) {
     sum =
       square *
       (currentType.children ? currentCategory.price : currentType.price);
+  } else {
+    setErrors(value);
+    return;
   }
-  if (value.quality) {
+  if (
+    value.quality &&
+    fieldNodes["quality"].classList.value.indexOf("enabled-field") > -1
+  ) {
     sum *= value.quality;
   }
-  if (value.plotter) {
+  if (
+    value.plotter &&
+    fieldNodes["plotter"].classList.value.indexOf("enabled-field") > -1
+  ) {
     sum +=
       currentCategory.fields.plotter.values[+value.plotter - 1].price * square;
   }
@@ -289,6 +315,7 @@ function getSum(value) {
 
 function getLettersSum(value) {
   let sum = 0;
+  console.log(value);
   if (value.height) {
     value.height = +value.height;
     if (value.height > 49 && value.height < 151) {
@@ -304,24 +331,26 @@ function getLettersSum(value) {
   if (value.count) {
     sum *= value.count;
   }
-  if (value.frame) {
+  console.log(sum)
+  if (value.substrate == 1) {
     const count = +value.count;
+    console.log(currentType.fields.substrate.values[0])
     if (count < 7) {
-      sum += 2 * currentType.fields.frame.price;
+      sum += 2 * currentType.fields.substrate.values[0].price;
     }
     if (count > 6 && count < 15) {
-      sum += 4 * currentType.fields.frame.price;
+      sum += 4 * currentType.fields.substrate.values[0].price;
     }
     if (count > 14 && count < 22) {
-      sum += 6 * currentType.fields.frame.price;
+      sum += 6 * currentType.fields.substrate.values[0].price;
     }
   }
-  if (value.substrate) {
+  if (value.substrate == 2) {
     const square =
       (value["substrate-width"] / 1000) * (value["substrate-height"] / 1000);
-    sum += square * currentType.fields.substrate.price;
+    sum += square * currentType.fields.substrate.values[1].price;
   }
-
+console.log(sum)
   return sum;
 }
 
