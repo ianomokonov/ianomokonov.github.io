@@ -1,3 +1,10 @@
+let data = null;
+fetch('data.json').then((response) => {
+  response.json().then(d => {
+    data = d;
+    onTypeClick({});
+  });
+})
 let currentType = null;
 let currentCategory = null;
 const fieldNames = [
@@ -25,9 +32,19 @@ let heightMaxListener;
 fieldNames.forEach((name) => {
   fieldNodes[name] = document.querySelector(`.${name}`);
 });
+clearFields();
 
 let onTypeClick = ({ target }) => {
-  const typeNode = target.closest("[data-type]");
+  if (!data) {
+    return;
+  }
+  let typeNode = null
+  if (target) {
+    typeNode = target.closest("[data-type]");
+  } else {
+    typeNode = document.querySelector("[data-type='plotter']")
+  }
+
   const item = data[typeNode.dataset.type];
   currentType = item;
   clearActiveItems("[data-type]");
@@ -44,6 +61,9 @@ let onTypeClick = ({ target }) => {
 };
 
 let onCategoryClick = ({ target }) => {
+  if (!data) {
+    return;
+  }
   const categoryNode = target.closest("[data-category]");
   const item = currentType.children[categoryNode.dataset.category];
   currentCategory = item;
@@ -350,7 +370,7 @@ function getLettersSum(value) {
       (value["substrate-width"] / 1000) * (value["substrate-height"] / 1000);
     sum += square * currentType.fields.substrate.values[1].price;
   }
-console.log(sum)
+  console.log(sum)
   return sum;
 }
 
@@ -364,8 +384,8 @@ function setCategories(categories) {
       node.innerHTML = `
           <li class="nav-item" data-category="${key}">
             <a class="nav-link" href="javascript:;">${categories[
-              key
-            ].name.toUpperCase()}</a>
+          key
+        ].name.toUpperCase()}</a>
           </li>`;
       const category = node.firstElementChild;
       category.addEventListener("click", onCategoryClick);
