@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администрирование данных</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <!-- Модальное окно аутентификации -->
+
+    <div class="modal fade" id="authModal" tabindex="-1" role="dialog" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="authModalLabel">Доступ к панели администратора</h5>
+            </div>
+            <div class="modal-body">
+                <form class="enterForm">
+                    <div class="form-group">
+                      <label for="inputLogin">Логин</label>
+                      <input type="text" class="form-control" id="inputLogin" placeholder="Введите логин">
+                    </div>
+                    <div class="form-group">
+                      <label for="inputPassword">Пароль</label>
+                      <input type="password" class="form-control" id="inputPassword" placeholder="Введите пароль">
+                    </div>
+                    <div class="form-group form-check">
+                      <input type="checkbox" class="form-check-input" id="checkMe">
+                      <label class="form-check-label" for="checkMe">Запомнить меня</label>
+                    </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary exit">Назад</button>
+              <button type="button" class="btn btn-primary signIn">Вход</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Страница управления данными -->
+
+    <div class="container pt-5">
+      <div class="row justify-content-end">
+        <button type="button" class="btn btn-secondary mainBtn exit">На главную</button>
+        <button type="button" class="btn btn-primary mainBtn signOut">Выход</button>
+      </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="list-group" id="nav-tab" role="tablist">
+                    <a class="list-group-item list-group-item-action active" id="plotter" data-toggle="list" href="#list-plotter" role="tab" aria-controls="plotter">Плоттерная печать</a>
+                    <a class="list-group-item list-group-item-action" id="interior" data-toggle="list" href="#list-interior" role="tab" aria-controls="interior">Интерьерная печать</a>
+                    <a class="list-group-item list-group-item-action" id="table" data-toggle="list" href="#list-table" role="tab" aria-controls="table">Табличка</a>
+                    <a class="list-group-item list-group-item-action" id="stand" data-toggle="list" href="#list-stand" role="tab" aria-controls="stand">Стенд</a>
+                    <a class="list-group-item list-group-item-action" id="letters" data-toggle="list" href="#list-letter" role="tab" aria-controls="letter">Объемные буквы</a>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active plotter" id="list-plotter" role="tabpanel" aria-labelledby="plotter">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group mb-0 mr-3">
+                              <label>Коэффициент ширины</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                data-type="width-koef"
+                              />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group mb-0">
+                                <label>Коэффициент высоты</label>
+                                <input
+                                type="number"
+                                class="form-control"
+                                data-type="height-koef"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group mb-0">
+                                <label>Базовая стоимость</label>
+                                <input
+                                type="number"
+                                class="form-control"
+                                data-type="price"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade interior" id="list-interior" role="tabpanel" aria-labelledby="interior">
+                    <div class="row">
+                        <div class="list-group list-group-horizontal" id="list-tab" role="tablist">
+                            <a style="text-align: center;" class="list-group-item list-group-item-action active" id="film" data-toggle="list" href="#list-film" role="tab" aria-controls="film">Пленка</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="bannerLaminated" data-toggle="list" href="#list-bannerLaminated" role="tab" aria-controls="bannerLaminated">Баннер ламинированный</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="bannerCast" data-toggle="list" href="#list-bannerCast" role="tab" aria-controls="bannerCast">Баннер литой</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="posterPaper" data-toggle="list" href="#list-posterPaper" role="tab" aria-controls="posterPaper">Постерная бумага</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="photoPaper" data-toggle="list" href="#list-photoPaper" role="tab" aria-controls="photoPaper">Фотобумага</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="Backlit" data-toggle="list" href="#list-Backlit" role="tab" aria-controls="Backlit">Бэклит</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="perforatedFilm" data-toggle="list" href="#list-perforatedFilm" role="tab" aria-controls="perforatedFilm">Перфорированная пленка</a>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="list-film" role="tabpanel" aria-labelledby="film" data-child = "film">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент ламинации</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="lamination-koef"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Стоимость обрезки</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="perimeterCut-price"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-bannerLaminated" role="tabpanel" aria-labelledby="bannerLaminated" data-child="bannerLaminated">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Стоимость обрезки по периметру</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="perimeterCut-price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Стоимость проклейки по периметру</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="perimeterBonding-price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Стоимость люверсов</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="eyelets-price"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-bannerCast" role="tabpanel" aria-labelledby="bannerCast" data-child="bannerCast">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Стоимость обрезки по периметру</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="perimeterCut-price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Стоимость проклейки по периметру</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="perimeterBonding-price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Стоимость люверсов</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="eyelets-price"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-posterPaper" role="tabpanel" aria-labelledby="posterPaper" data-child="posterPaper">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Стоимость обрезки по периметру</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="perimeterCut-price"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-photoPaper" role="tabpanel" aria-labelledby="photoPaper" data-child="photoPaper">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Стоимость обрезки по периметру</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="perimeterCut-price"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-Backlit" role="tabpanel" aria-labelledby="Backlit" data-child="Backlit">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Стоимость обрезки по периметру</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="perimeterCut-price"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-perforatedFilm" role="tabpanel" aria-labelledby="perforatedFilm" data-child="perforatedFilm">
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Базовая стоимость</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="price"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент ширины</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="width-koef"
+                                      />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                      <label>Коэффициент высоты</label>
+                                      <input
+                                        type="number"
+                                        class="form-control"
+                                        data-type="height-koef"
+                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-3">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 720dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-0"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Коэффициент качества 1440dpi</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="quality-koef-1"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mb-0 mr-3">
+                                        <label>Стоимость обрезки по периметру</label>
+                                        <input
+                                          type="number"
+                                          class="form-control"
+                                          data-type="perimeterCut-price"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade table" id="list-table" role="tabpanel" aria-labelledby="table">
+                    <div class="row">
+                        <div class="flex-fill list-group list-group-horizontal" id="table-tab" role="tablist">
+                            <a style="text-align: center;" class="list-group-item list-group-item-action active" id="pvh" data-toggle="list" href="#list-pvh" role="tab" aria-controls="pvh">ПВХ</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="composit" data-toggle="list" href="#list-composit" role="tab" aria-controls="composit">Композит</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="akrile" data-toggle="list" href="#list-akrile" role="tab" aria-controls="akrile">Акрил</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="list-pvh" role="tabpanel" aria-labelledby="pvh" data-child="pvh">
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Базовая стоимость</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="price"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент ширины</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="width-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент высоты</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="height-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 720dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 1440dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент ламинации</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="lamination-koef"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 1 цвет</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 2 цвета</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "в обрез"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "с подгибкой"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-12 thikness" data-type="thikness">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="list-composit" role="tabpanel" aria-labelledby="composit" data-child="composit">
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Базовая стоимость</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="price"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент ширины</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="width-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент высоты</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="height-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 720dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 1440dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент ламинации</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="lamination-koef"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 1 цвет</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 2 цвета</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "в обрез"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "с подгибкой"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                  <div class="col-12 thikness" data-type="thikness">
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="list-akrile" role="tabpanel" aria-labelledby="akrile" data-child="akrile">
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Базовая стоимость</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="price"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент ширины</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="width-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент высоты</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="height-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 720dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 1440dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент ламинации</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="lamination-koef"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 1 цвет</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 2 цвета</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "в обрез"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "с подгибкой"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                  <div class="col-12 thikness" data-type="thikness">
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade stand" id="list-stand" role="tabpanel" aria-labelledby="stand">
+                    <div class="row">
+                        <div class="flex-fill list-group list-group-horizontal" id="stand-tab" role="tablist">
+                            <a style="text-align: center;" class="list-group-item list-group-item-action active" id="pvh" data-toggle="list" href="#stand-pvh" role="tab" aria-controls="stand-pvh">ПВХ</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="composit" data-toggle="list" href="#stand-composit" role="tab" aria-controls="stand-composit">Композит</a>
+                            <a style="text-align: center;" class="list-group-item list-group-item-action" id="akrile" data-toggle="list" href="#stand-akrile" role="tab" aria-controls="stand-akrile">Акрил</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="stand-pvh" role="tabpanel" aria-labelledby="pvh" data-child="pvh">
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Базовая стоимость</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="price"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент ширины</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="width-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент высоты</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="height-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 720dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 1440dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент ламинации</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="lamination-koef"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 1 цвет</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 2 цвета</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "в обрез"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "с подгибкой"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                  <div class="col-12 thikness" data-type="thikness">
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="stand-composit" role="tabpanel" aria-labelledby="composit" data-child="composit">
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Базовая стоимость</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="price"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент ширины</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="width-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент высоты</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="height-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 720dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 1440dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент ламинации</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="lamination-koef"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 1 цвет</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 2 цвета</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "в обрез"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "с подгибкой"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                  <div class="col-12 thikness" data-type="thikness">
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="stand-akrile" role="tabpanel" aria-labelledby="akrile" data-child="akrile">
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Базовая стоимость</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="price"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент ширины</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="width-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                          <label>Коэффициент высоты</label>
+                                          <input
+                                            type="number"
+                                            class="form-control"
+                                            data-type="height-koef"
+                                          />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 720dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент качества 1440dpi</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="quality-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент ламинации</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="lamination-koef"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 1 цвет</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Стоимость печати в 2 цвета</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="plotter-price-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "в обрез"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 mr-3">
+                                            <label>Коэффициент "с подгибкой"</label>
+                                            <input
+                                              type="number"
+                                              class="form-control"
+                                              data-type="flexy-koef-1"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                  <div class="col-12 thikness" data-type="thikness">
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade letters" id="list-letter" role="tabpanel" aria-labelledby="letters">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group mb-0">
+                                <label>Коэффициент высоты</label>
+                                <input
+                                type="number"
+                                class="form-control"
+                                data-type="height-koef"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group mb-0 mr-3">
+                              <label>Стоимость рамки</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                data-type="substrate-price-0"
+                              />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group mb-0">
+                                <label>Стоимость подложки</label>
+                                <input
+                                type="number"
+                                class="form-control"
+                                data-type="substrate-price-1"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-start mt-5">
+                    <button class="btn btn-primary" type="button" id="dataSave">
+                      Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="tag-input.js"></script>
+    <script type="module" src="admin-script.js"></script>
+</body>
+</html>

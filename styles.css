@@ -47,3 +47,61 @@
 .disabled-field:hover:after {
   display: none;
 }
+
+.tag-input{
+  display: flex !important;
+}
+
+.tag-input .tags{
+  display: flex;
+  align-items: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+}
+
+div.form-control{
+  padding: 0%;
+}
+
+div.form-control .input{
+  display: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 5px;
+}
+
+div.form-control.focus .input{
+  display: block;
+}
+
+.span-tag{
+  background-color: #ebeef2;
+  color: black;
+  border-radius: 5px;
+  padding-left: 10px;
+  margin-right: 5px;
+  padding-right: 10px;
+}
+
+.span-tag span{
+  margin-left: 10px;
+}
+
+.span-tag span:hover{
+  cursor: pointer;
+}
+
+.container .row .mainBtn{
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+body.modal-open .container{
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+}
