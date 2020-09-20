@@ -65,21 +65,21 @@ export default class TagInput {
         
         this.element.querySelector('.input').addEventListener('keydown', ({key}) => {
             if (key == 'Enter') {
-                let cont = true;
+                let isValid = true;
                 this.element.querySelector('.input').blur();
                 this.element.querySelector('.tag-input').classList.remove('focus');
                 const tagValue = parseInt(this.element.querySelector('.input').innerText);
                 this.element.querySelector('.input').innerHTML = null;
                 for(let el of this.outputData){
                     if (el != tagValue) {
-                        cont = true;
+                        isValid = true;
                     }
                     else{
-                        cont = false;
+                        isValid = false;
                         break;
                     }
                 }
-                if (!isNaN(tagValue) && cont) {
+                if (!isNaN(tagValue) && isValid) {
                     this.outputData.push(tagValue);
                     let span = document.createElement('span');
                     span.className = 'span-tag';
