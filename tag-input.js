@@ -2,7 +2,6 @@ export default class TagInput {
 
     inputData;
     outputData;
-
     element;
 
     constructor(data) {
@@ -24,7 +23,7 @@ export default class TagInput {
         this.inputData.forEach(el => {
             let span = document.createElement('span');
             span.className = 'span-tag';
-            span.innerHTML = el + '<span>&times;</span>';
+            span.innerHTML = `${el}<span>&times;</span>`;
             this.element.querySelector('.tags').append(span);
         });
     }
@@ -42,7 +41,6 @@ export default class TagInput {
                 const elRemove = target.parentNode;
                 elRemove.remove();
                 const numRemove = elRemove.innerText.substring(0, elRemove.innerText.length - 1);
-                let d;
                 for (let i = 0; i < this.outputData.length; i++) {
                     const el = this.outputData[i];
                     if (el == numRemove) {
@@ -85,7 +83,7 @@ export default class TagInput {
                     this.outputData.push(tagValue);
                     let span = document.createElement('span');
                     span.className = 'span-tag';
-                    span.innerHTML = tagValue + '<span>&times;</span>';
+                    span.innerHTML = `${tagValue}<span>&times;</span>`;
                     this.element.querySelector('.tags').append(span);
                 }
             }

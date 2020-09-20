@@ -1,54 +1,77 @@
 import TagInput from "./tag-input.js";
 
+let data = null;
 
 if (!sessionStorage.getItem('adminToken') && !localStorage.getItem('adminToken')) {
     $('#authModal').modal({
         backdrop: 'static',
         keyboard: false
     })
+} else{
+    loadData();
 }
 
-document.querySelector('.spinner').classList.add('d-flex');
 
-let data = null;
-fetch('data.json').then((response) => {
-  response.json().then(d => {
-    data = d;
-    setData(data);
-    console.log(data);
-    document.querySelector('.spinner').classList.remove('d-flex');
-  });
-})
+function loadData(){
+    document.querySelector('.spinner').classList.add('d-flex');
+    fetch('data.json').then((response) => {
+        response.json().then(d => {
+          data = d;
+          dataAction('load');
+          document.querySelector('.spinner').classList.remove('d-flex');
+        });
+      })
+}
 
-function setData(dataSet){
-    for (const [key, value] of Object.entries(dataSet)) {
+function dataAction(action){
+    for (const [key, value] of Object.entries(data)) {
         document.querySelectorAll('.' + key).forEach(el => {
             let children = el.querySelectorAll('[data-child]');
             if (children.length != 0) {
                 children.forEach(child => {
-                    for (const [k, val] of Object.entries(value.children)) {
-                        if (child.dataset.child == k) {
+                    for (const [childKey, childValue] of Object.entries(value.children)) {
+                        if (child.dataset.child == childKey) {
                             child.querySelectorAll(['[data-type]']).forEach(input => {
-                                let str = input.dataset.type.split('-');
-                                if (str[0] == 'price') {
-                                    input.value = val.price;
+                                let [field, attribute, position] = input.dataset.type.split('-');
+                                if (field == 'price') {
+                                    if (action == 'load') {
+                                        input.value = childValue.price;
+                                    }
+                                    if (action == 'save') {
+                                        childValue.price = input.value;
+                                    }
                                 }
-                                for (const [k, v] of Object.entries(val.fields)){
-                                    if (k == str[0]) {
-                                        if (str[2]) {
-                                            input.value = v.values[str[2]][str[1]];
+                                for (const [fieldKey, fieldValue] of Object.entries(childValue.fields)){
+                                    if (fieldKey == field && fieldKey != 'thikness') {
+                                        if (position) {
+                                            if (action == 'load') {
+                                                input.value = fieldValue.values[position][attribute];
+                                            }
+                                            if (action == 'save') {
+                                                fieldValue.values[position][attribute] = input.value;
+                                            }
                                         }
                                         else{
-                                            input.value = v[str[1]];
+                                            if (action == 'load') {
+                                                input.value = fieldValue[attribute];
+                                            }
+                                            if (action == 'save') {
+                                                fieldValue[attribute] = input.value;
+                                            }
                                         }
                                     }
-                                    if (k == 'thikness') {
-                                        if(!child.querySelector('.thikness .tag-input')){
-                                            let tableTags = new TagInput(v);
-                                            child.querySelector('.thikness').append(tableTags.element);
-                                            tableTags.element.addEventListener('data-changed', ({detail}) => {
-                                                v = detail || [];
-                                            })
+                                    if (fieldKey == 'thikness') {
+                                        if (action == 'load') {
+                                            if(!child.querySelector('.thikness .tag-input')){
+                                                let tableTags = new TagInput(fieldValue);
+                                                child.querySelector('.thikness').append(tableTags.element);
+                                                tableTags.element.addEventListener('data-changed', ({detail}) => {
+                                                    fieldValue = detail || [];
+                                                })
+                                            }
+                                        }
+                                        if (action == 'save') {
+                                            fieldValue.sort((a,b) => { return a-b });
                                         }
                                     }
                                 }
@@ -60,17 +83,32 @@ function setData(dataSet){
             else{
                 el.querySelectorAll('[data-type]').forEach(input => {
                     if (input.dataset.type == 'price') {
-                        input.value = value.price;
+                        if (action == 'load') {
+                            input.value = value.price;
+                        }
+                        if (action == 'save') {
+                            value.price = input.value;
+                        }
                     }
                     else{
-                        let str = input.dataset.type.split('-');
-                        for (const [k, v] of Object.entries(value.fields)){
-                            if (k == str[0]) {
-                                if (str[2]) {
-                                    input.value = v.values[str[2]][str[1]];
+                        let [field, attribute, position] = input.dataset.type.split('-');
+                        for (const [fieldKey, fieldValue] of Object.entries(value.fields)){
+                            if (fieldKey == field) {
+                                if (position) {
+                                    if (action == 'load') {
+                                        input.value = fieldValue.values[position][attribute];
+                                    }
+                                    if (action == 'save') {
+                                        fieldValue.values[position][attribute] = input.value;
+                                    }
                                 }
                                 else{
-                                    input.value = v[str[1]];
+                                    if (action == 'load') {
+                                        input.value = fieldValue[attribute];
+                                    }
+                                    if (action == 'save') {
+                                        fieldValue[attribute] = input.value;
+                                    }
                                 }
                             }
                         }
@@ -81,11 +119,23 @@ function setData(dataSet){
     }
 }
 
-function showAlert(){
-    document.querySelector('.alert').classList.remove('d-none');
-    setTimeout(() => {
-        document.querySelector('.alert').classList.add('d-none')
-    }, 5000)
+function showAlert(success, message){
+    if (success) {
+        let alert = document.querySelector('.alert-success');
+        alert.innerHTML = message;
+        alert.classList.remove('d-none');
+        setTimeout(() => {
+            alert.classList.add('d-none')
+        }, 5000)
+    }
+    else{
+        let alert = document.querySelector('.alert-danger');
+        alert.innerHTML = message;
+        alert.classList.remove('d-none');
+        setTimeout(() => {
+            alert.classList.add('d-none')
+        }, 5000)
+    }
 }
 
 document.querySelectorAll('.exit').forEach(tag => {
@@ -112,10 +162,11 @@ document.querySelector('.signIn').addEventListener('click', () => {
         response.json().then((result) => {
             if (result == true) {
                 $('#authModal').modal('hide');
-                if (document.querySelector('#checkMe').checked) {
+                if (document.querySelector('#saveMe').checked) {
                     localStorage.setItem('adminToken', JSON.stringify(user));
                 }
                 sessionStorage.setItem('adminToken', JSON.stringify(user));
+                loadData();
             }
             else{
                 let alertDiv = document.querySelector('.alertDiv');
@@ -137,65 +188,19 @@ document.querySelector('.signIn').addEventListener('click', () => {
 
 document.getElementById('dataSave').addEventListener('click', () => {
     document.querySelector('.spinner').classList.add('d-flex');
-    for (const [key, value] of Object.entries(data)) {
-        document.querySelectorAll('.' + key).forEach(el => {
-            let children = el.querySelectorAll('[data-child]');
-            if (children.length != 0) {
-                children.forEach(child => {
-                    for (const [k, val] of Object.entries(value.children)) {
-                        if (child.dataset.child == k) {
-                            child.querySelectorAll(['[data-type]']).forEach(input => {
-                                let str = input.dataset.type.split('-');
-                                if (str[0] == 'price') {
-                                    val.price = input.value;
-                                }
-                                for (const [k, v] of Object.entries(val.fields)){
-                                    if (k == str[0] && k != 'thikness') {
-                                        if (str[2]) {
-                                            v.values[str[2]][str[1]] = input.value;
-                                        }
-                                        else{
-                                            v[str[1]] = input.value;
-                                        }
-                                    }
-                                    if (k == 'thikness') {
-                                        v.sort((a,b) => { return a-b });
-                                    }
-                                }
-                            })
-                        }
-                    }
-                });
-            }
-            else{
-                el.querySelectorAll('[data-type]').forEach(input => {
-                    if (input.dataset.type == 'price') {
-                        value.price = input.value;
-                    }
-                    else{
-                        let str = input.dataset.type.split('-');
-                        for (const [k, v] of Object.entries(value.fields)){
-                            if (k == str[0]) {
-                                if (str[2]) {
-                                    v.values[str[2]][str[1]] = input.value;
-                                }
-                                else{
-                                    v[str[1]] = input.value;
-                                }
-                            }
-                        }
-                    }
-                })
-            }
-        });
+    if (sessionStorage.getItem('adminToken') || localStorage.getItem('adminToken')) {
+        dataAction('save');
+        fetch('./repository.php?key=data-save', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        }).then((response) => {
+            response.json().then((result) => {
+                document.querySelector('.spinner').classList.remove('d-flex');
+                showAlert(true, result.message);
+            })});
     }
-    fetch('./repository.php?key=data-save', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }).then((response) => {
-        response.json().then((result) => {
-            document.querySelector('.spinner').classList.remove('d-flex');
-            showAlert();
-            // console.log(result);
-        })});
+    else{
+        document.querySelector('.spinner').classList.remove('d-flex');
+        showAlert(false, 'Нет прав доступа');
+    }
 })

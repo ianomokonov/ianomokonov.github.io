@@ -2,12 +2,6 @@
 
 if(isset($_GET['key'])){
     switch ($_GET['key']) {
-        case 'set-password':
-            genPassword();
-            return;
-        case 'hash-password':
-            hashPassword();
-            return;
         case 'sign-in':
             $data = json_decode(file_get_contents("php://input"));
             echo json_encode(signIn($data));

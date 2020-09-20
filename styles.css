@@ -61,7 +61,7 @@
 }
 
 div.form-control{
-  padding: 0%;
+  padding: 0;
 }
 
 div.form-control .input{
@@ -120,6 +120,7 @@ body.modal-open .container{
 }
 
 .alert{
+  z-index: 10000;
   position: fixed !important;
   top: 20px;
   left: 30px;
