@@ -105,3 +105,22 @@ body.modal-open .container{
   -ms-filter: blur(5px);
   filter: blur(5px);
 }
+
+.spinner{
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.486);
+}
+
+.alert{
+  position: fixed !important;
+  top: 20px;
+  left: 30px;
+}

@@ -8,12 +8,15 @@ if (!sessionStorage.getItem('adminToken') && !localStorage.getItem('adminToken')
     })
 }
 
+document.querySelector('.spinner').classList.add('d-flex');
+
 let data = null;
 fetch('data.json').then((response) => {
   response.json().then(d => {
     data = d;
     setData(data);
     console.log(data);
+    document.querySelector('.spinner').classList.remove('d-flex');
   });
 })
 
@@ -78,6 +81,13 @@ function setData(dataSet){
     }
 }
 
+function showAlert(){
+    document.querySelector('.alert').classList.remove('d-none');
+    setTimeout(() => {
+        document.querySelector('.alert').classList.add('d-none')
+    }, 5000)
+}
+
 document.querySelectorAll('.exit').forEach(tag => {
     tag.addEventListener('click', () => {
         document.location.replace('./');
@@ -126,6 +136,7 @@ document.querySelector('.signIn').addEventListener('click', () => {
 })
 
 document.getElementById('dataSave').addEventListener('click', () => {
+    document.querySelector('.spinner').classList.add('d-flex');
     for (const [key, value] of Object.entries(data)) {
         document.querySelectorAll('.' + key).forEach(el => {
             let children = el.querySelectorAll('[data-child]');
@@ -183,6 +194,8 @@ document.getElementById('dataSave').addEventListener('click', () => {
         body: JSON.stringify(data)
     }).then((response) => {
         response.json().then((result) => {
+            document.querySelector('.spinner').classList.remove('d-flex');
+            showAlert();
             // console.log(result);
         })});
 })
