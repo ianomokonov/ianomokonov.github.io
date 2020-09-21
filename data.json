@@ -561,7 +561,7 @@
               }
             ]
           },
-          "flat-pocket": {
+          "flatPocket": {
             "type": "radio",
             "values": [
               {
@@ -578,7 +578,7 @@
               }
             ]
           },
-          "volume-pocket": {
+          "volumePocket": {
             "type": "radio",
             "values": [
               {
@@ -656,7 +656,7 @@
               }
             ]
           },
-          "flat-pocket": {
+          "flatPocket": {
             "type": "radio",
             "values": [
               {
@@ -673,7 +673,7 @@
               }
             ]
           },
-          "volume-pocket": {
+          "volumePocket": {
             "type": "radio",
             "values": [
               {
@@ -751,7 +751,7 @@
               }
             ]
           },
-          "flat-pocket": {
+          "flatPocket": {
             "type": "radio",
             "values": [
               {
@@ -768,7 +768,7 @@
               }
             ]
           },
-          "volume-pocket": {
+          "volumePocket": {
             "type": "radio",
             "values": [
               {
