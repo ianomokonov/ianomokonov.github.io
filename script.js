@@ -1,10 +1,10 @@
 let data = null;
-fetch('data.json').then((response) => {
-  response.json().then(d => {
+fetch("data.json").then((response) => {
+  response.json().then((d) => {
     data = d;
     onTypeClick({});
   });
-})
+});
 let currentType = null;
 let currentCategory = null;
 const fieldNames = [
@@ -24,6 +24,8 @@ const fieldNames = [
   "substrate-height",
   "max-width-lable",
   "max-height-lable",
+  "flatPocket",
+  "volumePocket",
 ];
 
 const fieldNodes = {};
@@ -38,11 +40,11 @@ let onTypeClick = ({ target }) => {
   if (!data) {
     return;
   }
-  let typeNode = null
+  let typeNode = null;
   if (target) {
     typeNode = target.closest("[data-type]");
   } else {
-    typeNode = document.querySelector("[data-type='plotter']")
+    typeNode = document.querySelector("[data-type='plotter']");
   }
 
   const item = data[typeNode.dataset.type];
@@ -73,6 +75,7 @@ let onCategoryClick = ({ target }) => {
   const fieldsNames = Object.keys(currentCategory.fields);
   showFields(fieldsNames);
   setQualityPlotterListeners(fieldsNames.find((name) => name === "plotter"));
+  setPocketListeners(fieldsNames.find((name) => name === "flatPocket"));
   if (!fieldsNames.find((name) => name === "max-width-lable")) {
     document.forms[0].elements["width"].removeEventListener(
       "input",
@@ -158,6 +161,18 @@ const onQualityPlotterClick = ({ target }) => {
   setEnableClass(fieldNodes["quality"], true);
 };
 
+const onPocketClick = ({ target }) => {
+  let field = target.closest(".flatPocket");
+  if (field) {
+    setEnableClass(fieldNodes["flatPocket"], true);
+    setEnableClass(fieldNodes["volumePocket"], false);
+    return;
+  }
+  field = target.closest(".volumePocket");
+  setEnableClass(fieldNodes["flatPocket"], false);
+  setEnableClass(fieldNodes["volumePocket"], true);
+};
+
 function setEnableClass(target, isEnabled) {
   if (isEnabled) {
     target.classList.add("enabled-field");
@@ -176,6 +191,16 @@ function setQualityPlotterListeners(listen) {
   }
   fieldNodes["plotter"].removeEventListener("click", onQualityPlotterClick);
   fieldNodes["quality"].removeEventListener("click", onQualityPlotterClick);
+}
+
+function setPocketListeners(listen) {
+  if (listen) {
+    fieldNodes["flatPocket"].addEventListener("click", onPocketClick);
+    fieldNodes["volumePocket"].addEventListener("click", onPocketClick);
+    return;
+  }
+  fieldNodes["flatPocket"].removeEventListener("click", onPocketClick);
+  fieldNodes["volumePocket"].removeEventListener("click", onPocketClick);
 }
 
 function showFields(names) {
@@ -198,6 +223,10 @@ function showFields(names) {
         setEnableClass(fieldNodes[key], false);
       }
       if (key === "quality" && !!names.find((name) => name === "plotter")) {
+        setEnableClass(fieldNodes[key], true);
+      }
+      if (key === "flatPocket") {
+        setEnableClass(fieldNodes["volumePocket"], false);
         setEnableClass(fieldNodes[key], true);
       }
 
@@ -296,6 +325,20 @@ function getSum(value) {
     sum +=
       currentCategory.fields.plotter.values[+value.plotter - 1].price * square;
   }
+  if (
+    value.volumePocket &&
+    fieldNodes["volumePocket"].classList.value.indexOf("enabled-field") > -1
+  ) {
+    sum +=
+      currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price * value.volumePocketCount;
+  }
+  if (
+    value.flatPocket &&
+    fieldNodes["flatPocket"].classList.value.indexOf("enabled-field") > -1
+  ) {
+    sum +=
+      currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price * value.flatPocketCount;
+  }
   if (value.flexy) {
     sum *= value.flexy;
   }
@@ -337,7 +380,7 @@ function getLettersSum(value) {
   let sum = 0;
   console.log(value);
   if (value.height) {
-    value.height = +value.height;
+    value.height = +value.height * 10;
     if (value.height > 49 && value.height < 151) {
       sum = (value.height / 10) * 150;
     }
@@ -351,10 +394,9 @@ function getLettersSum(value) {
   if (value.count) {
     sum *= value.count;
   }
-  console.log(sum)
   if (value.substrate == 1) {
     const count = +value.count;
-    console.log(currentType.fields.substrate.values[0])
+    console.log(currentType.fields.substrate.values[0]);
     if (count < 7) {
       sum += 2 * currentType.fields.substrate.values[0].price;
     }
@@ -370,7 +412,7 @@ function getLettersSum(value) {
       (value["substrate-width"] / 1000) * (value["substrate-height"] / 1000);
     sum += square * currentType.fields.substrate.values[1].price;
   }
-  console.log(sum)
+  console.log(sum);
   return sum;
 }
 
@@ -384,8 +426,8 @@ function setCategories(categories) {
       node.innerHTML = `
           <li class="nav-item" data-category="${key}">
             <a class="nav-link" href="javascript:;">${categories[
-          key
-        ].name.toUpperCase()}</a>
+              key
+            ].name.toUpperCase()}</a>
           </li>`;
       const category = node.firstElementChild;
       category.addEventListener("click", onCategoryClick);
