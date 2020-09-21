@@ -16,11 +16,12 @@
   background-color: blue;
 }
 
-.nav-item.active {
-  background-color: #0056b3;
+.nav-item.active, .nav-item.active:focus {
+  background-color: #0056b3 !important;
 }
 .nav-item.active a {
   color: #fff;
+  background-color: transparent !important;
 }
 
 .enabled-field {
