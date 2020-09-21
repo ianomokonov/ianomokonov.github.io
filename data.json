@@ -592,7 +592,7 @@
             ]
           },
           "volumePocketCount": true,
-          "faltPocketCount": true,
+          "flatPocketCount": true,
           "thikness": [
             3,
             5
@@ -689,7 +689,7 @@
             ]
           },
           "volumePocketCount": true,
-          "faltPocketCount": true,
+          "flatPocketCount": true,
           "thikness": [
             3
           ]
@@ -786,7 +786,7 @@
             ]
           },
           "volumePocketCount": true,
-          "faltPocketCount": true,
+          "flatPocketCount": true,
           "thikness": [
             2,
             3,
