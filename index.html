@@ -195,7 +195,7 @@
       </div>
       <!--bottom-header-->
     </header>
-    <div class="container pt-5">
+    <div class="container pt-2 pt-sm-5">
       <ul class="services-list__list">
         <li class="services-list__list-item services-list__list-item--green" data-type="plotter">
           <a
@@ -263,26 +263,28 @@
           <div class="text-center mt-2">Объемные буквы</div>
         </div>
       </div> -->
-      <ul class="nav pt-4" id="categoriesMenu"></ul>
+      <div class="wrap-categories">
+        <ul class="nav pt-4" id="categoriesMenu"></ul>
+      </div>
       <form id="calculatorForm">
         <div class="row py-3">
-          <div class="col-4 width">
-            <div class="form-group mb-0 mr-3">
+          <div class="col-12 col-sm-4 width">
+            <div class="form-group mb-2 mb-sm-0 mr-0 mr-sm-3">
               <label>Ширина</label>
               <input type="number" class="form-control" name="width" />
               <small class="text-muted max-width-lable"></small>
             </div>
           </div>
-          <div class="col-4 height">
-            <div class="form-group mb-0">
+          <div class="col-12 col-sm-4 height">
+            <div class="form-group mb-2 mb-sm-0">
               <label>Высота</label>
               <input type="number" class="form-control" name="height" />
               <small class="text-muted max-height-lable"></small>
             </div>
           </div>
 
-          <div class="col-4 substrate">
-            <div class="form-group">
+          <div class="col-12 col-sm-4 substrate">
+            <div class="form-group mb-2 mb-sm-0">
               <label>Оформление</label>
               <div class="form-check">
                 <input
@@ -295,7 +297,7 @@
                 />
                 <label class="form-check-label" for="frame"> Рамка </label>
               </div>
-              <div class="form-check">
+              <div class="form-check mb-2 mb-sm-0">
                 <input
                   class="form-check-input"
                   type="radio"
@@ -311,8 +313,8 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-4 quality">
-            <div class="form-group">
+          <div class="col-12 col-sm-4 quality">
+            <div class="form-group mb-2 mb-sm-0">
               <label>Качество изображение</label>
               <div class="form-check">
                 <input
@@ -325,7 +327,7 @@
                 />
                 <label class="form-check-label" for="720dpi"> 720dpi </label>
               </div>
-              <div class="form-check">
+              <div class="form-check mb-2 mb-sm-0">
                 <input
                   class="form-check-input"
                   type="radio"
@@ -337,10 +339,10 @@
               </div>
             </div>
           </div>
-          <div class="col-4 flexy">
+          <div class="col-12 col-sm-4 flexy">
             <div class="form-group">
               <label>Вид таблицы</label>
-              <div class="form-check">
+              <div class="form-check mb-2 mb-sm-0">
                 <input
                   class="form-check-input"
                   type="radio"
@@ -353,7 +355,7 @@
                   Табличка в обрез
                 </label>
               </div>
-              <div class="form-check">
+              <div class="form-check mb-2 mb-sm-0">
                 <input
                   class="form-check-input"
                   type="radio"
@@ -367,8 +369,8 @@
               </div>
             </div>
           </div>
-          <div class="col-4">
-            <div class="form-check lamination">
+          <div class="col-12 col-sm-4">
+            <div class="form-check mb-2 mb-sm-0 lamination">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -379,7 +381,7 @@
                 Ламинация
               </label>
             </div>
-            <div class="form-check perimeterCut">
+            <div class="form-check mb-2 mb-sm-0 perimeterCut">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -390,7 +392,7 @@
                 Обрезка по периметру
               </label>
             </div>
-            <div class="form-check perimeterBonding">
+            <div class="form-check mb-2 mb-sm-0 perimeterBonding">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -402,8 +404,8 @@
               </label>
             </div>
           </div>
-          <div class="col-4 plotter">
-            <div class="form-group">
+          <div class="col-12 col-sm-4 plotter">
+            <div class="form-group mb-2 mb-sm-0">
               <label>Плотерная резка</label>
               <div class="form-check">
                 <input
@@ -428,13 +430,13 @@
               </div>
             </div>
           </div>
-          <div class="col-4 eyelets">
+          <div class="col-12 col-sm-4 eyelets">
             <div class="form-group">
               <label>Люверсы</label>
               <input type="number" class="form-control" name="eyelets" />
             </div>
           </div>
-          <div class="col-4 thikness">
+          <div class="col-12 col-sm-4 thikness">
             <div class="form-group">
               <label>Толщина</label>
               <select class="form-control" name="thikness"></select>
@@ -442,20 +444,14 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-4">
-            <div class="form-group mr-3 count">
+          <div class="col-12 col-sm-4">
+            <div class="form-group mr-0 mr-sm-3 count">
               <label>Количество</label>
               <input type="number" class="form-control" name="count" />
             </div>
-            <div class="d-flex align-items-center mt-3">
-              <button class="btn btn-primary" type="button" id="countBtn">
-                Рассчитать
-              </button>
-              <small class="text-muted ml-5" id="result"></small>
-            </div>
           </div>
-          <div class="col-4 substrate-width">
-            <div class="form-group mb-0 mr-3">
+          <div class="col-12 col-sm-4 substrate-width">
+            <div class="form-group mb-0 mr-0 mr-sm-3">
               <label>Ширина подложки</label>
               <input
                 type="number"
@@ -464,7 +460,7 @@
               />
             </div>
           </div>
-          <div class="col-4 substrate-height">
+          <div class="col-12 col-sm-4 substrate-height">
             <div class="form-group mb-0">
               <label>Высота подложки</label>
               <input
@@ -472,6 +468,16 @@
                 class="form-control"
                 name="substrate-height"
               />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-sm-4">
+            <div class="d-flex align-items-center mt-3">
+              <button class="btn btn-primary" type="button" id="countBtn">
+                Рассчитать
+              </button>
+              <small class="text-muted ml-5" id="result"></small>
             </div>
           </div>
         </div>
