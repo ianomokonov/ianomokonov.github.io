@@ -241,41 +241,19 @@
           </a>
         </li>
       </ul>
-      <!-- <div class="d-flex justify-content-between">
-        <div class="type pb-2 pointer" data-type="plotter">
-          <img src="./safitta.ru/plotter.svg" class="w-100" />
-          <div class="text-center mt-2">Плотерная печать</div>
-        </div>
-        <div class="type pb-2 pointer" data-type="interior">
-          <img src="./safitta.ru/plotter.svg" class="w-100" />
-          <div class="text-center mt-2">Интерьерная печать</div>
-        </div>
-        <div class="type pb-2 pointer" data-type="table">
-          <img src="./safitta.ru/plotter.svg" class="w-100" />
-          <div class="text-center mt-2">Табличка</div>
-        </div>
-        <div class="type pb-2 pointer" data-type="stand">
-          <img src="./safitta.ru/plotter.svg" class="w-100" />
-          <div class="text-center mt-2">Стенд</div>
-        </div>
-        <div class="type pb-2 pointer" data-type="letters">
-          <img src="./safitta.ru/plotter.svg" class="w-100" />
-          <div class="text-center mt-2">Объемные буквы</div>
-        </div>
-      </div> -->
       <div class="wrap-categories">
         <ul class="nav pt-4" id="categoriesMenu"></ul>
       </div>
       <form id="calculatorForm">
         <div class="row py-3">
-          <div class="col-sm-12 col-md-4 width">
+          <div class="col-sm-12 col-md-4 width mb-3">
             <div class="form-group mb-2 mb-sm-0 mr-sm-0 mr-md-3">
               <label>Ширина</label>
               <input type="number" class="form-control" name="width" />
               <small class="text-muted max-width-lable"></small>
             </div>
           </div>
-          <div class="col-sm-12 col-md-4 height">
+          <div class="col-sm-12 col-md-4 height mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Высота</label>
               <input type="number" class="form-control" name="height" />
@@ -283,7 +261,7 @@
             </div>
           </div>
 
-          <div class="col-sm-12 col-md-4 substrate">
+          <div class="col-sm-12 col-md-4 substrate mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Оформление</label>
               <div class="form-check">
@@ -313,7 +291,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-12 col-md-4 quality">
+          <div class="col-sm-12 col-md-4 quality mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Качество изображение</label>
               <div class="form-check">
@@ -339,7 +317,7 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-12 col-md-4 flexy">
+          <div class="col-sm-12 col-md-4 flexy mb-3">
             <div class="form-group">
               <label>Вид таблицы</label>
               <div class="form-check mb-2 mb-sm-0">
@@ -369,7 +347,7 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-12 col-md-4">
+          <div class="col-sm-12 col-md-4 mb-3">
             <div class="form-check mb-2 mb-sm-0 lamination">
               <input
                 class="form-check-input"
@@ -404,7 +382,7 @@
               </label>
             </div>
           </div>
-          <div class="col-sm-12 col-md-4 plotter">
+          <div class="col-sm-12 col-md-4 plotter mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Плотерная резка</label>
               <div class="form-check">
@@ -430,13 +408,13 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-12 col-md-4 eyelets">
+          <div class="col-sm-12 col-md-4 eyelets mb-3">
             <div class="form-group">
               <label>Люверсы</label>
               <input type="number" class="form-control" name="eyelets" />
             </div>
           </div>
-          <div class="col-sm-12 col-md-4 thikness">
+          <div class="col-sm-12 col-md-4 thikness mb-3">
             <div class="form-group">
               <label>Толщина</label>
               <select class="form-control" name="thikness"></select>
@@ -444,7 +422,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-12 col-md-4">
+          <div class="col-sm-12 col-md-4 mb-3">
             <div class="form-group mr-sm-0 mr-md-3 count">
               <label>Количество</label>
               <input type="number" class="form-control" name="count" />
@@ -474,7 +452,7 @@
         <div class="row">
           <div class="col-sm-12 col-md-4">
             <div class="d-flex align-items-center mt-3">
-              <button class="btn btn-primary" type="button" id="countBtn">
+              <button class="btn btn-primary mb-3" type="button" id="countBtn">
                 Рассчитать
               </button>
               <small class="text-muted ml-5" id="result"></small>
