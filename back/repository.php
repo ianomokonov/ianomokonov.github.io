@@ -13,10 +13,12 @@ if(isset($_GET['key'])){
                 return;
             }
             else{
-                return array("isAccess" => false, "message" => "Нет прав доступа");
+                echo json_encode(array("isAccess" => false, "message" => "Нет прав доступа"));
+                return;
             }
         default:
-            return array("message" => "Ключ запроса не найден");
+            echo json_encode(array("message" => "Ключ запроса не найден"));
+            return;
     }
 }
 
