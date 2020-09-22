@@ -561,6 +561,38 @@
               }
             ]
           },
+          "flatPocket": {
+            "type": "radio",
+            "values": [
+              {
+                "name": "A3",
+                "price": 300
+              },
+              {
+                "name": "A4",
+                "price": 300
+              },
+              {
+                "name": "A5",
+                "price": 300
+              }
+            ]
+          },
+          "volumePocket": {
+            "type": "radio",
+            "values": [
+              {
+                "name": "A4",
+                "price": 300
+              },
+              {
+                "name": "A5",
+                "price": 300
+              }
+            ]
+          },
+          "volumePocketCount": true,
+          "flatPocketCount": true,
           "thikness": [
             3,
             5
@@ -626,6 +658,38 @@
               }
             ]
           },
+          "flatPocket": {
+            "type": "radio",
+            "values": [
+              {
+                "name": "A3",
+                "price": 300
+              },
+              {
+                "name": "A4",
+                "price": 300
+              },
+              {
+                "name": "A5",
+                "price": 300
+              }
+            ]
+          },
+          "volumePocket": {
+            "type": "radio",
+            "values": [
+              {
+                "name": "A4",
+                "price": 300
+              },
+              {
+                "name": "A5",
+                "price": 300
+              }
+            ]
+          },
+          "volumePocketCount": true,
+          "flatPocketCount": true,
           "thikness": [
             3
           ]
@@ -691,6 +755,38 @@
               }
             ]
           },
+          "flatPocket": {
+            "type": "radio",
+            "values": [
+              {
+                "name": "A3",
+                "price": 300
+              },
+              {
+                "name": "A4",
+                "price": 300
+              },
+              {
+                "name": "A5",
+                "price": 300
+              }
+            ]
+          },
+          "volumePocket": {
+            "type": "radio",
+            "values": [
+              {
+                "name": "A4",
+                "price": 300
+              },
+              {
+                "name": "A5",
+                "price": 300
+              }
+            ]
+          },
+          "volumePocketCount": true,
+          "flatPocketCount": true,
           "thikness": [
             2,
             3,
