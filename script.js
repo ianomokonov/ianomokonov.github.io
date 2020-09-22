@@ -31,6 +31,30 @@ const fieldNames = [
 const fieldNodes = {};
 let widthMaxListener;
 let heightMaxListener;
+function init() {
+    try{
+  clearFields();
+  countBtn.addEventListener("click", onCountButtonClick);
+  document.forms[0].elements.substrate[1].addEventListener(
+    "change",
+    onSubstrateChange
+  );
+  document.forms[0].elements.substrate[0].addEventListener(
+    "change",
+    onSubstrateChange
+  );
+  document.querySelectorAll("[data-type]").forEach((node, index) => {
+    node.addEventListener("click", onTypeClick);
+    if (!index) {
+      node.click();
+    }
+  });
+        
+    }
+  catch(error){
+      alert('init')
+  }
+}
 fieldNames.forEach((name) => {
   fieldNodes[name] = document.querySelector(`.${name}`);
 });
@@ -94,13 +118,20 @@ let onCategoryClick = ({ target }) => {
 };
 
 let onCountButtonClick = () => {
+    try{
   const value = getRawValue(
     Object.keys(
       currentType.fields ? currentType.fields : currentCategory.fields
     )
   );
   const sum = getSum(value);
-  result.innerHTML = `Итого: ${sum?.toFixed(2) | 0} руб.`;
+  if(sum){
+      result.innerHTML = `Итого: ${sum.toFixed(2) | 0} руб.`;
+  }
+  
+  }catch(error){
+      alert(`onCountButtonClick: ${JSON.stringify(error)}`)
+  }
 };
 
 let onSubstrateChange = ({ target }) => {
