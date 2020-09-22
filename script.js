@@ -2,6 +2,7 @@ let data = null;
 fetch("data.json").then((response) => {
   response.json().then((d) => {
     data = d;
+    init();
     onTypeClick({});
   });
 });
@@ -31,10 +32,27 @@ const fieldNames = [
 const fieldNodes = {};
 let widthMaxListener;
 let heightMaxListener;
+function init() {
+  clearFields();
+  countBtn.addEventListener("click", onCountButtonClick);
+  document.forms[0].elements.substrate[1].addEventListener(
+    "change",
+    onSubstrateChange
+  );
+  document.forms[0].elements.substrate[0].addEventListener(
+    "change",
+    onSubstrateChange
+  );
+  document.querySelectorAll("[data-type]").forEach((node, index) => {
+    node.addEventListener("click", onTypeClick);
+    if (!index) {
+      node.click();
+    }
+  });
+}
 fieldNames.forEach((name) => {
   fieldNodes[name] = document.querySelector(`.${name}`);
 });
-clearFields();
 
 let onTypeClick = ({ target }) => {
   if (!data) {
@@ -110,23 +128,6 @@ let onSubstrateChange = ({ target }) => {
     clearFields(["substrate-width", "substrate-height"]);
   }
 };
-
-countBtn.addEventListener("click", onCountButtonClick);
-document.forms[0].elements.substrate[1].addEventListener(
-  "change",
-  onSubstrateChange
-);
-document.forms[0].elements.substrate[0].addEventListener(
-  "change",
-  onSubstrateChange
-);
-
-document.querySelectorAll("[data-type]").forEach((node, index) => {
-  node.addEventListener("click", onTypeClick);
-  if (!index) {
-    node.click();
-  }
-});
 
 function clearActiveItems(selector) {
   document.querySelectorAll(selector).forEach((node) => {
@@ -330,14 +331,16 @@ function getSum(value) {
     fieldNodes["volumePocket"].classList.value.indexOf("enabled-field") > -1
   ) {
     sum +=
-      currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price * value.volumePocketCount;
+      currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price *
+      value.volumePocketCount;
   }
   if (
     value.flatPocket &&
     fieldNodes["flatPocket"].classList.value.indexOf("enabled-field") > -1
   ) {
     sum +=
-      currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price * value.flatPocketCount;
+      currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price *
+      value.flatPocketCount;
   }
   if (value.flexy) {
     sum *= value.flexy;
