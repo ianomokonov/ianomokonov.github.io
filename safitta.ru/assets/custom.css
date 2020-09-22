@@ -1488,7 +1488,7 @@ img {
     width: 100%;
   }
   .header-nav ul li {
-    display: block;
+    display: block !important;
   }
   .header-nav ul li a {
     font-size: 17px;
