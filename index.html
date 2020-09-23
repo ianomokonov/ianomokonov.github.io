@@ -279,14 +279,24 @@
           <div class="col-sm-12 col-md-4 width mb-3">
             <div class="form-group mb-2 mb-sm-0 mr-sm-0 mr-md-3">
               <label>Ширина</label>
-              <input type="number" class="form-control" name="width" />
+              <input
+                type="number"
+                class="form-control"
+                name="width"
+                placeholder="мм"
+              />
               <small class="text-muted max-width-lable"></small>
             </div>
           </div>
           <div class="col-sm-12 col-md-4 height mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Высота</label>
-              <input type="number" class="form-control" name="height" />
+              <input
+                type="number"
+                class="form-control"
+                name="height"
+                placeholder="мм"
+              />
               <small class="text-muted max-height-lable"></small>
             </div>
           </div>
@@ -408,12 +418,15 @@
           <div class="col-sm-12 col-md-4 eyelets mb-3">
             <div class="form-group">
               <label>Люверсы</label>
-              <input type="number" class="form-control" name="eyelets" />
+              <input
+                type="number"
+                class="form-control"
+                name="eyelets"
+                placeholder="Интервал, мм"
+              />
             </div>
           </div>
-          <div
-            class="col-sm-12 col-md-4 flatPocket mb-3"
-          >
+          <div class="col-sm-12 col-md-4 flatPocket mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Плоский карман</label>
               <div class="form-check">
@@ -545,7 +558,12 @@
           <div class="col-sm-12 col-md-4 mb-3">
             <div class="form-group mr-sm-0 mr-md-3 count">
               <label>Количество</label>
-              <input type="number" class="form-control" name="count" />
+              <input
+                value="1"
+                type="number"
+                class="form-control"
+                name="count"
+              />
             </div>
           </div>
           <div class="col-sm-12 col-md-4 substrate-width">
@@ -555,6 +573,7 @@
                 type="number"
                 class="form-control"
                 name="substrate-width"
+                placeholder="мм"
               />
             </div>
           </div>
@@ -565,6 +584,7 @@
                 type="number"
                 class="form-control"
                 name="substrate-height"
+                placeholder="мм"
               />
             </div>
           </div>
@@ -575,8 +595,11 @@
               <button class="btn btn-primary mb-3" type="button" id="countBtn">
                 Рассчитать
               </button>
-              <small class="text-muted ml-5" id="result"></small>
             </div>
+          </div>
+          <div class="col-sm-12 col-md-8 rounded border border-success d-flex justify-content-between align-items-center pr-5 d-none" id="resultContainer">
+            <h3 class="text-muted ml-2" id="result"></h3>
+            <a class="btn btn-success" href="http://safitta.ru/contacts#anchor-page">Свяжитесь с нами &#10144;</a>
           </div>
         </div>
       </form>

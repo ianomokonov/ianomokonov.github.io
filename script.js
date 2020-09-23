@@ -32,27 +32,25 @@ const fieldNodes = {};
 let widthMaxListener;
 let heightMaxListener;
 function init() {
-    try{
-  clearFields();
-  countBtn.addEventListener("click", onCountButtonClick);
-  document.forms[0].elements.substrate[1].addEventListener(
-    "change",
-    onSubstrateChange
-  );
-  document.forms[0].elements.substrate[0].addEventListener(
-    "change",
-    onSubstrateChange
-  );
-  document.querySelectorAll("[data-type]").forEach((node, index) => {
-    node.addEventListener("click", onTypeClick);
-    if (!index) {
-      node.click();
-    }
-  });
-        
-    }
-  catch(error){
-      alert('init')
+  try {
+    clearFields();
+    countBtn.addEventListener("click", onCountButtonClick);
+    document.forms[0].elements.substrate[1].addEventListener(
+      "change",
+      onSubstrateChange
+    );
+    document.forms[0].elements.substrate[0].addEventListener(
+      "change",
+      onSubstrateChange
+    );
+    document.querySelectorAll("[data-type]").forEach((node, index) => {
+      node.addEventListener("click", onTypeClick);
+      if (!index) {
+        node.click();
+      }
+    });
+  } catch (error) {
+    alert("init");
   }
 }
 fieldNames.forEach((name) => {
@@ -83,6 +81,8 @@ let onTypeClick = ({ target }) => {
     showFields(Object.keys(currentType.fields));
     clearFields(["substrate-width", "substrate-height"]);
   }
+  resultContainer.classList.remove("d-flex");
+  resultContainer.classList.add("d-none");
   result.innerHTML = ``;
 };
 
@@ -114,23 +114,26 @@ let onCategoryClick = ({ target }) => {
     );
     document.forms[0].elements["height"].removeAttribute("max");
   }
+  resultContainer.classList.remove("d-flex");
+  resultContainer.classList.add("d-none");
   result.innerHTML = ``;
 };
 
 let onCountButtonClick = () => {
-    try{
-  const value = getRawValue(
-    Object.keys(
-      currentType.fields ? currentType.fields : currentCategory.fields
-    )
-  );
-  const sum = getSum(value);
-  if(sum){
-      result.innerHTML = `Итого: ${sum.toFixed(2) | 0} руб.`;
-  }
-  
-  }catch(error){
-      alert(`onCountButtonClick: ${JSON.stringify(error)}`)
+  try {
+    const value = getRawValue(
+      Object.keys(
+        currentType.fields ? currentType.fields : currentCategory.fields
+      )
+    );
+    const sum = getSum(value);
+    if (sum) {
+      resultContainer.classList.remove("d-none");
+      resultContainer.classList.add("d-flex");
+      result.innerHTML = `Итого: ${sum.toFixed(2)} руб.`;
+    }
+  } catch (error) {
+    alert(`onCountButtonClick: ${JSON.stringify(error)}`);
   }
 };
 
@@ -166,6 +169,8 @@ function clearActiveItems(selector) {
 }
 
 function clearFields(fields = Object.keys(fieldNodes)) {
+  document.forms[0].elements.width.value = null;
+  document.forms[0].elements.height.value = null;
   fields.forEach((key) => {
     fieldNodes[key].classList.remove("d-block");
     fieldNodes[key].classList.add("d-none");
@@ -195,11 +200,20 @@ const onQualityPlotterClick = ({ target }) => {
 const onPocketClick = ({ target }) => {
   let field = target.closest(".flatPocket");
   if (field) {
+    if (fieldNodes["flatPocket"].className.indexOf("enabled-field") > -1) {
+      setEnableClass(fieldNodes["flatPocket"], false);
+      return;
+    }
+
     setEnableClass(fieldNodes["flatPocket"], true);
     setEnableClass(fieldNodes["volumePocket"], false);
     return;
   }
   field = target.closest(".volumePocket");
+  if (fieldNodes["volumePocket"].className.indexOf("enabled-field") > -1) {
+    setEnableClass(fieldNodes["volumePocket"], false);
+    return;
+  }
   setEnableClass(fieldNodes["flatPocket"], false);
   setEnableClass(fieldNodes["volumePocket"], true);
 };
@@ -244,10 +258,18 @@ function showFields(names) {
         select.innerHTML = "";
         currentCategory.fields.thikness.forEach((th, index) => {
           const opt = document.createElement("option");
-          opt.value = index;
+          opt.value = th;
           opt.textContent = `${th} мм`;
           select.append(opt);
         });
+      }
+      if (
+        currentType &&
+        currentType.fields &&
+        currentType.fields[key].measure
+      ) {
+        fieldNodes[key].querySelector("input").placeholder =
+          currentType.fields[key].measure;
       }
 
       if (key === "plotter") {
@@ -343,9 +365,13 @@ function getSum(value) {
     setErrors(value);
     return;
   }
+  if (value.thikness) {
+    sum *= value.thikness;
+  }
   if (
     value.quality &&
-    fieldNodes["quality"].classList.value.indexOf("enabled-field") > -1
+    (fieldNodes["quality"].classList.value.indexOf("enabled-field") > -1 ||
+      !value.plotter)
   ) {
     sum *= value.quality;
   }
@@ -361,14 +387,16 @@ function getSum(value) {
     fieldNodes["volumePocket"].classList.value.indexOf("enabled-field") > -1
   ) {
     sum +=
-      currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price * value.volumePocketCount;
+      currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price *
+      value.volumePocketCount;
   }
   if (
     value.flatPocket &&
     fieldNodes["flatPocket"].classList.value.indexOf("enabled-field") > -1
   ) {
     sum +=
-      currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price * value.flatPocketCount;
+      currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price *
+      value.flatPocketCount;
   }
   if (value.flexy) {
     sum *= value.flexy;
@@ -379,15 +407,12 @@ function getSum(value) {
   if (value.perimeterCut) {
     sum += perimeter * currentCategory.fields.perimeterCut.price;
   }
-  if (value.thikness) {
-    sum += currentCategory.price * value.thikness + 1;
-  }
   if (value.perimeterBonding) {
     sum += perimeter * currentCategory.fields.perimeterBonding.price;
   }
   if (value.eyelets) {
     sum +=
-      Math.ceil(perimeter / value.eyelets + 1) *
+      Math.ceil(perimeter / (value.eyelets / 1000) + 1) *
       currentCategory.fields.eyelets.price;
   }
 
@@ -427,15 +452,15 @@ function getLettersSum(value) {
   }
   if (value.substrate == 1) {
     const count = +value.count;
-    console.log(currentType.fields.substrate.values[0]);
+    let wood = count % 7 ? Math.ceil(count / 7) * 2 : (count / 7) * 2;
     if (count < 7) {
       sum += 2 * currentType.fields.substrate.values[0].price;
-    }
-    if (count > 6 && count < 15) {
+    } else if (count > 6 && count < 15) {
       sum += 4 * currentType.fields.substrate.values[0].price;
-    }
-    if (count > 14 && count < 22) {
+    } else if (count > 14 && count < 22) {
       sum += 6 * currentType.fields.substrate.values[0].price;
+    } else {
+      sum += wood * currentType.fields.substrate.values[0].price;
     }
   }
   if (value.substrate == 2) {

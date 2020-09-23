@@ -43,12 +43,10 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
             "koef": 1.45
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
             "price": 10
           },
           "count": true
@@ -81,17 +79,14 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
             "price": 10
           },
           "perimeterBonding": {
             "type": "checkbox",
-            "measure": "m",
             "price": 50
           },
           "eyelets": {
             "type": "number",
-            "measure": "th",
             "price": 10
           },
           "count": true
@@ -124,17 +119,16 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "perimeterBonding": {
             "type": "checkbox",
-            "measure": "m",
             "price": 50
           },
           "eyelets": {
             "type": "number",
-            "measure": "th",
+            
             "price": 10
           },
           "count": true
@@ -167,7 +161,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -200,7 +194,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -233,7 +227,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -266,7 +260,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -280,7 +274,7 @@
       "pvh": {
         "name": "ПВХ",
         "type": "number",
-        "measure": "step",
+        
         "price": 646,
         "fields": {
           "height": {
@@ -312,7 +306,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -320,12 +314,12 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
@@ -383,7 +377,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -391,12 +385,12 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
@@ -422,7 +416,7 @@
       "akrile": {
         "name": "Акрил",
         "type": "number",
-        "measure": "step",
+        
         "price": 2500,
         "fields": {
           "height": {
@@ -454,7 +448,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -462,12 +456,12 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
@@ -504,7 +498,7 @@
       "pvh": {
         "name": "ПВХ",
         "type": "number",
-        "measure": "step",
+        
         "price": 646,
         "fields": {
           "height": {
@@ -530,7 +524,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -538,12 +532,12 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
@@ -627,7 +621,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -635,12 +629,12 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
@@ -698,7 +692,7 @@
       "akrile": {
         "name": "Акрил",
         "type": "number",
-        "measure": "step",
+        
         "price": 2500,
         "fields": {
           "height": {
@@ -724,7 +718,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -732,12 +726,12 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
@@ -803,7 +797,8 @@
     "fields": {
       "height": {
         "type": "number",
-        "koef": 1
+        "koef": 1,
+        "measure": "см"
       },
       "substrate": {
         "type": "radio",
