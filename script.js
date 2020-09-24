@@ -96,24 +96,25 @@ let onCategoryClick = ({ target }) => {
   clearActiveItems("[data-category]");
   categoryNode.classList.add("active");
   clearFields();
-  const fieldsNames = Object.keys(currentCategory.fields);
-  showFields(fieldsNames);
-  setQualityPlotterListeners(fieldsNames.find((name) => name === "plotter"));
-  setPocketListeners(fieldsNames.find((name) => name === "flatPocket"));
-  if (!fieldsNames.find((name) => name === "max-width-lable")) {
+  if (widthMaxListener) {
     document.forms[0].elements["width"].removeEventListener(
       "input",
       widthMaxListener
     );
     document.forms[0].elements["width"].removeAttribute("max");
   }
-  if (!fieldsNames.find((name) => name === "max-height-lable")) {
+  if (heightMaxListener) {
     document.forms[0].elements["height"].removeEventListener(
       "input",
       heightMaxListener
     );
     document.forms[0].elements["height"].removeAttribute("max");
   }
+  const fieldsNames = Object.keys(currentCategory.fields);
+  showFields(fieldsNames);
+  setQualityPlotterListeners(fieldsNames.find((name) => name === "plotter"));
+  setPocketListeners(fieldsNames.find((name) => name === "flatPocket"));
+  
   resultContainer.classList.remove("d-flex");
   resultContainer.classList.add("d-none");
   result.innerHTML = ``;
