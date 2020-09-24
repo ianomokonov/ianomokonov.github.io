@@ -298,6 +298,7 @@
                 placeholder="мм"
               />
               <small class="text-muted max-height-lable"></small>
+              <small class="text-muted letter-height"></small>
             </div>
           </div>
 
@@ -311,7 +312,6 @@
                   name="substrate"
                   id="frame"
                   value="1"
-                  checked
                 />
                 <label class="form-check-label" for="frame"> Рамка </label>
               </div>
@@ -386,7 +386,7 @@
 
           <div class="col-sm-12 col-md-4 flexy mb-3">
             <div class="form-group">
-              <label>Вид таблицы</label>
+              <label class="flexy-type">Вид таблицы</label>
               <div class="form-check mb-2 mb-sm-0">
                 <input
                   class="form-check-input"
@@ -396,7 +396,7 @@
                   value="1"
                   checked
                 />
-                <label class="form-check-label" for="flexy1">
+                <label class="form-check-label flexy-cut" for="flexy1">
                   Табличка в обрез
                 </label>
               </div>
@@ -408,7 +408,7 @@
                   id="flexy2"
                   value="1.2"
                 />
-                <label class="form-check-label" for="flexy2">
+                <label class="form-check-label flexy-hem" for="flexy2">
                   Табличка с подгибкой
                 </label>
               </div>
@@ -589,7 +589,7 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row mb-3">
           <div class="col-sm-12 col-md-4">
             <div class="d-flex align-items-center mt-3">
               <button class="btn btn-primary mb-3" type="button" id="countBtn">

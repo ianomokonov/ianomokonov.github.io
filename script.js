@@ -24,6 +24,7 @@ const fieldNames = [
   "substrate-height",
   "max-width-lable",
   "max-height-lable",
+  "letter-height",
   "flatPocket",
   "volumePocket",
 ];
@@ -189,11 +190,15 @@ const onQualityPlotterClick = ({ target }) => {
   let field = target.closest(".plotter");
   if (field) {
     setEnableClass(fieldNodes["plotter"], true);
+    fieldNodes["lamination"].classList.remove('d-block');
+    fieldNodes["lamination"].classList.add('d-none');
     setEnableClass(fieldNodes["quality"], false);
     return;
   }
   field = target.closest(".quality");
   setEnableClass(fieldNodes["plotter"], false);
+  fieldNodes["lamination"].classList.add('d-block');
+  fieldNodes["lamination"].classList.remove('d-none');
   setEnableClass(fieldNodes["quality"], true);
 };
 
@@ -275,6 +280,11 @@ function showFields(names) {
       if (key === "plotter") {
         setEnableClass(fieldNodes[key], false);
       }
+      if (key === "flexy") {
+        document.querySelector('.flexy-type').innerHTML = currentCategory.fields["flexy"].name;
+        document.querySelector('.flexy-cut').innerHTML = currentCategory.fields["flexy"].values[0].name;
+        document.querySelector('.flexy-hem').innerHTML = currentCategory.fields["flexy"].values[1].name;
+      }
       if (key === "quality" && !!names.find((name) => name === "plotter")) {
         setEnableClass(fieldNodes[key], true);
       }
@@ -315,6 +325,22 @@ function showFields(names) {
           currentCategory.fields["max-height-lable"].value
         );
       }
+      if (key === "letter-height") {
+        fieldNodes[
+          key
+        ].innerHTML = `От ${currentType.fields["letter-height"].min} до ${currentType.fields["letter-height"].max} см.`;
+        heightMaxListener = maxValidator(
+          currentType.fields["letter-height"].max
+        );
+        document.forms[0].elements["height"].addEventListener(
+          "input",
+          heightMaxListener
+        );
+        document.forms[0].elements["height"].setAttribute(
+          "max",
+          currentType.fields["letter-height"].max
+        );
+      }
     }
   });
 }
@@ -340,6 +366,18 @@ function setErrors(value) {
     document.forms[0].elements["height"].classList.add("border-danger");
   } else {
     document.forms[0].elements["height"].classList.remove("border-danger");
+  }
+  if (value.substrate == 2) {
+    if (!value["substrate-width"]) {
+      document.forms[0].elements["substrate-width"].classList.add("border-danger");
+    } else {
+      document.forms[0].elements["substrate-width"].classList.remove("border-danger");
+    }
+    if (!value["substrate-height"]) {
+      document.forms[0].elements["substrate-height"].classList.add("border-danger");
+    } else {
+      document.forms[0].elements["substrate-height"].classList.remove("border-danger");
+    }
   }
 }
 
@@ -434,18 +472,27 @@ function getSum(value) {
 
 function getLettersSum(value) {
   let sum = 0;
-  console.log(value);
+  setErrors(value);
   if (value.height) {
-    value.height = +value.height * 10;
-    if (value.height > 49 && value.height < 151) {
-      sum = (value.height / 10) * 150;
+    if (value.height < 5) {
+      document.forms[0].elements["height"].classList.add("border-danger");
+      return;
+    } else {
+      document.forms[0].elements["height"].classList.remove("border-danger");
     }
-    if (value.height > 150 && value.height < 401) {
-      sum = (value.height / 10) * 80;
+    if (value.height >= 5 && value.height <= 15) {
+      sum = (value.height) * 150;
     }
-    if (value.height > 400 && value.height < 501) {
-      sum = (value.height / 10) * 100;
+    if (value.height > 15 && value.height <= 40) {
+      sum = (value.height) * 80;
     }
+    if (value.height > 40 && value.height <= 50) {
+      sum = (value.height) * 100;
+    }
+  }
+  else{
+    setErrors(value);
+    return;
   }
   if (value.count) {
     sum *= value.count;
@@ -464,11 +511,13 @@ function getLettersSum(value) {
     }
   }
   if (value.substrate == 2) {
+    if (!value["substrate-width"] || !value["substrate-height"]) {
+      return;
+    }
     const square =
       (value["substrate-width"] / 1000) * (value["substrate-height"] / 1000);
     sum += square * currentType.fields.substrate.values[1].price;
   }
-  console.log(sum);
   return sum;
 }
 
