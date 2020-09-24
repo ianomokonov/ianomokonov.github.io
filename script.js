@@ -270,6 +270,8 @@ function showFields(names) {
       ) {
         fieldNodes[key].querySelector("input").placeholder =
           currentType.fields[key].measure;
+      } else if (key == "height") {
+        fieldNodes[key].querySelector("input").placeholder = "мм";
       }
 
       if (key === "plotter") {
