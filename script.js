@@ -25,6 +25,7 @@ const fieldNames = [
   "substrate-height",
   "max-width-lable",
   "max-height-lable",
+  "letter-height",
   "flatPocket",
   "volumePocket",
 ];
@@ -77,6 +78,8 @@ let onTypeClick = ({ target }) => {
     showFields(Object.keys(currentType.fields));
     clearFields(["substrate-width", "substrate-height"]);
   }
+  resultContainer.classList.remove("d-flex");
+  resultContainer.classList.add("d-none");
   result.innerHTML = ``;
 };
 
@@ -90,35 +93,46 @@ let onCategoryClick = ({ target }) => {
   clearActiveItems("[data-category]");
   categoryNode.classList.add("active");
   clearFields();
-  const fieldsNames = Object.keys(currentCategory.fields);
-  showFields(fieldsNames);
-  setQualityPlotterListeners(fieldsNames.find((name) => name === "plotter"));
-  setPocketListeners(fieldsNames.find((name) => name === "flatPocket"));
-  if (!fieldsNames.find((name) => name === "max-width-lable")) {
+  if (widthMaxListener) {
     document.forms[0].elements["width"].removeEventListener(
       "input",
       widthMaxListener
     );
     document.forms[0].elements["width"].removeAttribute("max");
   }
-  if (!fieldsNames.find((name) => name === "max-height-lable")) {
+  if (heightMaxListener) {
     document.forms[0].elements["height"].removeEventListener(
       "input",
       heightMaxListener
     );
     document.forms[0].elements["height"].removeAttribute("max");
   }
+  const fieldsNames = Object.keys(currentCategory.fields);
+  showFields(fieldsNames);
+  setQualityPlotterListeners(fieldsNames.find((name) => name === "plotter"));
+  setPocketListeners(fieldsNames.find((name) => name === "flatPocket"));
+  
+  resultContainer.classList.remove("d-flex");
+  resultContainer.classList.add("d-none");
   result.innerHTML = ``;
 };
 
 let onCountButtonClick = () => {
-  const value = getRawValue(
-    Object.keys(
-      currentType.fields ? currentType.fields : currentCategory.fields
-    )
-  );
-  const sum = getSum(value);
-  result.innerHTML = `Итого: ${sum?.toFixed(2) | 0} руб.`;
+  try {
+    const value = getRawValue(
+      Object.keys(
+        currentType.fields ? currentType.fields : currentCategory.fields
+      )
+    );
+    const sum = getSum(value);
+    if (sum) {
+      resultContainer.classList.remove("d-none");
+      resultContainer.classList.add("d-flex");
+      result.innerHTML = `Итого: ${sum.toFixed(2)} руб.`;
+    }
+  } catch (error) {
+    alert(`onCountButtonClick: ${JSON.stringify(error)}`);
+  }
 };
 
 let onSubstrateChange = ({ target }) => {
@@ -136,6 +150,8 @@ function clearActiveItems(selector) {
 }
 
 function clearFields(fields = Object.keys(fieldNodes)) {
+  document.forms[0].elements.width.value = null;
+  document.forms[0].elements.height.value = null;
   fields.forEach((key) => {
     fieldNodes[key].classList.remove("d-block");
     fieldNodes[key].classList.add("d-none");
@@ -154,22 +170,35 @@ const onQualityPlotterClick = ({ target }) => {
   let field = target.closest(".plotter");
   if (field) {
     setEnableClass(fieldNodes["plotter"], true);
+    fieldNodes["lamination"].classList.remove('d-block');
+    fieldNodes["lamination"].classList.add('d-none');
     setEnableClass(fieldNodes["quality"], false);
     return;
   }
   field = target.closest(".quality");
   setEnableClass(fieldNodes["plotter"], false);
+  fieldNodes["lamination"].classList.add('d-block');
+  fieldNodes["lamination"].classList.remove('d-none');
   setEnableClass(fieldNodes["quality"], true);
 };
 
 const onPocketClick = ({ target }) => {
   let field = target.closest(".flatPocket");
   if (field) {
+    if (fieldNodes["flatPocket"].className.indexOf("enabled-field") > -1) {
+      setEnableClass(fieldNodes["flatPocket"], false);
+      return;
+    }
+
     setEnableClass(fieldNodes["flatPocket"], true);
     setEnableClass(fieldNodes["volumePocket"], false);
     return;
   }
   field = target.closest(".volumePocket");
+  if (fieldNodes["volumePocket"].className.indexOf("enabled-field") > -1) {
+    setEnableClass(fieldNodes["volumePocket"], false);
+    return;
+  }
   setEnableClass(fieldNodes["flatPocket"], false);
   setEnableClass(fieldNodes["volumePocket"], true);
 };
@@ -214,14 +243,29 @@ function showFields(names) {
         select.innerHTML = "";
         currentCategory.fields.thikness.forEach((th, index) => {
           const opt = document.createElement("option");
-          opt.value = index;
+          opt.value = th;
           opt.textContent = `${th} мм`;
           select.append(opt);
         });
       }
+      if (
+        currentType &&
+        currentType.fields &&
+        currentType.fields[key].measure
+      ) {
+        fieldNodes[key].querySelector("input").placeholder =
+          currentType.fields[key].measure;
+      } else if (key == "height") {
+        fieldNodes[key].querySelector("input").placeholder = "мм";
+      }
 
       if (key === "plotter") {
         setEnableClass(fieldNodes[key], false);
+      }
+      if (key === "flexy") {
+        document.querySelector('.flexy-type').innerHTML = currentCategory.fields["flexy"].name;
+        document.querySelector('.flexy-cut').innerHTML = currentCategory.fields["flexy"].values[0].name;
+        document.querySelector('.flexy-hem').innerHTML = currentCategory.fields["flexy"].values[1].name;
       }
       if (key === "quality" && !!names.find((name) => name === "plotter")) {
         setEnableClass(fieldNodes[key], true);
@@ -263,6 +307,22 @@ function showFields(names) {
           currentCategory.fields["max-height-lable"].value
         );
       }
+      if (key === "letter-height") {
+        fieldNodes[
+          key
+        ].innerHTML = `От ${currentType.fields["letter-height"].min} до ${currentType.fields["letter-height"].max} см.`;
+        heightMaxListener = maxValidator(
+          currentType.fields["letter-height"].max
+        );
+        document.forms[0].elements["height"].addEventListener(
+          "input",
+          heightMaxListener
+        );
+        document.forms[0].elements["height"].setAttribute(
+          "max",
+          currentType.fields["letter-height"].max
+        );
+      }
     }
   });
 }
@@ -289,6 +349,18 @@ function setErrors(value) {
   } else {
     document.forms[0].elements["height"].classList.remove("border-danger");
   }
+  if (value.substrate == 2) {
+    if (!value["substrate-width"]) {
+      document.forms[0].elements["substrate-width"].classList.add("border-danger");
+    } else {
+      document.forms[0].elements["substrate-width"].classList.remove("border-danger");
+    }
+    if (!value["substrate-height"]) {
+      document.forms[0].elements["substrate-height"].classList.add("border-danger");
+    } else {
+      document.forms[0].elements["substrate-height"].classList.remove("border-danger");
+    }
+  }
 }
 
 function getSum(value) {
@@ -313,9 +385,13 @@ function getSum(value) {
     setErrors(value);
     return;
   }
+  if (value.thikness) {
+    sum *= value.thikness;
+  }
   if (
     value.quality &&
-    fieldNodes["quality"].classList.value.indexOf("enabled-field") > -1
+    (fieldNodes["quality"].classList.value.indexOf("enabled-field") > -1 ||
+      !value.plotter)
   ) {
     sum *= value.quality;
   }
@@ -351,15 +427,12 @@ function getSum(value) {
   if (value.perimeterCut) {
     sum += perimeter * currentCategory.fields.perimeterCut.price;
   }
-  if (value.thikness) {
-    sum += currentCategory.price * value.thikness + 1;
-  }
   if (value.perimeterBonding) {
     sum += perimeter * currentCategory.fields.perimeterBonding.price;
   }
   if (value.eyelets) {
     sum +=
-      Math.ceil(perimeter / value.eyelets + 1) *
+      Math.ceil(perimeter / (value.eyelets / 1000) + 1) *
       currentCategory.fields.eyelets.price;
   }
 
@@ -381,41 +454,52 @@ function getSum(value) {
 
 function getLettersSum(value) {
   let sum = 0;
-  console.log(value);
+  setErrors(value);
   if (value.height) {
-    value.height = +value.height * 10;
-    if (value.height > 49 && value.height < 151) {
-      sum = (value.height / 10) * 150;
+    if (value.height < 5) {
+      document.forms[0].elements["height"].classList.add("border-danger");
+      return;
+    } else {
+      document.forms[0].elements["height"].classList.remove("border-danger");
     }
-    if (value.height > 150 && value.height < 401) {
-      sum = (value.height / 10) * 80;
+    if (value.height >= 5 && value.height <= 15) {
+      sum = (value.height) * 150;
     }
-    if (value.height > 400 && value.height < 501) {
-      sum = (value.height / 10) * 100;
+    if (value.height > 15 && value.height <= 40) {
+      sum = (value.height) * 80;
     }
+    if (value.height > 40 && value.height <= 50) {
+      sum = (value.height) * 100;
+    }
+  }
+  else{
+    setErrors(value);
+    return;
   }
   if (value.count) {
     sum *= value.count;
   }
   if (value.substrate == 1) {
     const count = +value.count;
-    console.log(currentType.fields.substrate.values[0]);
+    let wood = count % 7 ? Math.ceil(count / 7) * 2 : (count / 7) * 2;
     if (count < 7) {
       sum += 2 * currentType.fields.substrate.values[0].price;
-    }
-    if (count > 6 && count < 15) {
+    } else if (count > 6 && count < 15) {
       sum += 4 * currentType.fields.substrate.values[0].price;
-    }
-    if (count > 14 && count < 22) {
+    } else if (count > 14 && count < 22) {
       sum += 6 * currentType.fields.substrate.values[0].price;
+    } else {
+      sum += wood * currentType.fields.substrate.values[0].price;
     }
   }
   if (value.substrate == 2) {
+    if (!value["substrate-width"] || !value["substrate-height"]) {
+      return;
+    }
     const square =
       (value["substrate-width"] / 1000) * (value["substrate-height"] / 1000);
     sum += square * currentType.fields.substrate.values[1].price;
   }
-  console.log(sum);
   return sum;
 }
 

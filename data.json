@@ -1,6 +1,6 @@
 {
   "plotter": {
-    "name": "Плотерная резка",
+    "name": "Плоттерная резка",
     "price": 1500,
     "fields": {
       "width": {
@@ -43,12 +43,10 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
             "koef": 1.45
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
             "price": 10
           },
           "count": true
@@ -81,17 +79,14 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
             "price": 10
           },
           "perimeterBonding": {
             "type": "checkbox",
-            "measure": "m",
             "price": 50
           },
           "eyelets": {
             "type": "number",
-            "measure": "th",
             "price": 10
           },
           "count": true
@@ -124,17 +119,16 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "perimeterBonding": {
             "type": "checkbox",
-            "measure": "m",
             "price": 50
           },
           "eyelets": {
             "type": "number",
-            "measure": "th",
+            
             "price": 10
           },
           "count": true
@@ -167,7 +161,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -200,7 +194,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -233,7 +227,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -266,7 +260,7 @@
           },
           "perimeterCut": {
             "type": "checkbox",
-            "measure": "m",
+            
             "price": 10
           },
           "count": true
@@ -280,7 +274,7 @@
       "pvh": {
         "name": "ПВХ",
         "type": "number",
-        "measure": "step",
+        
         "price": 646,
         "fields": {
           "height": {
@@ -312,7 +306,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -320,18 +314,19 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
           },
           "flexy": {
             "type": "radio",
+            "name": "Вид таблицы",
             "values": [
               {
                 "name": "Табличка в обрез",
@@ -383,7 +378,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -391,18 +386,19 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
           },
           "flexy": {
             "type": "radio",
+            "name": "Вид таблицы",
             "values": [
               {
                 "name": "Табличка в обрез",
@@ -422,7 +418,7 @@
       "akrile": {
         "name": "Акрил",
         "type": "number",
-        "measure": "step",
+        
         "price": 2500,
         "fields": {
           "height": {
@@ -454,7 +450,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -462,18 +458,19 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
           },
           "flexy": {
             "type": "radio",
+            "name": "Вид таблицы",
             "values": [
               {
                 "name": "Табличка в обрез",
@@ -504,7 +501,7 @@
       "pvh": {
         "name": "ПВХ",
         "type": "number",
-        "measure": "step",
+        
         "price": 646,
         "fields": {
           "height": {
@@ -530,7 +527,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -538,25 +535,26 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
           },
           "flexy": {
             "type": "radio",
+            "name": "Вид стенда",
             "values": [
               {
-                "name": "Табличка в обрез",
+                "name": "Стенд в обрез",
                 "koef": 1
               },
               {
-                "name": "Табличка с подгибкой",
+                "name": "Стенд с подгибкой",
                 "koef": 1.2
               }
             ]
@@ -627,7 +625,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -635,25 +633,26 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
           },
           "flexy": {
             "type": "radio",
+            "name": "Вид стенда",
             "values": [
               {
-                "name": "Табличка в обрез",
+                "name": "Стенд в обрез",
                 "koef": 1
               },
               {
-                "name": "Табличка с подгибкой",
+                "name": "Стенд с подгибкой",
                 "koef": 1.2
               }
             ]
@@ -698,7 +697,7 @@
       "akrile": {
         "name": "Акрил",
         "type": "number",
-        "measure": "step",
+        
         "price": 2500,
         "fields": {
           "height": {
@@ -724,7 +723,7 @@
           },
           "lamination": {
             "type": "checkbox",
-            "measure": "m2",
+            
             "koef": 1.45
           },
           "plotter": {
@@ -732,25 +731,26 @@
             "values": [
               {
                 "name": "1 цвет",
-                "measure": "m2",
+                
                 "price": 1500
               },
               {
                 "name": "2 цвета",
-                "measure": "m2",
+                
                 "price": 3000
               }
             ]
           },
           "flexy": {
             "type": "radio",
+            "name": "Вид стенда",
             "values": [
               {
-                "name": "Табличка в обрез",
+                "name": "Стенд в обрез",
                 "koef": 1
               },
               {
-                "name": "Табличка с подгибкой",
+                "name": "Стенд с подгибкой",
                 "koef": 1.2
               }
             ]
@@ -803,7 +803,12 @@
     "fields": {
       "height": {
         "type": "number",
-        "koef": 1
+        "koef": 1,
+        "measure": "см"
+      },
+      "letter-height": {
+        "min": 5,
+        "max": 50
       },
       "substrate": {
         "type": "radio",

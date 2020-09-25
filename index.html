@@ -45,7 +45,7 @@
       }
 
       .form-check-label {
-        margin-left: 1rem;
+        margin-left: 1.2rem;
       }
 
       @font-face {
@@ -103,7 +103,7 @@
                 <div class="top-header__contacts-btn">
                   <a
                     class="top-header__contacts-btn-link popup-js"
-                    href="http://safitta.ru/#popup-call-back"
+                    href="http://safitta.ru/contacts#anchor-page"
                   >
                     Заказать консультацию
                   </a>
@@ -219,10 +219,8 @@
             </div>
             <!--end-my-navigation-->
           </div>
-          <!-- END wrap-my-navigation -->
         </div>
       </div>
-      <!--bottom-header-->
     </header>
     <div class="container pt-2 pt-sm-5">
       <ul class="services-list__list">
@@ -232,7 +230,7 @@
         >
           <a class="services-list__list-item-link" href="javascript:;">
             <span class="services-list__list-item-link-name">
-              Плотерная печать
+              Плоттерная печать
             </span>
           </a>
         </li>
@@ -281,15 +279,26 @@
           <div class="col-sm-12 col-md-4 width mb-3">
             <div class="form-group mb-2 mb-sm-0 mr-sm-0 mr-md-3">
               <label>Ширина</label>
-              <input type="number" class="form-control" name="width" />
+              <input
+                type="number"
+                class="form-control"
+                name="width"
+                placeholder="мм"
+              />
               <small class="text-muted max-width-lable"></small>
             </div>
           </div>
           <div class="col-sm-12 col-md-4 height mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Высота</label>
-              <input type="number" class="form-control" name="height" />
+              <input
+                type="number"
+                class="form-control"
+                name="height"
+                placeholder="мм"
+              />
               <small class="text-muted max-height-lable"></small>
+              <small class="text-muted letter-height"></small>
             </div>
           </div>
 
@@ -303,7 +312,6 @@
                   name="substrate"
                   id="frame"
                   value="1"
-                  checked
                 />
                 <label class="form-check-label" for="frame"> Рамка </label>
               </div>
@@ -351,7 +359,7 @@
           </div>
           <div class="col-sm-12 col-md-4 plotter mb-3">
             <div class="form-group mb-2 mb-sm-0">
-              <label>Плотерная резка</label>
+              <label>Плоттерная резка</label>
               <div class="form-check">
                 <input
                   class="form-check-input"
@@ -378,7 +386,7 @@
 
           <div class="col-sm-12 col-md-4 flexy mb-3">
             <div class="form-group">
-              <label>Вид таблицы</label>
+              <label class="flexy-type">Вид таблицы</label>
               <div class="form-check mb-2 mb-sm-0">
                 <input
                   class="form-check-input"
@@ -388,7 +396,7 @@
                   value="1"
                   checked
                 />
-                <label class="form-check-label" for="flexy1">
+                <label class="form-check-label flexy-cut" for="flexy1">
                   Табличка в обрез
                 </label>
               </div>
@@ -400,7 +408,7 @@
                   id="flexy2"
                   value="1.2"
                 />
-                <label class="form-check-label" for="flexy2">
+                <label class="form-check-label flexy-hem" for="flexy2">
                   Табличка с подгибкой
                 </label>
               </div>
@@ -410,12 +418,15 @@
           <div class="col-sm-12 col-md-4 eyelets mb-3">
             <div class="form-group">
               <label>Люверсы</label>
-              <input type="number" class="form-control" name="eyelets" />
+              <input
+                type="number"
+                class="form-control"
+                name="eyelets"
+                placeholder="Интервал, мм"
+              />
             </div>
           </div>
-          <div
-            class="col-sm-12 col-md-4 flatPocket mb-3"
-          >
+          <div class="col-sm-12 col-md-4 flatPocket mb-3">
             <div class="form-group mb-2 mb-sm-0">
               <label>Плоский карман</label>
               <div class="form-check">
@@ -547,7 +558,12 @@
           <div class="col-sm-12 col-md-4 mb-3">
             <div class="form-group mr-sm-0 mr-md-3 count">
               <label>Количество</label>
-              <input type="number" class="form-control" name="count" />
+              <input
+                value="1"
+                type="number"
+                class="form-control"
+                name="count"
+              />
             </div>
           </div>
           <div class="col-sm-12 col-md-4 substrate-width">
@@ -557,6 +573,7 @@
                 type="number"
                 class="form-control"
                 name="substrate-width"
+                placeholder="мм"
               />
             </div>
           </div>
@@ -567,23 +584,34 @@
                 type="number"
                 class="form-control"
                 name="substrate-height"
+                placeholder="мм"
               />
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row mb-3">
           <div class="col-sm-12 col-md-4">
-            <div class="d-flex align-items-center mt-3">
+            <div class="d-flex align-items-center">
               <button class="btn btn-primary mb-3" type="button" id="countBtn">
                 Рассчитать
               </button>
-              <small class="text-muted ml-5" id="result"></small>
             </div>
+          </div>
+          <div
+            class="col-sm-12 col-md-8 rounded border border-success d-flex justify-content-between align-items-center pr-2 d-none py-2 mb-3"
+            id="resultContainer"
+          >
+            <h3 class="text-muted" id="result"></h3>
+            <a
+              class="btn btn-success"
+              href="http://safitta.ru/contacts#anchor-page"
+              >Свяжитесь с нами &#10144;</a
+            >
           </div>
         </div>
       </form>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js" type="text/javascript"></script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

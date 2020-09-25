@@ -16,6 +16,15 @@
   background-color: blue;
 }
 
+#resultContainer {
+  font-size: 16px;
+}
+
+#result {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
 .nav-item.active,
 .nav-item.active:focus {
   background-color: #0056b3 !important;
@@ -140,4 +149,10 @@ body.modal-open .container {
   position: fixed !important;
   top: 20px;
   left: 30px;
+}
+
+@media (max-width: 576px) {
+  #result {
+    font-size: 1rem;
+  }
 }

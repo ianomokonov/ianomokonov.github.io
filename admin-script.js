@@ -2,7 +2,9 @@ import TagInput from "./tag-input.js";
 
 let data = null;
 
-if (!sessionStorage.getItem('adminToken') && !localStorage.getItem('adminToken')) {
+const tokenKey = 'adminToken';
+
+if (!sessionStorage.getItem(tokenKey) && !localStorage.getItem(tokenKey)) {
     $('#authModal').modal({
         backdrop: 'static',
         keyboard: false
@@ -145,27 +147,28 @@ document.querySelectorAll('.exit').forEach(tag => {
 })
 
 document.querySelector('.signOut').addEventListener('click', () => {
-    sessionStorage.removeItem('adminToken');
-    localStorage.removeItem('adminToken');
+    sessionStorage.removeItem(tokenKey);
+    localStorage.removeItem(tokenKey);
     document.location.replace('./');
 })
 
 document.querySelector('.signIn').addEventListener('click', () => {
-    let user = {
+    const user = {
         "login": document.querySelector('#inputLogin').value,
         "password": document.querySelector('#inputPassword').value
     };
-    fetch('./repository.php?key=sign-in', {
+    fetch('./back/repository.php?key=sign-in', {
         method: 'POST',
         body: JSON.stringify(user)
     }).then((response) => {
         response.json().then((result) => {
-            if (result == true) {
+            if (result.isAccess == true) {
+                user.password = result.password;
                 $('#authModal').modal('hide');
                 if (document.querySelector('#saveMe').checked) {
-                    localStorage.setItem('adminToken', JSON.stringify(user));
+                    localStorage.setItem(tokenKey, JSON.stringify(user));
                 }
-                sessionStorage.setItem('adminToken', JSON.stringify(user));
+                sessionStorage.setItem(tokenKey, JSON.stringify(user));
                 loadData();
             }
             else{
@@ -188,15 +191,21 @@ document.querySelector('.signIn').addEventListener('click', () => {
 
 document.getElementById('dataSave').addEventListener('click', () => {
     document.querySelector('.spinner').classList.add('d-flex');
-    if (sessionStorage.getItem('adminToken') || localStorage.getItem('adminToken')) {
+    if (sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey)) {
         dataAction('save');
-        fetch('./repository.php?key=data-save', {
+        const user = JSON.parse(sessionStorage.getItem(tokenKey));
+        fetch(`./back/repository.php?key=data-save&login=${user.login}&password=${user.password}`, {
             method: 'POST',
             body: JSON.stringify(data)
         }).then((response) => {
             response.json().then((result) => {
                 document.querySelector('.spinner').classList.remove('d-flex');
-                showAlert(true, result.message);
+                if (result.isAccess) {
+                    showAlert(result.isAccess, result.message);
+                }
+                else{
+                    showAlert(result.isAccess, result.message);
+                }
             })});
     }
     else{
