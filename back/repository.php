@@ -16,6 +16,9 @@ if(isset($_GET['key'])){
                 echo json_encode(array("isAccess" => false, "message" => "Нет прав доступа"));
                 return;
             }
+        case 'get-data':
+            echo getData();
+            return;
         default:
             echo json_encode(array("message" => "Ключ запроса не найден"));
             return;
@@ -28,14 +31,18 @@ function signIn($user){
     }
     $data = file('./admin-data.php');
     $login = trim($data[1]);
-    $password = trim($data[3]);
+    $hashPassword = trim($data[3]);
     if($user->login == $login){
-        if(!password_verify($user->password, $password)){
+        if(!password_verify($user->password, $hashPassword)){
             return array("isAccess" => false, "message" => "Неверный пароль", "method" => "signIn");
         }
-        return array("isAccess" => true, "password" => $password);
+        return array("isAccess" => true, "password" => $hashPassword);
     }
     return array("isAccess" => false, "message" => "Неверный логин", "method" => "signIn");
+}
+
+function getData(){
+    return file_get_contents('./../data.json');
 }
 
 function dataSave($data){

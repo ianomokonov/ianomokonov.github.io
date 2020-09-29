@@ -144,7 +144,7 @@ body.modal-open .container {
   background-color: rgba(255, 255, 255, 0.486);
 }
 
-.alert {
+.alertMessage {
   z-index: 10000;
   position: fixed !important;
   top: 20px;

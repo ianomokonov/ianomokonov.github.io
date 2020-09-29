@@ -3,13 +3,18 @@ import TagInput from "./tag-input.js";
 let data = null;
 
 const tokenKey = 'adminToken';
+const sessionToken = sessionStorage.getItem(tokenKey);
+const localToken = localStorage.getItem(tokenKey);
 
-if (!sessionStorage.getItem(tokenKey) && !localStorage.getItem(tokenKey)) {
+if (!sessionToken && !localToken) {
     $('#authModal').modal({
         backdrop: 'static',
         keyboard: false
     })
 } else{
+    if(localToken && !sessionToken){
+        sessionStorage.setItem(tokenKey, localToken);
+    }
     loadData();
 }
 
@@ -191,7 +196,7 @@ document.querySelector('.signIn').addEventListener('click', () => {
 
 document.getElementById('dataSave').addEventListener('click', () => {
     document.querySelector('.spinner').classList.add('d-flex');
-    if (sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey)) {
+    if (sessionStorage.getItem(tokenKey)) {
         dataAction('save');
         const user = JSON.parse(sessionStorage.getItem(tokenKey));
         fetch(`./back/repository.php?key=data-save&login=${user.login}&password=${user.password}`, {

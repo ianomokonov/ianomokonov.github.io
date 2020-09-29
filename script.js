@@ -1,5 +1,5 @@
 let data = null;
-fetch("data.json").then((response) => {
+fetch("./back/repository.php?key=get-data").then((response) => {
   response.json().then((d) => {
     data = d;
     onTypeClick({});
