@@ -230,7 +230,6 @@ const onPocketClick = ({ target }) => {
     }
 
     setEnableClass(fieldNodes["flatPocket"], true);
-    setEnableClass(fieldNodes["volumePocket"], false);
     return;
   }
   field = target.closest(".volumePocket");
@@ -238,7 +237,6 @@ const onPocketClick = ({ target }) => {
     setEnableClass(fieldNodes["volumePocket"], false);
     return;
   }
-  setEnableClass(fieldNodes["flatPocket"], false);
   setEnableClass(fieldNodes["volumePocket"], true);
 };
 
@@ -435,6 +433,12 @@ function getSum(value) {
     setErrors(value);
     return;
   }
+  if (value.flexy) {
+    sum *= value.flexy;
+  }
+  if (value.lamination) {
+    sum *= currentCategory.fields.lamination.koef;
+  }
   if (value.thikness) {
     sum *= value.thikness;
   }
@@ -468,12 +472,7 @@ function getSum(value) {
       currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price *
       value.flatPocketCount;
   }
-  if (value.flexy) {
-    sum *= value.flexy;
-  }
-  if (value.lamination) {
-    sum *= currentCategory.fields.lamination.koef;
-  }
+  
   if (value.perimeterCut) {
     sum += perimeter * currentCategory.fields.perimeterCut.price;
   }
