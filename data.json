@@ -1,16 +1,10 @@
 {
   "plotter": {
     "name": "Плоттерная резка",
-    "price": 1500,
+    "price": "1500",
     "fields": {
-      "width": {
-        "type": "number",
-        "koef": 1
-      },
-      "height": {
-        "type": "number",
-        "koef": 1
-      }
+      "width": { "type": "number", "koef": "1" },
+      "height": { "type": "number", "koef": "1" }
     }
   },
   "interior": {
@@ -18,251 +12,125 @@
     "children": {
       "film": {
         "name": "Пленка",
-        "price": 550,
+        "price": "1000",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            "koef": 1.45
-          },
-          "perimeterCut": {
-            "type": "checkbox",
-            "price": 10
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
           "count": true
         }
       },
       "bannerLaminated": {
         "name": "Баннер ламинированный",
-        "price": 300,
+        "price": "860",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "perimeterCut": {
-            "type": "checkbox",
-            "price": 10
-          },
-          "perimeterBonding": {
-            "type": "checkbox",
-            "price": 50
-          },
-          "eyelets": {
-            "type": "number",
-            "price": 10
-          },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
+          "perimeterBonding": { "type": "checkbox", "price": "50" },
+          "eyelets": { "type": "number", "price": "10" },
           "count": true
         }
       },
       "bannerCast": {
         "name": "Баннер Литой",
-        "price": 300,
+        "price": "1000",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "perimeterCut": {
-            "type": "checkbox",
-            
-            "price": 10
-          },
-          "perimeterBonding": {
-            "type": "checkbox",
-            "price": 50
-          },
-          "eyelets": {
-            "type": "number",
-            
-            "price": 10
-          },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
+          "perimeterBonding": { "type": "checkbox", "price": "50" },
+          "eyelets": { "type": "number", "price": "10" },
           "count": true
         }
       },
       "posterPaper": {
         "name": "Постерная бумага",
-        "price": 400,
+        "price": "760",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "perimeterCut": {
-            "type": "checkbox",
-            
-            "price": 10
-          },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
           "count": true
         }
       },
       "photoPaper": {
         "name": "Фотобумага",
-        "price": 400,
+        "price": "1050",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "perimeterCut": {
-            "type": "checkbox",
-            
-            "price": 10
-          },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
           "count": true
         }
       },
       "Backlit": {
         "name": "Бэклит",
-        "price": 400,
+        "price": "1400",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "perimeterCut": {
-            "type": "checkbox",
-            
-            "price": 10
-          },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
           "count": true
         }
       },
       "perforatedFilm": {
         "name": "Перфорированная пленка",
-        "price": 400,
+        "price": "1260",
         "fields": {
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
+          "width": { "type": "number", "koef": "1" },
+          "height": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "perimeterCut": {
-            "type": "checkbox",
-            
-            "price": 10
-          },
+          "perimeterCut": { "type": "checkbox", "price": "10" },
           "count": true
         }
       }
@@ -274,223 +142,106 @@
       "pvh": {
         "name": "ПВХ",
         "type": "number",
-        
-        "price": 646,
+        "price": "1000",
         "fields": {
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "max-width-lable": {
-            "value": 600
-          },
-          "max-height-lable": {
-            "value": 600
-          },
+          "height": { "type": "number", "koef": "1" },
+          "width": { "type": "number", "koef": "1" },
+          "max-width-lable": { "value": 600 },
+          "max-height-lable": { "value": 600 },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            
-            "koef": 1.45
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
           "plotter": {
             "type": "radio",
             "values": [
-              {
-                "name": "1 цвет",
-                
-                "price": 1500
-              },
-              {
-                "name": "2 цвета",
-                
-                "price": 3000
-              }
+              { "name": "1 цвет", "price": "1" },
+              { "name": "2 цвета", "price": "200" }
             ]
           },
           "flexy": {
             "type": "radio",
             "name": "Вид таблицы",
             "values": [
-              {
-                "name": "Табличка в обрез",
-                "koef": 1
-              },
-              {
-                "name": "Табличка с подгибкой",
-                "koef": 1.2
-              }
+              { "name": "Табличка в обрез", "koef": "1" },
+              { "name": "Табличка с подгибкой", "koef": "1.1" }
             ]
           },
-          "thikness": [
-            3,
-            5
-          ]
+          "thikness": [3, 5]
         }
       },
       "composit": {
         "name": "Композит",
         "type": "number",
-        "price": 5000,
+        "price": "1160",
         "fields": {
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "max-width-lable": {
-            "value": 600
-          },
-          "max-height-lable": {
-            "value": 600
-          },
+          "height": { "type": "number", "koef": "1" },
+          "width": { "type": "number", "koef": "1" },
+          "max-width-lable": { "value": 600 },
+          "max-height-lable": { "value": 600 },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            
-            "koef": 1.45
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
           "plotter": {
             "type": "radio",
             "values": [
-              {
-                "name": "1 цвет",
-                
-                "price": 1500
-              },
-              {
-                "name": "2 цвета",
-                
-                "price": 3000
-              }
+              { "name": "1 цвет", "price": "1" },
+              { "name": "2 цвета", "price": "200" }
             ]
           },
           "flexy": {
             "type": "radio",
             "name": "Вид таблицы",
             "values": [
-              {
-                "name": "Табличка в обрез",
-                "koef": 1
-              },
-              {
-                "name": "Табличка с подгибкой",
-                "koef": 1.2
-              }
+              { "name": "Табличка в обрез", "koef": "1" },
+              { "name": "Табличка с подгибкой", "koef": "1.1" }
             ]
           },
-          "thikness": [
-            3
-          ]
+          "thikness": [3]
         }
       },
       "akrile": {
         "name": "Акрил",
         "type": "number",
-        
-        "price": 2500,
+        "price": "1250",
         "fields": {
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
-          "max-width-lable": {
-            "value": 600
-          },
-          "max-height-lable": {
-            "value": 600
-          },
+          "height": { "type": "number", "koef": "1" },
+          "width": { "type": "number", "koef": "1" },
+          "max-width-lable": { "value": 600 },
+          "max-height-lable": { "value": 600 },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            
-            "koef": 1.45
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
           "plotter": {
             "type": "radio",
             "values": [
-              {
-                "name": "1 цвет",
-                
-                "price": 1500
-              },
-              {
-                "name": "2 цвета",
-                
-                "price": 3000
-              }
+              { "name": "1 цвет", "price": "1" },
+              { "name": "2 цвета", "price": "200" }
             ]
           },
           "flexy": {
             "type": "radio",
             "name": "Вид таблицы",
             "values": [
-              {
-                "name": "Табличка в обрез",
-                "koef": 1
-              },
-              {
-                "name": "Табличка с подгибкой",
-                "koef": 1.2
-              }
+              { "name": "Табличка в обрез", "koef": "1" },
+              { "name": "Табличка с подгибкой", "koef": "1.1" }
             ]
           },
-          "thikness": [
-            2,
-            3,
-            4,
-            5,
-            6,
-            8,
-            10
-          ]
+          "thikness": [2, 3, 4, 5, 6, 8, 10]
         }
       }
     }
@@ -501,298 +252,151 @@
       "pvh": {
         "name": "ПВХ",
         "type": "number",
-        
-        "price": 646,
+        "price": "1000",
         "fields": {
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
+          "height": { "type": "number", "koef": "1" },
+          "width": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            
-            "koef": 1.45
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
           "plotter": {
             "type": "radio",
             "values": [
-              {
-                "name": "1 цвет",
-                
-                "price": 1500
-              },
-              {
-                "name": "2 цвета",
-                
-                "price": 3000
-              }
+              { "name": "1 цвет", "price": "1" },
+              { "name": "2 цвета", "price": "200" }
             ]
           },
           "flexy": {
             "type": "radio",
             "name": "Вид стенда",
             "values": [
-              {
-                "name": "Стенд в обрез",
-                "koef": 1
-              },
-              {
-                "name": "Стенд с подгибкой",
-                "koef": 1.2
-              }
+              { "name": "Стенд в обрез", "koef": "1" },
+              { "name": "Стенд с подгибкой", "koef": "1.1" }
             ]
           },
           "flatPocket": {
             "type": "radio",
             "values": [
-              {
-                "name": "A3",
-                "price": 300
-              },
-              {
-                "name": "A4",
-                "price": 300
-              },
-              {
-                "name": "A5",
-                "price": 300
-              }
+              { "name": "A3", "price": "400" },
+              { "name": "A4", "price": "250" },
+              { "name": "A5", "price": "200" }
             ]
           },
           "volumePocket": {
             "type": "radio",
             "values": [
-              {
-                "name": "A4",
-                "price": 300
-              },
-              {
-                "name": "A5",
-                "price": 300
-              }
+              { "name": "A4", "price": "500" },
+              { "name": "A5", "price": "400" }
             ]
           },
           "volumePocketCount": true,
           "flatPocketCount": true,
-          "thikness": [
-            3,
-            5
-          ]
+          "thikness": [3, 5]
         }
       },
       "composit": {
         "name": "Композит",
         "type": "number",
-        "price": 5000,
+        "price": "1160",
         "fields": {
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
+          "height": { "type": "number", "koef": "1" },
+          "width": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            
-            "koef": 1.45
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
           "plotter": {
             "type": "radio",
             "values": [
-              {
-                "name": "1 цвет",
-                
-                "price": 1500
-              },
-              {
-                "name": "2 цвета",
-                
-                "price": 3000
-              }
+              { "name": "1 цвет", "price": "1" },
+              { "name": "2 цвета", "price": "200" }
             ]
           },
           "flexy": {
             "type": "radio",
             "name": "Вид стенда",
             "values": [
-              {
-                "name": "Стенд в обрез",
-                "koef": 1
-              },
-              {
-                "name": "Стенд с подгибкой",
-                "koef": 1.2
-              }
+              { "name": "Стенд в обрез", "koef": "1" },
+              { "name": "Стенд с подгибкой", "koef": "1.1" }
             ]
           },
           "flatPocket": {
             "type": "radio",
             "values": [
-              {
-                "name": "A3",
-                "price": 300
-              },
-              {
-                "name": "A4",
-                "price": 300
-              },
-              {
-                "name": "A5",
-                "price": 300
-              }
+              { "name": "A3", "price": "400" },
+              { "name": "A4", "price": "250" },
+              { "name": "A5", "price": "200" }
             ]
           },
           "volumePocket": {
             "type": "radio",
             "values": [
-              {
-                "name": "A4",
-                "price": 300
-              },
-              {
-                "name": "A5",
-                "price": 300
-              }
+              { "name": "A4", "price": "500" },
+              { "name": "A5", "price": "400" }
             ]
           },
           "volumePocketCount": true,
           "flatPocketCount": true,
-          "thikness": [
-            3
-          ]
+          "thikness": [3]
         }
       },
       "akrile": {
         "name": "Акрил",
         "type": "number",
-        
-        "price": 2500,
+        "price": "1250",
         "fields": {
-          "height": {
-            "type": "number",
-            "koef": 1
-          },
-          "width": {
-            "type": "number",
-            "koef": 1
-          },
+          "height": { "type": "number", "koef": "1" },
+          "width": { "type": "number", "koef": "1" },
           "quality": {
             "type": "radio",
             "values": [
-              {
-                "name": "720dpi",
-                "koef": 1
-              },
-              {
-                "name": "1440dpi",
-                "koef": 1.2
-              }
+              { "name": "720dpi", "koef": "1" },
+              { "name": "1440dpi", "koef": "1.2" }
             ]
           },
-          "lamination": {
-            "type": "checkbox",
-            
-            "koef": 1.45
-          },
+          "lamination": { "type": "checkbox", "price": "450" },
           "plotter": {
             "type": "radio",
             "values": [
-              {
-                "name": "1 цвет",
-                
-                "price": 1500
-              },
-              {
-                "name": "2 цвета",
-                
-                "price": 3000
-              }
+              { "name": "1 цвет", "price": "1" },
+              { "name": "2 цвета", "price": "200" }
             ]
           },
           "flexy": {
             "type": "radio",
             "name": "Вид стенда",
             "values": [
-              {
-                "name": "Стенд в обрез",
-                "koef": 1
-              },
-              {
-                "name": "Стенд с подгибкой",
-                "koef": 1.2
-              }
+              { "name": "Стенд в обрез", "koef": "1" },
+              { "name": "Стенд с подгибкой", "koef": "1.1" }
             ]
           },
           "flatPocket": {
             "type": "radio",
             "values": [
-              {
-                "name": "A3",
-                "price": 300
-              },
-              {
-                "name": "A4",
-                "price": 300
-              },
-              {
-                "name": "A5",
-                "price": 300
-              }
+              { "name": "A3", "price": "400" },
+              { "name": "A4", "price": "250" },
+              { "name": "A5", "price": "200" }
             ]
           },
           "volumePocket": {
             "type": "radio",
             "values": [
-              {
-                "name": "A4",
-                "price": 300
-              },
-              {
-                "name": "A5",
-                "price": 300
-              }
+              { "name": "A4", "price": "500" },
+              { "name": "A5", "price": "400" }
             ]
           },
           "volumePocketCount": true,
           "flatPocketCount": true,
-          "thikness": [
-            2,
-            3,
-            4,
-            5
-          ]
+          "thikness": [2, 3, 4, 5]
         }
       }
     }
@@ -801,26 +405,13 @@
     "name": "Объемные буквы",
     "isLetters": true,
     "fields": {
-      "height": {
-        "type": "number",
-        "koef": 1,
-        "measure": "см"
-      },
-      "letter-height": {
-        "min": 5,
-        "max": 50
-      },
+      "height": { "type": "number", "koef": "1", "measure": "см" },
+      "letter-height": { "min": 5, "max": 50 },
       "substrate": {
         "type": "radio",
         "values": [
-          {
-            "name": "Рамка",
-            "price": 300
-          },
-          {
-            "name": "Подложка",
-            "price": 3000
-          }
+          { "name": "Рамка", "price": "500" },
+          { "name": "Подложка", "price": "3500" }
         ]
       },
       "count": true,

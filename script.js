@@ -419,7 +419,7 @@ function getSum(value) {
   if (currentType.isLetters) {
     return getLettersSum(value);
   }
-
+    let str = '';
   if (value.width && value.height) {
     setErrors(value);
     const width = value.width / 1000;
@@ -429,18 +429,19 @@ function getSum(value) {
     sum =
       square *
       (currentType.children ? currentCategory.price : currentType.price);
+      str +=`площадь (${sum})`;
   } else {
     setErrors(value);
     return;
   }
   if (value.flexy) {
     sum *= value.flexy;
+    str +=` * вид (${value.flexy})`;
   }
-  if (value.lamination) {
-    sum *= currentCategory.fields.lamination.koef;
-  }
+  
   if (value.thikness) {
     sum *= value.thikness;
+    str +=` * толщина (${value.thikness})`;
   }
   if (
     value.quality &&
@@ -448,6 +449,11 @@ function getSum(value) {
       !value.plotter)
   ) {
     sum *= value.quality;
+    str +=` * качество (${value.quality})`;
+  }
+  if (value.lamination) {
+    sum += square * currentCategory.fields.lamination.price;
+    str +=` + ламинация (${square * currentCategory.fields.lamination.price})`;
   }
   if (
     value.plotter &&
@@ -455,6 +461,7 @@ function getSum(value) {
   ) {
     sum +=
       currentCategory.fields.plotter.values[+value.plotter - 1].price * square;
+      str +=` + плоттерная резка(${currentCategory.fields.plotter.values[+value.plotter - 1].price * square})`;
   }
   if (
     value.volumePocket &&
@@ -463,6 +470,7 @@ function getSum(value) {
     sum +=
       currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price *
       value.volumePocketCount;
+      str +=` + объемные карманы(${value.currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price * value.volumePocketCount})`;
   }
   if (
     value.flatPocket &&
@@ -471,18 +479,22 @@ function getSum(value) {
     sum +=
       currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price *
       value.flatPocketCount;
+      str +=` + объемные карманы(${currentCategory.fields.flatPocket.values[+value.flatPocket - 1].price * value.flatPocketCount})`;
   }
   
   if (value.perimeterCut) {
     sum += perimeter * currentCategory.fields.perimeterCut.price;
+    str +=` + обрезка по периметру(${perimeter * currentCategory.fields.perimeterCut.price})`;
   }
   if (value.perimeterBonding) {
     sum += perimeter * currentCategory.fields.perimeterBonding.price;
+    str +=` + проклейка по периметру(${perimeter * currentCategory.fields.perimeterBonding.price})`;
   }
   if (value.eyelets) {
     sum +=
       Math.ceil(perimeter / (value.eyelets / 1000) + 1) *
       currentCategory.fields.eyelets.price;
+      str +=` + люверсы (${Math.ceil(perimeter / (value.eyelets / 1000) + 1) * currentCategory.fields.eyelets.price})`;
   }
 
   if (value.count) {
@@ -498,6 +510,7 @@ function getSum(value) {
       sum *= 0.93;
     }
   }
+  console.log(str);
   return sum;
 }
 
