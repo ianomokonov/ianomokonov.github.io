@@ -470,7 +470,7 @@ function getSum(value) {
     sum +=
       currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price *
       value.volumePocketCount;
-      str +=` + объемные карманы(${value.currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price * value.volumePocketCount})`;
+      str +=` + объемные карманы(${currentCategory.fields.flatPocket.values[+value.volumePocket - 1].price * value.volumePocketCount})`;
   }
   if (
     value.flatPocket &&
