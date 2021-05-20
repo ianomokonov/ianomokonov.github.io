@@ -1,0 +1,222 @@
+@import './adaptive.css';
+
+html,
+body {
+  min-height: 100vh;
+}
+
+html {
+  background-image: url(../assets/images/test_bg.png);
+  background-size: cover;
+}
+.container {
+  height: 100vh;
+}
+
+.page-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 100px);
+  flex-direction: column;
+}
+
+.test {
+  display: none;
+}
+
+.header {
+  text-align: center;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 60px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.page-content_testing .header,
+.page-content_testing .page-content__learn-more,
+.page-content_finished .header,
+.page-content_finished .page-content__learn-more,
+.page-content_loading .header,
+.page-content_loading .page-content__learn-more {
+  display: none;
+}
+
+.page-content_testing {
+  justify-content: flex-start;
+  padding-top: 324px;
+}
+
+.page-content_testing .test {
+  display: block;
+}
+
+.w-50 {
+  min-width: 50% !important;
+}
+
+.pt-0 {
+  padding-top: 0 !important;
+}
+
+.test__result {
+  display: none;
+}
+
+.page-content_finished .test__result {
+  display: block;
+}
+
+.page-content_loading .test__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-content_loading .test__loading img {
+  animation-name: rotate;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  height: 600px;
+}
+
+.test__loading:after {
+  content: 'Подбираем рептилию';
+  display: block;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 30px;
+  text-align: center;
+  letter-spacing: 0.02em;
+  width: 191px;
+  position: absolute;
+}
+.d-sm-flex {
+  display: none !important;
+}
+.test__question {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 48px;
+  text-align: center;
+  letter-spacing: 0.02em;
+  margin-bottom: 60px;
+}
+
+.test__loading {
+  display: none;
+}
+
+.test__answer {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 32px;
+  line-height: 39px;
+  /* identical to box height */
+
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.page-content__page-point {
+  margin-right: 40px;
+  margin-bottom: 0 !important;
+}
+
+.test__answer:hover {
+  color: #21a36c;
+}
+
+.test__answer:hover .page-content__page-point {
+  border-color: #21a36c;
+}
+
+.test__answer:hover .page-content__page-point::after {
+  background-color: black;
+}
+
+.page-content__result-header {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 36px;
+  line-height: 116.02%;
+  /* identical to box height, or 42px */
+
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.page-content__result-name {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 60px;
+  text-align: center;
+
+  /* Оранжевый */
+
+  color: #ff8d27;
+}
+
+.page-content__result-content {
+  display: flex;
+  align-items: flex-start;
+}
+
+.page-content__img {
+  max-width: 50%;
+}
+
+.page-content__description {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 22px;
+  line-height: 143%;
+  padding-top: 50px;
+  padding-left: 100px;
+}
+
+.page-content__description small {
+  display: block;
+  margin-top: 50px;
+  font-size: 16px;
+  line-height: 140%;
+  position: relative;
+  padding-left: 10px;
+}
+
+.page-content__description small::before {
+  content: '*';
+  position: absolute;
+  left: 0;
+  top: -10px;
+  color: #21a36c;
+}
+
+.page-content__description .page-content__learn-more {
+  margin: 26px auto 0;
+  display: block !important;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(-360deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

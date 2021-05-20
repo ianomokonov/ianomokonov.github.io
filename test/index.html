@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-content">
+        <h3 class="header">
+          Пройди тест и узнай, какая рептилия<br />подойдет тебе больше всего!
+        </h3>
+        <button class="page-content__learn-more">Пройти тестирование</button>
+
+        <div class="test">
+          <div class="test__question">
+            1. Какой пейзаж вам нравится больше всего?
+          </div>
+          <div class="test__answer">
+            <div class="page-content__page-point"></div>
+            Горы
+          </div>
+          <div class="test__answer">
+            <div class="page-content__page-point"></div>
+            Горы
+          </div>
+          <div class="test__answer">
+            <div class="page-content__page-point"></div>
+            Горы
+          </div>
+          <div class="test__answer">
+            <div class="page-content__page-point"></div>
+            Горы
+          </div>
+          <div class="test__question-points">
+            <div class="test__question-point"></div>
+            <div class="test__question-point test__question-point_active"></div>
+            <div class="test__question-point"></div>
+            <div class="test__question-point"></div>
+            <div class="test__question-point"></div>
+            <div class="test__question-point"></div>
+            <div class="test__question-point"></div>
+          </div>
+        </div>
+        <div class="test__loading">
+          <img src="../assets/images/test_loading.png" />
+        </div>
+        <div class="test__result">
+          <h3 class="page-content__result-header">Больше всего вам подходит</h3>
+          <h2 class="page-content__result-name">Реснитчатый Бананоед</h2>
+          <div class="page-content__result-content">
+            <img
+              src="../assets/images/Rhacodactylus_ciliatus.png"
+              alt=""
+              class="page-content__img"
+            />
+            <div class="page-content__description">
+              <span
+                >Бананоеды — ручные гекконы, которых можно не кормить живыми
+                насекомыми. В природе питаются насекомыми и перезрелыми
+                фруктами, но в домашних условиях хорошо приучаются к
+                специализированным кормам для рептилий. Реснитчатый — некрупный
+                геккон до 12-15 см. Самый распространенный вид, который выбирают
+                в качестве домашнего питомца. Имеет примечательные выросты
+                вокруг глаз, за которые и получил свое название «реснитчатый»,
+                поскольку они немного напоминают ресницы.</span
+              >
+              <small
+                >Если вам понравился кто-то из питомцев,вы можете заказать
+                сувенирную продукцию с его изображением</small
+              >
+              <button class="page-content__learn-more">Заказать</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../reptiles/data.js" type="module"></script>
+    <script src="./script.js" type="module"></script>
+    <script src="../menu.js"></script>
+  </body>
+</html>
