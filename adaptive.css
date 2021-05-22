@@ -3,7 +3,8 @@
     background: none !important;
   }
   .main-menu {
-    background-color: #21a36c;
+    background-color: #21a36c !important;
+    width: 100% !important;
     flex-direction: column;
     align-items: center !important;
     justify-content: center !important;

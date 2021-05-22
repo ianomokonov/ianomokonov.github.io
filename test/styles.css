@@ -25,7 +25,7 @@ html {
   display: none;
 }
 
-.test__question-container{
+.test__question-container {
   min-height: 450px;
 }
 
@@ -56,6 +56,13 @@ html {
 
 .page-content_testing .test {
   display: block;
+}
+
+.steps {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 .w-50 {
