@@ -8,11 +8,11 @@ if (container) {
         <img class="main-menu__logo" src="/assets/images/logo.svg" alt="" />
         <img class="main-menu__logo main-menu__logo_sm" src="/assets/images/logo_monochrome.svg" alt="" />
         <div class="main-menu__menu-items">
-        <a href="/" class="main-menu__menu-item ${getActive('/')}">
+        <a href="/" class="main-menu__menu-item ${getActive('/', true)}">
             <span>Главная</span>
         </a>
         <a href="/reptiles" class="main-menu__menu-item ${getActive(
-          '/reptiles/'
+          '/reptile'
         )}"><span>Рептилии</span></a>
         <a href="/test" class="main-menu__menu-item ${getActive(
           '/test/'
@@ -33,9 +33,12 @@ if (container) {
   });
 }
 
-function getActive(route) {
+function getActive(route, exact = false) {
   console.log(window.location.pathname, window.location.pathname === route);
-  if (window.location.pathname === route) {
+  if (
+    (!exact && window.location.pathname.indexOf(route) > -1) ||
+    window.location.pathname === route
+  ) {
     return 'main-menu__menu-item_active';
   }
   return '';

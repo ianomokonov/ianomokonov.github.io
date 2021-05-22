@@ -25,6 +25,10 @@ html {
   display: none;
 }
 
+.test__question-container{
+  min-height: 450px;
+}
+
 .header {
   text-align: center;
   font-family: Inter;
@@ -47,7 +51,7 @@ html {
 
 .page-content_testing {
   justify-content: flex-start;
-  padding-top: 324px;
+  padding-top: 230px;
 }
 
 .page-content_testing .test {

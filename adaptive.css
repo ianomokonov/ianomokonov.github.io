@@ -57,4 +57,24 @@
     left: 32px;
     top: 14px;
   }
+
+  .main-header {
+    font-size: 52px !important;
+  }
+
+  .header-md {
+    font-size: 28px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-header {
+    font-size: 22px !important;
+    line-height: 29.33px !important;
+  }
+
+  .header-md {
+    font-size: 12px !important;
+    margin-top: 24px !important;
+  }
 }

@@ -38,6 +38,7 @@ function startTest() {
 function setQuestion(id) {
   const question = questions.find((q) => q.id == id);
   test.innerHTML = `
+  <div class="test__question-container">
     <div class="test__question">
     ${question.name}
     </div>
@@ -51,12 +52,13 @@ function setQuestion(id) {
         `
       )
       .join('')}
-    <div class="test__question-points">
+      </div>
+    <div class="steps">
         ${questions
           .map(
             (q) => `
-              <div class="test__question-point ${
-                q.id == id ? 'test__question-point_active' : ''
+              <div class="steps__point ${
+                q.id == id ? 'steps__point_active' : ''
               }"></div>
               `
           )

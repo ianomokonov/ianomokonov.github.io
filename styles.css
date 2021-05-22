@@ -172,3 +172,23 @@ body {
 .page-content .page-content__page-point.page-content__page-point_active::after {
   background-color: #000;
 }
+
+.steps {
+  display: none;
+  margin-bottom: 28px;
+}
+
+.steps__point {
+  border-radius: 50%;
+  border: 1px solid #bdbcbc;
+  height: 8px;
+  width: 8px;
+  margin: 0 4px;
+}
+
+.steps__point_active {
+  background-color: #21a36c;
+  border-color: #21a36c;
+  height: 10px;
+  width: 10px;
+}

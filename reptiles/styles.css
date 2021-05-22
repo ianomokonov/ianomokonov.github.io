@@ -97,7 +97,7 @@ body {
 }
 
 .page-content__col .page-content__main-img {
-  width: 100%;
+  max-width: 100%;
   max-height: 750px;
 }
 

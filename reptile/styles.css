@@ -1,11 +1,17 @@
+@import "./adaptive.css";
+
 body,
 html {
   min-height: 100vh;
 }
+body {
+  background-size: 500px auto;
+}
 
 .container {
   background-color: #fff;
-  max-width: 1540px;
+  /* max-width: 1540px; */
+  max-width: 92%;
   padding-left: 128px;
   padding-right: 70px;
   min-height: 100vh;
@@ -14,7 +20,7 @@ html {
 .main-menu {
   position: fixed;
   top: 0;
-  width: 1342px;
+  width: calc(92% - 164px);
   background-color: #fff;
   z-index: 100;
 }
@@ -293,35 +299,39 @@ html {
 }
 
 .fourth-section__food-image:nth-of-type(2) {
-  top: 10px;
+  bottom: calc(50% + 155px);
 }
 
 .fourth-section__food-image:nth-of-type(3) {
-  top: 120px;
-  left: calc(50% + 150px);
+  bottom: calc(50% + 60px);
+  right: calc(50% + 150px);
 }
 
 .fourth-section__food-image:nth-of-type(4) {
-  top: 320px;
+  bottom: calc(50% + 60px);
   left: calc(50% + 150px);
 }
 
 .fourth-section__food-image:nth-of-type(5) {
-  top: calc(50% + 150px);
-  left: calc(50% + 20px);
+  top: calc(50% - 20px);
+  right: calc(50% + 150px);
 }
 
 .fourth-section__food-image:nth-of-type(6) {
+  top: calc(50% - 20px);
+  left: calc(50% + 150px);
+}
+
+.fourth-section__food-image:nth-of-type(7) {
   top: calc(50% + 150px);
   right: calc(50% + 20px);
 }
 
-.fourth-section__food-image:nth-of-type(7) {
-  top: 120px;
-  right: calc(50% + 150px);
+.fourth-section__food-image:nth-of-type(8) {
+  top: calc(50% + 150px);
+  left: calc(50% + 20px);
 }
 
-.fourth-section__food-image:nth-of-type(8) {
-  top: 320px;
-  right: calc(50% + 150px);
+.fourth-section__slider {
+  display: none;
 }

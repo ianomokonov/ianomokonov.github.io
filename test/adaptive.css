@@ -61,6 +61,10 @@
     padding: 0;
   }
 
+  .test__question-container{
+    min-height: 400px !important;
+  }
+
   .page-content {
     padding: 0 32px;
     min-height: calc(100% - 48px);
