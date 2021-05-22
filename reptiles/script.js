@@ -77,7 +77,7 @@ function getHiddenClass(index, activeIndex) {
   return '';
 }
 
-document.addEventListener('wheel', (e) => {
+const scroll = ({ deltaY }) => {
   if (scrolling) {
     return;
   }
@@ -85,13 +85,25 @@ document.addEventListener('wheel', (e) => {
   setTimeout(() => {
     scrolling = false;
   }, 500);
-  if (e.deltaY < 0 && activeIndex > 0) {
+  if (deltaY < 0 && activeIndex > 0) {
     show(activeIndex - 1);
     return;
   }
 
-  if (e.deltaY > 0 && activeIndex < reptiles.length - 1) {
+  if (deltaY > 0 && activeIndex < reptiles.length - 1) {
     show(activeIndex + 1);
     return;
   }
+};
+
+let start = 0;
+
+document.addEventListener('wheel', scroll);
+document.addEventListener('touchstart', (e) => {
+  start = e.changedTouches[0]?.clientY;
+});
+
+document.addEventListener('touchend', (e) => {
+  const deltaY = start - e.changedTouches[0]?.clientY;
+  scroll({ deltaY });
 });

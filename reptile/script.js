@@ -1,10 +1,10 @@
-import { reptiles } from "../reptiles/data.js";
+import { reptiles } from '../reptiles/data.js';
 
 let activeIndex = 0;
 let activeFoodIndex = 0;
 let scrolling = false;
 const reptile = reptiles.find(
-  (r) => r.id == new URL(document.location).searchParams.get("id")
+  (r) => r.id == new URL(document.location).searchParams.get('id')
 );
 
 const goBack = () => {
@@ -18,8 +18,8 @@ const goBack = () => {
   active.classList.add('food-content__block_next');
   prevReptile.classList.add('food-content__block_active');
   activeFoodIndex -= 1;
-  setActivePoint()
-}
+  setActivePoint();
+};
 
 const goForward = () => {
   if (activeFoodIndex > reptile.fullDescription.food.types.length - 2) {
@@ -32,11 +32,28 @@ const goForward = () => {
   active.classList.add('food-content__block_prev');
   nextReptile.classList.add('food-content__block_active');
   activeFoodIndex += 1;
-  setActivePoint()
-}
+  setActivePoint();
+};
+
+const scroll = (deltaY) => {
+  let shouldScroll = false;
+  if (deltaY < 0 && activeIndex > 0) {
+    activeIndex -= 1;
+    shouldScroll = true;
+  }
+
+  if (deltaY > 0 && activeIndex < 3) {
+    activeIndex += 1;
+    shouldScroll = true;
+  }
+
+  if (shouldScroll) {
+    document.querySelector(`.section-${activeIndex}`).scrollIntoView();
+  }
+};
 
 document.addEventListener(
-  "wheel",
+  'wheel',
   (e) => {
     e.preventDefault();
     if (scrolling) {
@@ -46,20 +63,30 @@ document.addEventListener(
     setTimeout(() => {
       scrolling = false;
     }, 500);
-    let shouldScroll = false;
-    if (e.deltaY < 0 && activeIndex > 0) {
-      activeIndex -= 1;
-      shouldScroll = true;
-    }
 
-    if (e.deltaY > 0 && activeIndex < 3) {
-      activeIndex += 1;
-      shouldScroll = true;
-    }
+    scroll(e.deltaY);
+  },
+  { passive: false }
+);
 
-    if (shouldScroll) {
-      document.querySelector(`.section-${activeIndex}`).scrollIntoView();
-    }
+let start = 0;
+
+document.addEventListener('wheel', scroll);
+document.addEventListener(
+  'touchstart',
+  (e) => {
+    e.preventDefault();
+    start = e.changedTouches[0]?.clientY;
+  },
+  { passive: false }
+);
+
+document.addEventListener(
+  'touchend',
+  (e) => {
+    e.preventDefault();
+    const deltaY = start - e.changedTouches[0]?.clientY;
+    scroll(deltaY);
   },
   { passive: false }
 );
@@ -71,7 +98,7 @@ function removeClasses(elem) {
 }
 
 const onFoodEnter = ({ target }) => {
-  const colored = target.closest("[data-colored]");
+  const colored = target.closest('[data-colored]');
   if (!colored) {
     return;
   }
@@ -80,7 +107,7 @@ const onFoodEnter = ({ target }) => {
 };
 
 const onFoodLeave = ({ target }) => {
-  const masked = target.closest("[data-masked]");
+  const masked = target.closest('[data-masked]');
   if (!masked) {
     return;
   }
@@ -90,17 +117,17 @@ const onFoodLeave = ({ target }) => {
 
 if (reptile) {
   document.body.style.setProperty(
-    "background-image",
+    'background-image',
     `url(${reptile.infoBackground})`,
-    "important"
+    'important'
   );
 
   setData(reptile);
 }
 
 document
-  .querySelector(".fourth-section__food")
-  .addEventListener("mouseenter", ({ target }) => {
+  .querySelector('.fourth-section__food')
+  .addEventListener('mouseenter', ({ target }) => {
     console.log(target);
   });
 
@@ -115,7 +142,7 @@ function setData(reptile) {
 }
 
 function setFirstSection(reptile) {
-  const section = document.querySelector(".first-section");
+  const section = document.querySelector('.first-section');
   section.innerHTML = `
     <h1 class="main-header main-header_centered">${reptile.name}</h1>
     <div class="row">
@@ -167,7 +194,7 @@ function setFirstSection(reptile) {
 }
 
 function setSecondSection(reptile) {
-  const section = document.querySelector(".second-section");
+  const section = document.querySelector('.second-section');
   section.innerHTML = `
     <div class="row">
     <div class="col-xl-6 col-11 d-flex align-items-center justify-content-center">
@@ -188,7 +215,7 @@ function setSecondSection(reptile) {
 }
 
 function setThirdSection(reptile) {
-  const section = document.querySelector(".third-section");
+  const section = document.querySelector('.third-section');
   section.innerHTML = `
   <div class="third-section__header">Содержание</div>
   <div class="row">
@@ -251,18 +278,20 @@ function setThirdSection(reptile) {
 }
 
 function setFourthSection(reptile) {
-  const section = document.querySelector(".fourth-section");
+  const section = document.querySelector('.fourth-section');
   section.innerHTML = `
   <div class="fourth-section__header">Питание</div>
   <div class="fourth-section__descriptions">
     <div class="fourth-section__description">
-    ${getFoodDescriptions()[0]  || ''}
+    ${getFoodDescriptions()[0] || ''}
     </div>
-    <div class="fourth-section__description ${getSecondBlockPosition(getFoodDescriptions()[1])}">
-    ${getFoodDescriptions()[1]  || ''}
+    <div class="fourth-section__description ${getSecondBlockPosition(
+      getFoodDescriptions()[1]
+    )}">
+    ${getFoodDescriptions()[1] || ''}
     </div>
     <div class="fourth-section__description">
-    ${getFoodDescriptions()[2]  || ''}
+    ${getFoodDescriptions()[2] || ''}
     </div>
     <div class="fourth-section__description">
     ${getFoodDescriptions()[3] || ''}
@@ -287,34 +316,41 @@ function setFourthSection(reptile) {
   </div>
         `;
 
-  section.querySelector(".food-content__arrow_prev").addEventListener('click', goBack);
-  section.querySelector(".food-content__arrow_next").addEventListener('click', goForward);
-  section.querySelectorAll("[data-colored]").forEach((elem) => {
-    elem.addEventListener("mouseenter", onFoodEnter);
-    elem.addEventListener("mouseleave", onFoodLeave);
+  section
+    .querySelector('.food-content__arrow_prev')
+    .addEventListener('click', goBack);
+  section
+    .querySelector('.food-content__arrow_next')
+    .addEventListener('click', goForward);
+  section.querySelectorAll('[data-colored]').forEach((elem) => {
+    elem.addEventListener('mouseenter', onFoodEnter);
+    elem.addEventListener('mouseleave', onFoodLeave);
   });
 }
 
 function getSecondBlockPosition(text) {
   // if (text.indexOf('Кормить:') > -1 || document.documentElement.clientWidth < 576) {
-    return 'fourth-section__description_top';
+  return 'fourth-section__description_top';
   // }
   // return '';
 }
 
 function getFoodDescriptions() {
   if (document.documentElement.clientWidth < 576) {
-    return reptile.fullDescription.food.descriptionsSm || reptile.fullDescription.food.descriptions;
+    return (
+      reptile.fullDescription.food.descriptionsSm ||
+      reptile.fullDescription.food.descriptions
+    );
   }
   return reptile.fullDescription.food.descriptions;
 }
 
 function getDifficulty(difficulty) {
-  let result = "";
+  let result = '';
   console.log(difficulty);
   for (let i = 0; i < 5; i++) {
     result += `<div class="third-section_dificulty-point ${
-      i <= difficulty - 1 ? "third-section_dificulty-point_filled" : ""
+      i <= difficulty - 1 ? 'third-section_dificulty-point_filled' : ''
     }"></div>`;
   }
 
@@ -323,12 +359,12 @@ function getDifficulty(difficulty) {
 
 function getDifficultyColor(difficulty) {
   if (difficulty < 3) {
-    return "third-section_dificulty_green";
+    return 'third-section_dificulty_green';
   }
   if (difficulty == 3) {
-    return "third-section_dificulty_yellow";
+    return 'third-section_dificulty_yellow';
   }
-  return "third-section_dificulty_orange";
+  return 'third-section_dificulty_orange';
 }
 
 function getFood(types) {
@@ -343,7 +379,7 @@ function getFood(types) {
     class="fourth-section__food-image"
   />`
     )
-    .join("");
+    .join('');
 }
 
 function getSlider(types) {
@@ -351,9 +387,7 @@ function getSlider(types) {
     .map(
       (type, index) =>
         `
-    <div class="food-content__block ${
-      getDirection(index)
-    }" id="${index}">
+    <div class="food-content__block ${getDirection(index)}" id="${index}">
         <img
         src="${type.coloredImg}"
         data-label="${type.label}"
@@ -364,7 +398,7 @@ function getSlider(types) {
     
     `
     )
-    .join("");
+    .join('');
 }
 
 function getDirection(index) {
@@ -382,12 +416,16 @@ function getSliderButtons(types) {
     .map(
       (type, index) =>
         `
-      <div class='steps__point ${activeFoodIndex == index ? "steps__point_active" : ""}'></div>
+      <div class='steps__point ${
+        activeFoodIndex == index ? 'steps__point_active' : ''
+      }'></div>
     `
     )
-    .join("");
+    .join('');
 }
 
 function setActivePoint() {
-  document.querySelector(".steps").innerHTML = getSliderButtons(reptile.fullDescription.food.types);
+  document.querySelector('.steps').innerHTML = getSliderButtons(
+    reptile.fullDescription.food.types
+  );
 }
