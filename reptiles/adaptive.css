@@ -39,6 +39,8 @@
     padding: 0 32px;
     justify-content: flex-start !important;
     padding-top: 30px;
+    overflow-x: scroll !important;
+    height: calc(100vh - 48px) !important;
   }
 
   .page-content__public-name {
@@ -68,6 +70,11 @@
 
   .page-content_rowed {
     width: calc(100% - 64px) !important;
+    position: static !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    min-height: calc(100vh - 48px);
   }
 
   .page-content__col:nth-of-type(1) {

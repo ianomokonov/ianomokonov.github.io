@@ -96,14 +96,14 @@ const scroll = ({ deltaY }) => {
   }
 };
 
-let start = 0;
+// let start = 0;
 
 document.addEventListener('wheel', scroll);
-document.addEventListener('touchstart', (e) => {
-  start = e.changedTouches[0]?.clientY;
-});
+// document.addEventListener('touchstart', (e) => {
+//   start = e.changedTouches[0]?.clientY;
+// });
 
-document.addEventListener('touchend', (e) => {
-  const deltaY = start - e.changedTouches[0]?.clientY;
-  scroll({ deltaY });
-});
+// document.addEventListener('touchend', (e) => {
+//   const deltaY = start - e.changedTouches[0]?.clientY;
+//   scroll({ deltaY });
+// });

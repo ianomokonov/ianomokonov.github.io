@@ -72,24 +72,24 @@ document.addEventListener(
 let start = 0;
 
 document.addEventListener('wheel', scroll);
-document.addEventListener(
-  'touchstart',
-  (e) => {
-    e.preventDefault();
-    start = e.changedTouches[0]?.clientY;
-  },
-  { passive: false }
-);
+// document.addEventListener(
+//   'touchstart',
+//   (e) => {
+//     // e.preventDefault();
+//     start = e.changedTouches[0]?.clientY;
+//   },
+//   { passive: false }
+// );
 
-document.addEventListener(
-  'touchend',
-  (e) => {
-    e.preventDefault();
-    const deltaY = start - e.changedTouches[0]?.clientY;
-    scroll(deltaY);
-  },
-  { passive: false }
-);
+// document.addEventListener(
+//   'touchend',
+//   (e) => {
+//     e.preventDefault();
+//     const deltaY = start - e.changedTouches[0]?.clientY;
+//     scroll(deltaY);
+//   },
+//   { passive: false }
+// );
 
 function removeClasses(elem) {
   elem.classList.remove('food-content__block_next');
