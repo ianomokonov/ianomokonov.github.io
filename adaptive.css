@@ -1,7 +1,29 @@
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
+  .main-menu {
+    height: 60px !important;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .main-menu__menu-item {
+    margin-left: 48px !important;
+    font-size: 18px !important;
+
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+    color: black !important;
+  }
+  .main-menu__menu-item:hover{
+    background-color: transparent !important;
+  }
+}
+
+@media (max-width: 767px) {
   html {
     background: none !important;
   }
+  
   .main-menu {
     background-color: #21a36c !important;
     width: 100% !important;
@@ -12,6 +34,7 @@
     height: 48px !important;
     position: relative;
     z-index: 100;
+    max-width: unset;
   }
 
   .main-menu_opened {
@@ -31,6 +54,7 @@
   }
   .main-menu__menu-item {
     color: white !important;
+    background: transparent !important;
   }
   .main-menu__logo:not(.main-menu__logo_sm) {
     display: none;
@@ -55,7 +79,7 @@
   .main-menu__burger {
     display: block !important;
     position: absolute;
-    left: 32px;
+    left: 16px;
     top: 14px;
   }
 

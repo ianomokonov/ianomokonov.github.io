@@ -1,15 +1,26 @@
 @import './adaptive.css';
 
 html {
-  background: repeat-y url(../assets/images/beared_dragon_bg.png) 0 0 / 100%
-    auto;
+ background: none; 
 }
 body,
 .container {
   height: 100vh;
 }
 .container {
+  position: relative;
+  z-index: 1;
   max-width: 70%;
+}
+
+.bg {
+  position: fixed;
+  transition: 1s;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 8972px;
+  background: repeat-y url(../assets/images/raptiles_bg.png) 0 0 / 100% auto;
 }
 
 body {

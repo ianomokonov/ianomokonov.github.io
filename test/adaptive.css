@@ -1,4 +1,4 @@
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .container {
     padding: 0 120px;
   }
@@ -40,16 +40,42 @@
     max-width: 75% !important;
     max-height: 520px;
   }
+
+  .main-menu__menu-item {
+    margin-left: 48px !important;
+    font-size: 18px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+    color: black !important;
+  }
+
+  .main-menu__menu-item:hover {
+    background-color: transparent !important;
+  }
 }
 
-@media (max-width: 1200px) and (min-width: 767px) {
+@media (max-width: 1400px) and (min-width: 768px) {
+  .main-menu {
+    height: 60px !important;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 768px) {
   html {
     background: repeat-y url(../assets/images/test_tablet_bg.png) 0 0 / 100%
       auto !important;
   }
+
+  .page-content {
+    padding: 0 82px;
+    min-height: calc(100% - 60px) !important;
+  }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1400px) {
   .page-content__result-content.d-sm-flex {
     display: flex !important;
   }
@@ -67,7 +93,7 @@
 
   .page-content {
     padding: 0 82px;
-    min-height: calc(100% - 48px);
+    min-height: calc(100% - 60px);
   }
 
   .page-content__learn-more {
@@ -76,7 +102,7 @@
 
   .page-content__img {
     max-width: 100% !important;
-    max-height: 340px;
+    max-height: 250px;
   }
 
   .page-content__description {
@@ -132,9 +158,27 @@
     font-size: 16px !important;
     width: 100px !important;
   }
+}
 
-  .page-content_finished {
-    background: url(../assets/images/test_finish_bg.png) bottom no-repeat;
+@media (max-width: 767px) {
+  .main-menu {
+    max-width: unset !important;
+  }
+  .main-menu__menu-item {
+    background-color: transparent !important;
+    color: white !important;
+  }
+
+  .test__answer:hover {
+    color: black !important;
+  }
+  
+  .test__answer:hover .page-content__page-point {
+    border-color: transparent !important;
+  }
+  
+  .test__answer:hover .page-content__page-point::after {
+    background-color: #bdbcbc !important;
   }
 }
 
@@ -159,5 +203,9 @@
   .page-content__description {
     font-size: 12px !important;
     padding-top: 0 !important;
+  }
+  .page-content_finished {
+    background: no-repeat url(../assets/images/test_finish_bg.png) bottom 0 left
+      0 / 100% auto;
   }
 }

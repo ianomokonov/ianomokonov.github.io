@@ -7,7 +7,7 @@ body {
 
 html {
   background-image: url(../assets/images/test_bg.png);
-  background-size: cover;
+  background-size: 100% auto;
 }
 .container {
   height: 100vh;

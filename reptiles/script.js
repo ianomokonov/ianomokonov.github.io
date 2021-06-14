@@ -1,24 +1,41 @@
 import { reptiles } from './data.js';
 
-const field = document.querySelector('.page-content');
-const pages = document.querySelector('.page-content__page-points');
+let field = document.querySelector('.page-content');
+let pages = document.querySelector('.page-content__page-points');
 let activeIndex = 0;
 let scrolling = false;
-showAll();
+window.document.addEventListener('DOMContentLoaded', function () {
+  // Аналог $(document).ready(function(){
+  field = document.querySelector('.page-content');
+  pages = document.querySelector('.page-content__page-points');
+  showAll();
+  show(0);
+});
 
 function show(index) {
   const reptile = document.getElementById(index);
   const active = document.getElementById(activeIndex);
+  const bg = document.querySelector('.bg');
   removeClasses(reptile);
   removeClasses(active);
+  console.log(window.innerHeight);
   if (activeIndex > index) {
     active.classList.add('page-content_next');
-  } else {
+    bg.style.transform = `translateY(${
+      -index * (window.innerWidth > 768 ? 1080 : 1024)
+    }px)`;
+  } else if (activeIndex < index) {
     active.classList.add('page-content_prev');
+    bg.style.transform = `translateY(${-index * (window.innerWidth > 768 ? 1080 : 1024)}px)`;
   }
   reptile.classList.add('page-content_active');
   activeIndex = index;
   setPages(activeIndex);
+  if (window.innerWidth < 768) {
+    document
+      .querySelector(`.page-content_active`)
+      .scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
 }
 
 function removeClasses(elem) {
@@ -77,7 +94,8 @@ function getHiddenClass(index, activeIndex) {
   return '';
 }
 
-const scroll = ({ deltaY }) => {
+const scroll = (event) => {
+  const { deltaY } = event;
   if (scrolling) {
     return;
   }
@@ -96,14 +114,29 @@ const scroll = ({ deltaY }) => {
   }
 };
 
-// let start = 0;
+let start = 0;
 
-document.addEventListener('wheel', scroll);
-// document.addEventListener('touchstart', (e) => {
-//   start = e.changedTouches[0]?.clientY;
-// });
+document.addEventListener('wheel', scroll, { passive: false });
+document.addEventListener(
+  'touchstart',
+  (e) => {
+    if (!e.target.closest('a, .main-menu__burger')) {
+      e.preventDefault();
+    }
+    start = e.changedTouches[0]?.clientY;
+  },
+  { passive: false }
+);
 
-// document.addEventListener('touchend', (e) => {
-//   const deltaY = start - e.changedTouches[0]?.clientY;
-//   scroll({ deltaY });
-// });
+document.addEventListener(
+  'touchend',
+  (e) => {
+    const deltaY = start - e.changedTouches[0]?.clientY;
+    if (Math.abs(deltaY) > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      scroll({ deltaY });
+    }
+  },
+  { passive: false }
+);

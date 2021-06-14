@@ -6,6 +6,7 @@
 
   .page-content_rowed {
     flex-direction: column;
+    padding-top: 30px;
   }
 
   .page-content__col .page-content__main-img {
@@ -22,25 +23,29 @@
     justify-content: center;
     padding-top: 20px;
   }
+  .page-content .page-content__page-points {
+    display: none;
+  }
 }
 
-@media (max-width: 1200px) and (min-width: 992px) {
-  html {
-    background: repeat-y url(../assets/images/tablet_bg.png) 0 0 / 100% auto !important;
+@media (max-width: 1200px) and (min-width: 768px) {
+  .bg {
+    background: repeat-y url(../assets/images/reptiles_tablet_bg.png) 0 0 / 100% auto !important;
   }
-
   .page-content__col .page-content__main-img {
-    max-height: 600px !important;
+    max-height: 400px !important;
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 767px) {
+  .bg {
+    display: none;
+  }
   .page-content {
     padding: 0 32px;
     justify-content: flex-start !important;
-    padding-top: 30px;
-    overflow-x: scroll !important;
     height: calc(100vh - 48px) !important;
+    overflow: hidden;
   }
 
   .page-content__public-name {
@@ -69,7 +74,9 @@
   }
 
   .page-content_rowed {
+    transition: 0s !important;
     width: calc(100% - 64px) !important;
+    padding-top: 10px;
     position: static !important;
     width: 100% !important;
     opacity: 1 !important;
@@ -85,9 +92,5 @@
 
   .page-content__learn-more {
     align-self: center;
-  }
-
-  .page-content .page-content__page-points {
-    display: none;
   }
 }

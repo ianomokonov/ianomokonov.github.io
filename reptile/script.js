@@ -55,6 +55,9 @@ const scroll = (deltaY) => {
 document.addEventListener(
   'wheel',
   (e) => {
+    if (window.innerHeight < 950) {
+      return;
+    }
     e.preventDefault();
     if (scrolling) {
       return;
@@ -71,7 +74,7 @@ document.addEventListener(
 
 let start = 0;
 
-document.addEventListener('wheel', scroll);
+// document.addEventListener('wheel', scroll);
 // document.addEventListener(
 //   'touchstart',
 //   (e) => {
@@ -103,7 +106,8 @@ const onFoodEnter = ({ target }) => {
     return;
   }
 
-  colored.src = colored.dataset.colored;
+  colored.firstChild.src = colored.dataset.colored;
+  colored.classList.add('fourth-section__food-image_active');
 };
 
 const onFoodLeave = ({ target }) => {
@@ -112,7 +116,8 @@ const onFoodLeave = ({ target }) => {
     return;
   }
 
-  masked.src = masked.dataset.masked;
+  masked.firstChild.src = masked.dataset.masked;
+  masked.classList.remove('fourth-section__food-image_active');
 };
 
 if (reptile) {
@@ -370,14 +375,17 @@ function getDifficultyColor(difficulty) {
 function getFood(types) {
   return types
     .map(
-      (t) => `<img
-    src="${t.maskedImg}"
-    data-colored="${t.coloredImg}"
-    data-masked="${t.maskedImg}"
-    data-label="${t.label}"
-    title="${t.label}"
-    class="fourth-section__food-image"
-  />`
+      (
+        t
+      ) => `<div class="fourth-section__food-image" data-colored="${t.coloredImg}"
+            data-masked="${t.maskedImg}"
+            data-label="${t.label}"><img
+            src="${t.maskedImg}" 
+            />
+            <div style="${t.styles}">
+              ${t.label}
+            </div>
+            </div>`
     )
     .join('');
 }
