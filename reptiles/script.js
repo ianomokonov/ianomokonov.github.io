@@ -31,7 +31,7 @@ function show(index) {
   reptile.classList.add('page-content_active');
   activeIndex = index;
   setPages(activeIndex);
-  if (window.innerWidth < 768) {
+  if (window.innerWidth < 768 && window.innerHeight > 800) {
     document
       .querySelector(`.page-content_active`)
       .scrollIntoView({ block: 'center', behavior: 'smooth' });
