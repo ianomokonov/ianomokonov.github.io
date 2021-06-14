@@ -48,6 +48,10 @@ const scroll = (deltaY) => {
   }
 
   if (shouldScroll) {
+    if (activeIndex == 3) {
+      document.querySelector(`footer`).scrollIntoView();
+      return;
+    }
     document.querySelector(`.section-${activeIndex}`).scrollIntoView();
   }
 };
