@@ -41,11 +41,14 @@
   .bg {
     display: none;
   }
+  body{
+    overflow: auto !important;
+  }
   .page-content {
     padding: 0 32px;
     justify-content: flex-start !important;
     height: calc(100vh - 48px) !important;
-    overflow: hidden;
+    /* overflow: hidden; */
   }
 
   .page-content__public-name {
