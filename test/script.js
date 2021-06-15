@@ -6,6 +6,41 @@ document
     startTest();
   });
 
+window.addEventListener('load', () => {
+  reptiles.forEach((r) => {
+    orderForm.reptileType.innerHTML += `<option>${r.name}</option>`;
+  });
+});
+
+document.querySelector('.make-an-order').addEventListener('click', async () => {
+  const fields = ['name', 'email', 'reptileType', 'productType', 'count'];
+  const formValue = {};
+  let hasError = false;
+  fields.forEach((f) => {
+    formValue[f] = orderForm[f].value;
+    if (!formValue[f]) {
+      hasError = true;
+    }
+  });
+  if (hasError) {
+    alert('Заполните все поля!');
+    return;
+  }
+  let responsee = await fetch(
+    'http://wedding.progoff.ru/reptiland/controller.php?key=add-app',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+      body: JSON.stringify(formValue),
+    }
+  );
+
+  await responsee.json();
+  document.querySelector('.btn-close')?.click();
+});
+
 const field = document.querySelector('.page-content');
 let points = 0;
 let activeId = 0;
@@ -95,17 +130,31 @@ function getResult(points) {
         >Если вам понравился кто-то из питомцев,вы можете заказать
         сувенирную продукцию с его изображением</small
       >
-      <button class="page-content__learn-more">Заказать</button>
+      <button
+                type="button"
+                class="page-content__learn-more"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop"
+              >
+                Заказать
+              </button>
     </div>
   </div>
-  <div class="page-content__result-content d-sm-flex">
+  <div class="page-content__result-content d-sm-flexx">
     <div class="w-50"></div>
     <div class="page-content__description pt-0">
       <small
         >Если вам понравился кто-то из питомцев,вы можете заказать
         сувенирную продукцию с его изображением</small
       >
-      <button class="page-content__learn-more">Заказать</button>
+      <button
+                type="button"
+                class="page-content__learn-more"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop"
+              >
+                Заказать
+              </button>
     </div>
   </div>
   `;

@@ -64,6 +64,9 @@
 }
 
 @media (max-width: 1200px) and (min-width: 768px) {
+  .main-menu {
+    max-width: 540px !important;
+  }
   html {
     background: repeat-y url(../assets/images/test_tablet_bg.png) 0 0 / 100%
       auto !important;
@@ -76,11 +79,11 @@
 }
 
 @media (max-width: 1400px) {
-  .page-content__result-content.d-sm-flex {
+  .page-content__result-content.d-sm-flexx {
     display: flex !important;
   }
-  .page-content__result-content:not(.d-sm-flex) small,
-  .page-content__result-content:not(.d-sm-flex) .page-content__learn-more {
+  .page-content__result-content:not(.d-sm-flexx) small,
+  .page-content__result-content:not(.d-sm-flexx) .page-content__learn-more {
     display: none !important;
   }
   .container {

@@ -4,6 +4,9 @@ html,
 body {
   min-height: 100vh;
 }
+body{
+  background: transparent !important;
+}
 
 html {
   background-image: url(../assets/images/test_bg.png);
@@ -95,6 +98,19 @@ html {
   height: 600px;
 }
 
+.header{
+  margin-bottom: 52px !important;
+}
+
+.form-group{
+  margin-bottom: 1rem;
+}
+
+label{
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
 .test__loading:after {
   content: 'Подбираем рептилию';
   display: block;
@@ -108,7 +124,7 @@ html {
   width: 191px;
   position: absolute;
 }
-.d-sm-flex {
+.d-sm-flexx {
   display: none !important;
 }
 .test__question {
