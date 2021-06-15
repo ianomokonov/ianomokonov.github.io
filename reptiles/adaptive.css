@@ -48,6 +48,9 @@
     top: 0;
     background-color: #fff;
   }
+  .container {
+    padding-top: 60px;
+  }
   
   html {
     background: repeat-y url(../assets/images/reptiles_tablet_bg.png) 0 0 / 100%
