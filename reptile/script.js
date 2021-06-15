@@ -111,7 +111,7 @@ const onFoodEnter = ({ target }) => {
   }
 
   colored.firstChild.src = colored.dataset.colored;
-  colored.classList.add('fourth-section__food-image_active');
+  colored.classList.add('tooltip_active');
 };
 
 const onFoodLeave = ({ target }) => {
@@ -121,7 +121,16 @@ const onFoodLeave = ({ target }) => {
   }
 
   masked.firstChild.src = masked.dataset.masked;
-  masked.classList.remove('fourth-section__food-image_active');
+  masked.classList.remove('tooltip_active');
+};
+
+const toogleTooltip = ({ target }) => {
+  const tooltip = target.closest('.has-tooltip');
+  if (!tooltip) {
+    return;
+  }
+
+  tooltip.classList.toggle('has-tooltip_active');
 };
 
 if (reptile) {
@@ -277,13 +286,22 @@ function setThirdSection(reptile) {
         reptile.fullDescription.difficulty
       )}"
     >
-      <div class="third-section_dificulty-points">
+      <div class="third-section_dificulty-points has-tooltip">
       ${getDifficulty(reptile.fullDescription.difficulty)}
+      <div class="tooltipp">
+              ${getDifficultyTooltip(reptile.fullDescription.difficulty)}
+            </div>
       </div>
       <img src="${reptile.fullDescription.maintenanceImg}" alt="" />
     </div>
   </div>
         `;
+  section
+    .querySelector('.has-tooltip')
+    .addEventListener('mouseenter', toogleTooltip);
+  section
+    .querySelector('.has-tooltip')
+    .addEventListener('mouseleave', toogleTooltip);
 }
 
 function setFourthSection(reptile) {
@@ -356,7 +374,6 @@ function getFoodDescriptions() {
 
 function getDifficulty(difficulty) {
   let result = '';
-  console.log(difficulty);
   for (let i = 0; i < 5; i++) {
     result += `<div class="third-section_dificulty-point ${
       i <= difficulty - 1 ? 'third-section_dificulty-point_filled' : ''
@@ -364,6 +381,21 @@ function getDifficulty(difficulty) {
   }
 
   return result;
+}
+
+function getDifficultyTooltip(difficulty) {
+
+  if(difficulty<3){
+    return `Сложность содержания:<br/><b class="d-block">Простая</b>`;
+  }
+  if(difficulty<4){
+    return `Сложность содержания:<br/><b class="d-block">Средняя</b>`;
+  }
+  if(difficulty<6){
+    return `Сложность содержания:<br/><b class="d-block">Тяжелая</b>`;
+  }
+
+  return `Сложность содержания:<br/><b class="d-block">Не указана</b>`;
 }
 
 function getDifficultyColor(difficulty) {

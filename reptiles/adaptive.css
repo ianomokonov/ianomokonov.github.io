@@ -1,10 +1,19 @@
 @media (max-width: 1200px) {
-  .page-content .page-content__page-points {
-    right: unset;
-    left: calc(100% + 12px);
+  body {
+    overflow: auto !important;
+  }
+  
+  .page-content {
+    display: block !important;
   }
 
   .page-content_rowed {
+    transition: 0s !important;
+    position: static !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    min-height: calc(100vh - 60px);
     flex-direction: column;
     padding-top: 30px;
   }
@@ -26,11 +35,23 @@
   .page-content .page-content__page-points {
     display: none;
   }
+  .bg {
+    display: none;
+  }
 }
 
 @media (max-width: 1200px) and (min-width: 768px) {
-  .bg {
-    background: repeat-y url(../assets/images/reptiles_tablet_bg.png) 0 0 / 100% auto !important;
+  .main-menu {
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    position: fixed !important;
+    top: 0;
+    background-color: #fff;
+  }
+  
+  html {
+    background: repeat-y url(../assets/images/reptiles_tablet_bg.png) 0 0 / 100%
+      auto !important;
   }
   .page-content__col .page-content__main-img {
     max-height: 400px !important;
@@ -38,17 +59,17 @@
 }
 
 @media (max-width: 767px) {
-  .bg {
-    display: none;
+  .container {
+    padding-top: 48px;
   }
-  body{
-    overflow: auto !important;
+  .main-menu {
+    position: fixed !important;
+    top: 0;
   }
   .page-content {
     padding: 0 32px;
     justify-content: flex-start !important;
     height: calc(100vh - 48px) !important;
-    /* overflow: hidden; */
   }
 
   .page-content__public-name {

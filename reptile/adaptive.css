@@ -122,7 +122,7 @@
     margin-bottom: 0px !important;
   }
 
-  .fourth-section {
+  .fourth-section{
     padding-top: 90px !important;
   }
 
@@ -144,7 +144,7 @@
     font-size: 14px !important;
   }
 
-  .fourth-section__description:first-child {
+  .fourth-section__description:first-child{
     padding-top: 30px;
   }
 
@@ -178,44 +178,44 @@
   .fourth-section__food-image:nth-of-type(1) div {
     bottom: 90%;
   }
-
+  
   .fourth-section__food-image:nth-of-type(2) div,
   .fourth-section__food-image:nth-of-type(3) div {
     bottom: 90%;
     left: unset !important;
     right: unset !important;
   }
-
+  
   .fourth-section__food-image:nth-of-type(4) div,
   .fourth-section__food-image:nth-of-type(5) div {
     top: 90%;
     left: unset !important;
     right: unset !important;
   }
-
+  
   .fourth-section__food-image:nth-of-type(6) div,
   .fourth-section__food-image:nth-of-type(7) div {
     top: 90%;
     left: unset !important;
     right: unset !important;
   }
-
+  
   .fourth-section__food-image:nth-of-type(1) div:after {
     top: calc(100% - 1px);
     border-top: 14px solid #fff;
   }
-
+  
   .fourth-section__food-image:nth-of-type(2) div:after,
   .fourth-section__food-image:nth-of-type(3) div:after {
     top: calc(100% - 1px);
     border-top: 14px solid #fff;
-
+    
     left: unset !important;
     border-left-color: transparent !important;
     right: unset !important;
     border-right-color: transparent !important;
   }
-
+  
   .fourth-section__food-image:nth-of-type(4) div:after,
   .fourth-section__food-image:nth-of-type(5) div:after {
     bottom: calc(100% - 1px);
@@ -225,7 +225,7 @@
     right: unset !important;
     border-right-color: transparent !important;
   }
-
+  
   .fourth-section__food-image:nth-of-type(6) div:after,
   .fourth-section__food-image:nth-of-type(7) div:after {
     bottom: calc(100% - 1px);

@@ -43,7 +43,6 @@ body {
 .main-menu .main-menu__menu-items {
   display: flex;
   justify-content: flex-end;
-  margin-right: -16px;
 }
 
 .main-menu .main-menu__menu-items .main-menu__menu-item {

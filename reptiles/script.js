@@ -31,11 +31,6 @@ function show(index) {
   reptile.classList.add('page-content_active');
   activeIndex = index;
   setPages(activeIndex);
-  // if (window.innerWidth < 768 && window.innerHeight > 800) {
-  //   document
-  //     .querySelector(`.page-content_active`)
-  //     .scrollIntoView({ block: 'center', behavior: 'smooth' });
-  // }
 }
 
 function removeClasses(elem) {
@@ -114,29 +109,4 @@ const scroll = (event) => {
   }
 };
 
-let start = 0;
-
 document.addEventListener('wheel', scroll, { passive: false });
-// document.addEventListener(
-//   'touchstart',
-//   (e) => {
-//     if (!e.target.closest('a, .main-menu__burger')) {
-//       e.preventDefault();
-//     }
-//     start = e.changedTouches[0]?.clientY;
-//   },
-//   { passive: false }
-// );
-
-// document.addEventListener(
-//   'touchend',
-//   (e) => {
-//     const deltaY = start - e.changedTouches[0]?.clientY;
-//     if (Math.abs(deltaY) > 0) {
-//       e.preventDefault();
-//       e.stopPropagation();
-//       scroll({ deltaY });
-//     }
-//   },
-//   { passive: false }
-// );
