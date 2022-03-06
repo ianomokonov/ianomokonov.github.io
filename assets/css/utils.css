@@ -22,12 +22,20 @@ body {
     display: flex;
 }
 
+.d-none {
+    display: none !important;
+}
+
 .h-100 {
     height: 100%;
 }
 
 .p-1 {
     padding: 0.25rem;
+}
+
+.p-3 {
+    padding: 1rem;
 }
 
 .pl-1 {

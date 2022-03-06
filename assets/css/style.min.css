@@ -340,6 +340,7 @@ template {
 html {
   font-size: 62.5%;
   font-family: "Roboto";
+  height: 100%;
 }
 
 * {
@@ -349,6 +350,7 @@ html {
 body {
   font-size: 1.6rem;
   overflow: hidden;
+  height: 100%;
 }
 
 .container {
@@ -651,7 +653,7 @@ body {
 }
 
 .main {
-  height: 100vh;
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr 5rem;
