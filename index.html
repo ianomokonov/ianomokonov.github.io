@@ -2,30 +2,247 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="stylesheet" href="assets/css/style.min.css" />
+    
+    <!-- Useful meta tags -->
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="google" content="notranslate" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,900&display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="main-styles.css" />
+    <script
+      src="https://kit.fontawesome.com/af25d668df.js"
+      crossorigin
+    ></script>
+    <!-- <meta name="format-detection" content="telephone=no" /> -->
+    <!-- <meta name="description" content="" /> -->
+    
+    <title>Home</title>
   </head>
   <body>
-    <div class="container">
-      <div class="page-content">
-        <h1 class="main-header main-header_centered">
-          Самые популярные домашние<br />рептилии для вашего дома
-        </h1>
-        <p class="header-md">Первая рептилия: какую выбрать и как ухаживать</p>
+    <div class="main container">
+      <div class="main__header"><header class="header">
+  <div class="header__logo">Picturim</div>
+  <div class="header__actions">
+    <div class="header__action"><i class="fas fa-comment-dots"></i></div>
+  </div>
+</header>
+</div>
+      <div class="main__body">
+
+<div class="photo-list">
+  <div class="photo-list__item photo">
+    <div class="photo__header">
+      <div class="photo__author author">
+        <img class="author__ava" src="../assets/images/ava.jpg" alt="" />
+        <span class="author__name">vanika_koma</span>
+      </div>
+
+      <div class="photo__menu"><i class="fas fa-ellipsis-v"></i></div>
+    </div>
+    <img class="photo__content" src="../assets/images/photo.jpg" alt="" />
+    <div class="photo__body">
+      <div class="photo__actions">
+        <i class="far fa-heart"></i>
+        <i class="fas fa-share"></i>
+      </div>
+      <div class="photo__likes">Нравится: 1200</div>
+      <div class="photo__comments">
+        <div class="comment comment_first">
+          <div class="comment__author-photo">
+            <div style="background-image: url(../assets/images/ava.jpg)"></div>
+          </div>
+          <div class="comment__content">
+            <span class="comment__author-name">vanika_koma</span>
+            <span class="comment__text"
+              >Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero
+              facere quam exercitationem illum dolorum temporibus blanditiis
+              molestias maiores aliquid unde. Incidunt inventore eligendi, culpa
+              ea, amet in id similique fugit nostrum perspiciatis at odit quos
+              eius blanditiis consequatur voluptatibus architecto accusamus hic
+              aspernatur? Beatae, voluptas recusandae. Eius quisquam assumenda
+              itaque adipisci quaerat quas sed corrupti! Molestiae fugiat
+              mollitia amet ipsum velit nihil ab pla...</span
+            >
+            <small class="comment__more">ещё</small>
+            <div class="comment__stats">
+              <small class="comment__create-duration">1д.</small>
+              <small class="comment__likes">Нравится: 125</small>
+              <small class="comment__replay">Ответить</small>
+            </div>
+          </div>
+          <div class="comment__actions">
+            <i class="far fa-heart"></i>
+          </div>
+        </div>
       </div>
     </div>
-    <script src="/menu.js"></script>
+  </div>
+  <div class="photo-list__item photo">
+    <div class="photo__header">
+      <div class="photo__author author">
+        <img class="author__ava" src="../assets/images/ava.jpg" alt="" />
+        <span class="author__name">vanika_koma</span>
+      </div>
+
+      <div class="photo__menu"><i class="fas fa-ellipsis-v"></i></div>
+    </div>
+    <img class="photo__content" src="../assets/images/photo1.jpg" alt="" />
+    <div class="photo__body">
+      <div class="photo__actions">
+        <i class="far fa-heart"></i>
+        <i class="fas fa-share"></i>
+      </div>
+      <div class="photo__likes">Нравится: 1200</div>
+      <div class="photo__comments">
+        <div class="comment comment_first">
+          <div class="comment__author-photo">
+            <div style="background-image: url(../assets/images/ava.jpg)"></div>
+          </div>
+          <div class="comment__content">
+            <span class="comment__author-name">vanika_koma</span>
+            <span class="comment__text"
+              >Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero
+              facere quam exercitationem illum dolorum temporibus blanditiis
+              molestias maiores aliquid unde. Incidunt inventore eligendi, culpa
+              ea, amet in id similique fugit nostrum perspiciatis at odit quos
+              eius blanditiis consequatur voluptatibus architecto accusamus hic
+              aspernatur? Beatae, voluptas recusandae. Eius quisquam assumenda
+              itaque adipisci quaerat quas sed corrupti! Molestiae fugiat
+              mollitia amet ipsum velit nihil ab pla...</span
+            >
+            <small class="comment__more">ещё</small>
+            <a href="./comments.html" class="comment__show-all"
+              >Посмотреть все комментарии</a
+            >
+            <div class="comment__stats">
+              <small class="comment__create-duration">1д.</small>
+              <small class="comment__likes">Нравится: 125</small>
+              <small class="comment__replay">Ответить</small>
+            </div>
+          </div>
+          <div class="comment__actions">
+            <i class="far fa-heart"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="photo-list__item photo">
+    <div class="photo__header">
+      <div class="photo__author author">
+        <img class="author__ava" src="../assets/images/ava.jpg" alt="" />
+        <span class="author__name">vanika_koma</span>
+      </div>
+
+      <div class="photo__menu"><i class="fas fa-ellipsis-v"></i></div>
+    </div>
+    <img class="photo__content" src="../assets/images/photo2.jpg" alt="" />
+    <div class="photo__body">
+      <div class="photo__actions">
+        <i class="far fa-heart"></i>
+        <i class="fas fa-share"></i>
+      </div>
+      <div class="photo__likes">Нравится: 1200</div>
+      <div class="photo__comments">
+        <div class="comment comment_first">
+          <div class="comment__author-photo">
+            <div style="background-image: url(../assets/images/ava.jpg)"></div>
+          </div>
+          <div class="comment__content">
+            <span class="comment__author-name">vanika_koma</span>
+            <span class="comment__text"
+              >Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero
+              facere quam exercitationem illum dolorum temporibus blanditiis
+              molestias maiores aliquid unde. Incidunt inventore eligendi, culpa
+              ea, amet in id similique fugit nostrum perspiciatis at odit quos
+              eius blanditiis consequatur voluptatibus architecto accusamus hic
+              aspernatur? Beatae, voluptas recusandae. Eius quisquam assumenda
+              itaque adipisci quaerat quas sed corrupti! Molestiae fugiat
+              mollitia amet ipsum velit nihil ab pla...</span
+            >
+            <small class="comment__more">ещё</small>
+            <div class="comment__stats">
+              <small class="comment__create-duration">1д.</small>
+              <small class="comment__likes">Нравится: 125</small>
+              <small class="comment__replay">Ответить</small>
+            </div>
+          </div>
+          <div class="comment__actions">
+            <i class="far fa-heart"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="photo-list__item photo">
+    <div class="photo__header">
+      <div class="photo__author author">
+        <img class="author__ava" src="../assets/images/ava.jpg" alt="" />
+        <span class="author__name">vanika_koma</span>
+      </div>
+
+      <div class="photo__menu"><i class="fas fa-ellipsis-v"></i></div>
+    </div>
+    <img class="photo__content" src="../assets/images/photo3.jpg" alt="" />
+    <div class="photo__body">
+      <div class="photo__actions">
+        <i class="far fa-heart"></i>
+        <i class="fas fa-share"></i>
+      </div>
+      <div class="photo__likes">Нравится: 1200</div>
+      <div class="photo__comments">
+        <div class="comment comment_first">
+          <div class="comment__author-photo">
+            <div style="background-image: url(../assets/images/ava.jpg)"></div>
+          </div>
+          <div class="comment__content">
+            <span class="comment__author-name">vanika_koma</span>
+            <span class="comment__text"
+              >Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero
+              facere quam exercitationem illum dolorum temporibus blanditiis
+              molestias maiores aliquid unde. Incidunt inventore eligendi, culpa
+              ea, amet in id similique fugit nostrum perspiciatis at odit quos
+              eius blanditiis consequatur voluptatibus architecto accusamus hic
+              aspernatur? Beatae, voluptas recusandae. Eius quisquam assumenda
+              itaque adipisci quaerat quas sed corrupti! Molestiae fugiat
+              mollitia amet ipsum velit nihil ab pla...</span
+            >
+            <small class="comment__more">ещё</small>
+            <div class="comment__stats">
+              <small class="comment__create-duration">1д.</small>
+              <small class="comment__likes">Нравится: 125</small>
+              <small class="comment__replay">Ответить</small>
+            </div>
+          </div>
+          <div class="comment__actions">
+            <i class="far fa-heart"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+      <div class="main__footer"><footer class="main-menu">
+  <a href="./index.html" class="main-menu__item"><i class="fas fa-home"></i></a>
+  <a href="./search.html" class="main-menu__item"><i class="fas fa-search"></i></a>
+  <div class="main-menu__item"><i class="fas fa-plus"></i></div>
+  <a href="./actions.html" class="main-menu__item"><i class="far fa-heart"></i></a>
+  <a href="./profile.html" class="main-menu__item"><i class="far fa-user"></i></a>
+</footer>
+</div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
   </body>
 </html>
