@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Планировщик расходов и долгов</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="css/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- ===================== ОНБОРДИНГ ===================== -->
+      <div id="onboarding" class="d-none">
+        <div class="container py-4" style="max-width: 800px">
+          <div class="text-center mb-4">
+            <h1 class="h2">
+              <i class="bi bi-wallet2 me-2 text-primary"></i>Планировщик расходов и долгов
+            </h1>
+            <p class="text-muted mb-0">Настроим бюджет и долги — это займёт минуту.</p>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div id="onboarding-alert"></div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="onboarding-income" class="form-label">
+                    Доход за месяц, ₽ <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="onboarding-income"
+                    class="form-control"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="Например: 120000"
+                  />
+                  <div class="invalid-feedback">Доход должен быть больше нуля</div>
+                </div>
+                <div class="col-md-6">
+                  <label for="onboarding-living" class="form-label">Расход на жизнь, ₽</label>
+                  <input
+                    type="number"
+                    id="onboarding-living"
+                    class="form-control"
+                    min="0"
+                    step="0.01"
+                    placeholder="Например: 40000"
+                  />
+                  <div class="invalid-feedback">Расход на жизнь не может быть отрицательным</div>
+                </div>
+              </div>
+
+              <hr class="my-4" />
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0">Долги</h2>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="onboarding-add-debt">
+                  <i class="bi bi-plus-lg me-1"></i>Добавить долг
+                </button>
+              </div>
+
+              <div id="onboarding-debts"></div>
+
+              <div class="d-grid mt-4">
+                <button type="button" class="btn btn-primary btn-lg" id="onboarding-save">
+                  <i class="bi bi-check-lg me-1"></i>Сохранить и начать
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== ДАШБОРД ===================== -->
+      <div id="dashboard" class="d-none"></div>
+
+      <!-- ===================== ПОВРЕЖДЁННЫЕ ДАННЫЕ ===================== -->
+      <div id="corrupt" class="d-none">
+        <div class="container py-5" style="max-width: 560px">
+          <div class="card shadow-sm text-center">
+            <div class="card-body py-5">
+              <i class="bi bi-exclamation-triangle text-warning display-4"></i>
+              <h1 class="h4 mt-2">Конфигурация повреждена</h1>
+              <p class="text-muted" id="corrupt-reason"></p>
+              <button type="button" class="btn btn-danger" id="corrupt-reset-btn">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Сбросить и начать заново
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== МОДАЛКА ДОЛГА ===================== -->
+    <div class="modal fade" id="debtModal" tabindex="-1" aria-labelledby="debtModalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="debtModalTitle">Добавить долг</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body" id="debtModalBody"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button type="button" class="btn btn-primary" id="debtModalSave">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== МОДАЛКА СБРОСА ===================== -->
+    <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="resetModalTitle">Сбросить конфигурацию?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            Все данные (доход, расход на жизнь и список долгов) будут удалены. Вы вернётесь
+            к онбордингу. Это действие нельзя отменить.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button type="button" class="btn btn-danger" id="reset-confirm-btn">
+              <i class="bi bi-trash me-1"></i>Сбросить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/finance.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

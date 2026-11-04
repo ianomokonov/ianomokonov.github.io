@@ -1,0 +1,42 @@
+/* styles.css — общие стили приложения */
+
+:root {
+  --app-bg: #f4f6f9;
+}
+
+body {
+  background-color: var(--app-bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Крупные числа в итоговом блоке */
+.summary-number {
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Чтобы длинное название долга не ломало список */
+.min-width-0 {
+  min-width: 0;
+}
+
+.debt-config-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Аккуратный фокус на полях */
+#onboarding .form-control:focus,
+#dashboard .form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+}
