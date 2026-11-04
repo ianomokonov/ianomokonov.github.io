@@ -44,11 +44,16 @@ function getTodayKey() {
 }
 
 /**
- * Ключ даты «вчера».
+ * Ключ даты «предыдущий рабочий день».
+ * Для понедельника это пятница; для субботы и воскресенья — тоже пятница.
  */
-function getYesterdayKey() {
+function getPreviousWorkingDayKey() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
+  // Отматываем назад, пока не попадём на будний день (пн–пт)
+  while (d.getDay() === 0 || d.getDay() === 6) {
+    d.setDate(d.getDate() - 1);
+  }
   return dateKey(d);
 }
 
@@ -89,7 +94,8 @@ function extractIssueKey(url) {
  * ============================================================ */
 
 /**
- * Загружает задачи из localStorage и удаляет устаревшие (старше вчерашнего дня).
+ * Загружает задачи из localStorage и удаляет устаревшие.
+ * Остаются только задачи за сегодня и за предыдущий рабочий день.
  * Сравнение идёт по календарной дате, а не по точному времени.
  */
 function loadTasks() {
@@ -104,12 +110,14 @@ function loadTasks() {
     console.error('Ошибка чтения localStorage:', err);
   }
 
-  const yesterdayKey = getYesterdayKey();
+  const todayKey = getTodayKey();
+  const prevWorkingDayKey = getPreviousWorkingDayKey();
 
-  // Оставляем только задачи за сегодня и вчера
+  // Оставляем только задачи за сегодня и за предыдущий рабочий день
   const cleaned = loaded.filter((task) => {
     if (!task || !task.createdAt) return false;
-    return dateKey(new Date(task.createdAt)) >= yesterdayKey; // строковое сравнение YYYY-MM-DD
+    const key = dateKey(new Date(task.createdAt));
+    return key === todayKey || key === prevWorkingDayKey;
   });
 
   tasks = cleaned;
@@ -337,10 +345,10 @@ function render() {
 
   const groups = groupByDate(tasks);
   const todayKey = getTodayKey();
-  const yesterdayKey = getYesterdayKey();
+  const prevWorkingDayKey = getPreviousWorkingDayKey();
 
   const todayTasks = groups[todayKey] || [];
-  const yesterdayTasks = groups[yesterdayKey] || [];
+  const yesterdayTasks = groups[prevWorkingDayKey] || [];
 
   // Порядок: сверху «Вчера», ниже «Сегодня»
   container.innerHTML =
@@ -350,7 +358,7 @@ function render() {
       list: yesterdayTasks,
       collapseId: 'collapse-yesterday',
       isOpen: false, // вчера по умолчанию закрыт
-      dateLabel: formatDateLabel(yesterdayKey)
+      dateLabel: formatDateLabel(prevWorkingDayKey)
     }) +
     renderGroup({
       title: 'Сегодня',
