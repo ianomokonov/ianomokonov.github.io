@@ -1,0 +1,280 @@
+/* ==========================================================================
+   Daily Tasks Tracker — стили
+   Цветовая схема заимствована из проекта todo-list
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f2f3f7;
+  --surface: #ffffff;
+  --surface-hover: #f5f6fa;
+  --text: #1c1f26;
+  --text-muted: #8b919e;
+  --border: #e5e8ef;
+
+  --primary: #4f6bf0;
+  --primary-hover: #3d57d8;
+  --primary-soft: rgba(79, 107, 240, 0.14);
+
+  --danger: #e5484d;
+  --danger-soft: rgba(229, 72, 77, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.10);
+  --shadow-lg: 0 20px 48px rgba(16, 24, 40, 0.24);
+
+  --radius-sm: 9px;
+  --radius: 14px;
+  --radius-lg: 16px;
+
+  --focus-ring: 0 0 0 3px var(--primary-soft);
+  --transition: 0.2s ease;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Переопределяем текстовые утилиты Bootstrap под палитру */
+.text-primary { color: var(--primary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-danger { color: var(--danger) !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app { max-width: 720px; margin: 0 auto; padding: 28px 16px 64px; }
+
+/* ============================== Шапка ============================== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.app-title { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+.app-title .bi { color: var(--primary); }
+.app-subtitle { margin: 2px 0 0; font-size: 13px; color: var(--text-muted); }
+
+/* ============================== Кнопки ============================== */
+.btn { font-weight: 600; }
+.btn:focus-visible { box-shadow: var(--focus-ring); }
+
+.btn-primary {
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-bg: var(--primary-hover);
+  --bs-btn-hover-border-color: var(--primary-hover);
+  --bs-btn-active-bg: var(--primary-hover);
+  --bs-btn-active-border-color: var(--primary-hover);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-focus-shadow-rgb: 79, 107, 240;
+}
+
+.btn-ghost {
+  --bs-btn-color: var(--text);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: var(--border);
+  --bs-btn-hover-color: var(--text);
+  --bs-btn-hover-bg: var(--surface-hover);
+  --bs-btn-hover-border-color: var(--border);
+  --bs-btn-active-color: var(--text);
+  --bs-btn-active-bg: var(--surface-hover);
+  --bs-btn-active-border-color: var(--border);
+  --bs-btn-focus-shadow-rgb: 28, 31, 38;
+}
+
+/* ============================== Формы ============================== */
+.form-label { font-weight: 500; }
+.form-control,
+.form-select {
+  border-color: var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  color: var(--text);
+  box-shadow: var(--focus-ring);
+}
+.form-control::placeholder { color: var(--text-muted); }
+
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+  border-color: var(--danger);
+}
+.form-control.is-invalid:focus,
+.was-validated .form-control:invalid:focus {
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+.invalid-feedback { color: var(--danger); }
+
+/* ============================== Секции-аккордеоны (Сегодня / Вчера) ============================== */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition);
+}
+.section-header:hover { background: var(--surface-hover); }
+.section-header:focus-visible { outline: none; box-shadow: inset 0 0 0 3px var(--primary-soft); }
+.section-title { font-size: 15px; font-weight: 600; }
+.section-count {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+.section-date { font-size: 13px; color: var(--text-muted); }
+.chevron {
+  margin-left: auto;
+  display: inline-flex;
+  color: var(--text-muted);
+  transition: transform var(--transition);
+}
+.section-header:not(.collapsed) .chevron { transform: rotate(180deg); }
+
+/* ============================== Список задач ============================== */
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.task { padding: 12px 16px; transition: background var(--transition); }
+.task + .task { border-top: 1px solid var(--border); }
+.task:hover { background: var(--surface-hover); }
+
+.task-row { display: flex; align-items: flex-start; gap: 12px; }
+.task-title-cell {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+.task-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.task-title:hover { color: var(--primary); }
+.task-title .bi { font-size: 13px; color: var(--text-muted); margin-left: 4px; }
+.task-issue {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.task-actions { display: flex; align-items: center; gap: 2px; flex: none; }
+
+.icon-btn {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.icon-btn:hover { background: var(--primary-soft); color: var(--primary); }
+.icon-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.icon-btn-danger:hover { background: var(--danger-soft); color: var(--danger); }
+
+/* Индикатор комментария подсвечивается, когда раскрыт */
+.icon-btn.comment-toggle[aria-expanded="true"] { background: var(--primary-soft); color: var(--primary); }
+
+.comment-body {
+  background: var(--surface-hover);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ============================== Inline-редактирование ============================== */
+.edit-form {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-top: 10px;
+}
+
+/* ============================== Пустое состояние ============================== */
+.empty { text-align: center; padding: 56px 20px; color: var(--text-muted); }
+.empty-icon { display: block; font-size: 44px; margin-bottom: 12px; opacity: 0.85; }
+.empty-text { margin: 0; font-size: 15px; }
+
+/* ============================== Модальное окно ============================== */
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.modal-header { border-bottom: 1px solid var(--border); padding: 20px 20px 12px; }
+.modal-title { font-weight: 700; }
+.modal-body { padding: 12px 20px 8px; }
+.modal-footer { border-top: 1px solid var(--border); padding: 16px 20px; }
+
+/* ============================== Адаптивность ============================== */
+@media (max-width: 480px) {
+  .app { padding: 20px 12px 48px; }
+  .app-title { font-size: 21px; }
+  .app-header { flex-wrap: wrap; }
+  .section-date { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
