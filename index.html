@@ -1,14 +1,146 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>quiz</title>
-    <script type="module" crossorigin src="/assets/index-DrY9IeVN.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CtpkBHlu.css">
+    <title>Мои проекты</title>
+    <style>
+      :root {
+        --bg: #f4f6f9;
+        --card: #ffffff;
+        --card-hover: #eef2ff;
+        --border: #e3e8ef;
+        --text: #1a1d26;
+        --muted: #6b7280;
+        --accent: #4f6ef7;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 48px 24px;
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      header {
+        margin-bottom: 40px;
+      }
+
+      h1 {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 15px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      a.card {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        transition: transform 0.15s ease, background 0.15s ease,
+          border-color 0.15s ease;
+      }
+
+      a.card:hover {
+        background: var(--card-hover);
+        border-color: var(--accent);
+        transform: translateY(-3px);
+      }
+
+      .card .arrow {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .card .name {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .card .path {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+        color: var(--muted);
+        word-break: break-all;
+      }
+
+      footer {
+        margin-top: 40px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div class="wrap">
+      <header>
+        <h1>Мои проекты</h1>
+      </header>
+
+      <div class="grid" id="projects">
+        <!-- Проекты подставляются скриптом ниже -->
+      </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // Список проектов. Каждый элемент — одна папка-проект.
+      //   path  — ссылка вида "/название-папки" (или "/название-папки/index.html")
+      //   name  — отображаемое название
+      // ============================================================
+      const projects = [
+        { path: "./todo-list/index.html", name: "Todo List" },
+        // { path: "/мой-новый-проект", name: "Новый проект" },
+      ];
+
+      const grid = document.getElementById("projects");
+
+      projects.forEach((p) => {
+        const a = document.createElement("a");
+        a.className = "card";
+        a.href = p.path;
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = p.name;
+
+        const path = document.createElement("div");
+        path.className = "path";
+        path.textContent = p.path;
+
+        a.appendChild(name);
+        a.appendChild(path);
+        grid.appendChild(a);
+      });
+    </script>
   </body>
 </html>

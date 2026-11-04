@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Список дел</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Шапка: заголовок, счётчик и переключатель темы -->
+    <header class="app-header">
+      <div class="app-heading">
+        <h1 class="app-title">Список дел</h1>
+        <span class="remaining" id="remaining" aria-live="polite">Осталось 0</span>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
+        <!-- Луна (видна в светлой теме) -->
+        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <!-- Солнце (видно в тёмной теме) -->
+        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+    </header>
+
+    <!-- Добавление новой задачи -->
+    <form class="add-form" id="addForm">
+      <div class="add-row">
+        <textarea id="newTask" class="add-input" rows="1" placeholder="Что нужно сделать?" aria-label="Новая задача"></textarea>
+        <button type="submit" class="add-btn">Добавить</button>
+      </div>
+    </form>
+
+    <!-- Список дел (рендерится из JS) -->
+    <main class="task-list" id="taskList"></main>
+  </div>
+
+  <!-- Модальное окно переноса незавершённых дел -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 class="modal-title" id="modalTitle">Есть незавершённые дела за прошлые дни</h2>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="modalKeep">Оставить как есть</button>
+        <button type="button" class="btn btn-primary" id="modalMove">Перенести выбранные на сегодня</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
