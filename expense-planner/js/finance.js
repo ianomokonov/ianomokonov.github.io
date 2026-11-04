@@ -13,6 +13,7 @@
  * @property {number} balance        — текущий остаток долга, ₽
  * @property {number} annualRate     — годовая ставка, %
  * @property {number=} termMonths    — срок в месяцах; undefined = бессрочный долг
+ * @property {number=} paymentDay    — день месяца платежа (1–31), по умолчанию 1
  */
 
 /**
@@ -77,6 +78,25 @@ function requiredMonthlyPayment(debt) {
 }
 
 /**
+ * Обязательный платёж по долгу на текущий момент.
+ *
+ * Для срочного долга аннуитет фиксируется от исходного остатка (досрочное
+ * погашение сокращает срок, а не сумму платежа). Для бессрочного долга
+ * обязательный платёж — проценты от текущего остатка.
+ *
+ * @param {Debt} debt          Исходный долг (balance — остаток на дату создания).
+ * @param {number} currentBalance Текущий остаток долга.
+ * @returns {number}
+ */
+function requiredPaymentForDebt(debt, currentBalance) {
+  if (!debt) return 0;
+  if (debt.termMonths != null && debt.termMonths > 0) {
+    return monthlyAnnuityPayment(debt.balance, debt.annualRate, debt.termMonths);
+  }
+  return monthlyInterest(currentBalance, debt.annualRate);
+}
+
+/**
  * Прибавить месяцы к дате с корректной обработкой конца месяца
  * (например, 31 января + 1 месяц = 28/29 февраля).
  * @param {Date} date
@@ -94,7 +114,7 @@ function addMonths(date, months) {
 }
 
 /**
- * Помесячная симуляция погашения долга.
+ * Помесячная симуляция погашения отдельного долга.
  *
  * Каждый месяц: начисление процентов → вычитание обязательного платежа →
  * вычитание дополнительной (досрочной) суммы.
@@ -189,4 +209,341 @@ function recommendPrepayment(debts, freeMoney) {
   }
 
   return result;
+}
+
+// ============================================================================
+// Помесячный план погашения всех долгов (график платежей)
+// ============================================================================
+
+/**
+ * Абсолютный индекс месяца (год и месяц в одной величине).
+ * @param {number} year
+ * @param {number} month 0-based (0 = январь).
+ * @returns {number}
+ */
+function monthIndex(year, month) {
+  return year * 12 + month;
+}
+
+/**
+ * Количество дней в месяце.
+ * @param {number} year
+ * @param {number} month 0-based.
+ * @returns {number}
+ */
+function daysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+/**
+ * Месяц первого платежа по долгу: ближайший день `paymentDay`, который
+ * наступает не раньше даты создания конфигурации.
+ * @param {Date} createdAt
+ * @param {number} [paymentDay]
+ * @returns {number} Абсолютный индекс месяца (см. monthIndex).
+ */
+function firstPaymentMonthIndex(createdAt, paymentDay) {
+  const day = paymentDay != null && paymentDay >= 1 ? Math.min(Math.floor(paymentDay), 31) : 1;
+  let y = createdAt.getFullYear();
+  let m = createdAt.getMonth();
+  const clamped = Math.min(day, daysInMonth(y, m));
+  const candidate = new Date(y, m, clamped);
+  if (candidate < createdAt) {
+    m += 1;
+    if (m === 12) {
+      m = 0;
+      y += 1;
+    }
+  }
+  return monthIndex(y, m);
+}
+
+/**
+ * Подпись месяца вида «11.2026».
+ * @param {number} year
+ * @param {number} month 0-based.
+ * @returns {string}
+ */
+function formatMonthLabel(year, month) {
+  return String(month + 1).padStart(2, '0') + '.' + year;
+}
+
+/**
+ * Разобрать локальную дату формата 'YYYY-MM-DD'.
+ * @param {string} key
+ * @returns {Date|null}
+ */
+function parseLocalDate(key) {
+  if (!key || typeof key !== 'string') return null;
+  const parts = key.split('-');
+  if (parts.length !== 3) return null;
+  const y = Number(parts[0]);
+  const m = Number(parts[1]);
+  const d = Number(parts[2]);
+  if (!isFinite(y) || !isFinite(m) || !isFinite(d)) return null;
+  if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+  return new Date(y, m - 1, d);
+}
+
+/**
+ * Локальная дата в формате 'YYYY-MM-DD'.
+ * @param {Date} date
+ * @returns {string}
+ */
+function localDateKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + d;
+}
+
+/**
+ * Низкоуровневая помесячная симуляция погашения всех долгов.
+ *
+ * Каждый месяц: по каждому активному долгу начисляются проценты и вычитается
+ * обязательный платёж (аннуитет для срочных, только проценты для бессрочных);
+ * затем свободные деньги распределяются на досрочное погашение методом
+ * «лавина» (если applyPrepayment = true).
+ *
+ * @param {Array<Debt & {firstPaymentIndex:number}>} debts
+ * @param {number} monthlyIncome
+ * @param {number} livingExpenses
+ * @param {number} fromIndex Абсолютный индекс первого месяца.
+ * @param {number} toIndex   Абсолютный индекс последнего месяца.
+ * @param {boolean} applyPrepayment
+ * @returns {{
+ *   rows: Array<Object>,
+ *   balancesBefore: Object<string, Object<string, number>>,
+ *   payoff: Object<string, Object>
+ * }}
+ */
+function simulateRepaymentPlan(debts, monthlyIncome, livingExpenses, fromIndex, toIndex, applyPrepayment) {
+  const states = debts.map(function (debt) {
+    return {
+      debt: debt,
+      remaining: roundMoney(debt.balance),
+      open: true,
+      interestPaid: 0,
+      closedAtIndex: null,
+      annuity:
+        debt.termMonths != null && debt.termMonths > 0
+          ? monthlyAnnuityPayment(debt.balance, debt.annualRate, debt.termMonths)
+          : 0,
+    };
+  });
+
+  const rows = [];
+  const balancesBefore = {};
+
+  for (let idx = fromIndex; idx <= toIndex; idx++) {
+    // Снимок остатков до платежей текущего месяца.
+    const snapshot = {};
+    states.forEach(function (s) {
+      snapshot[s.debt.id] = s.remaining;
+    });
+    balancesBefore[idx] = snapshot;
+
+    const year = Math.floor(idx / 12);
+    const month = idx % 12;
+
+    const active = states.filter(function (s) {
+      return s.open && idx >= s.debt.firstPaymentIndex;
+    });
+
+    const detail = active.map(function (s) {
+      const r = s.debt.annualRate / 100 / 12;
+      const interest = roundMoney(s.remaining * r);
+      s.interestPaid = roundMoney(s.interestPaid + interest);
+      const afterInterest = roundMoney(s.remaining + interest);
+      const required = Math.min(s.annuity > 0 ? s.annuity : interest, afterInterest);
+      const afterRequired = roundMoney(afterInterest - required);
+      return { state: s, required: required, afterRequired: afterRequired };
+    });
+
+    const totalRequired = roundMoney(
+      detail.reduce(function (sum, d) {
+        return sum + d.required;
+      }, 0)
+    );
+    const freeMoney = roundMoney(monthlyIncome - livingExpenses - totalRequired);
+
+    const prepayments = {};
+    let totalPrepayment = 0;
+    if (applyPrepayment && freeMoney > 0) {
+      let remainingFree = freeMoney;
+      const sorted = detail.slice().sort(function (a, b) {
+        return b.state.debt.annualRate - a.state.debt.annualRate;
+      });
+      for (const d of sorted) {
+        if (remainingFree <= 0) break;
+        const amount = Math.min(d.afterRequired, remainingFree);
+        if (amount > 0) {
+          prepayments[d.state.debt.id] = roundMoney(amount);
+          remainingFree = roundMoney(remainingFree - amount);
+        }
+      }
+      totalPrepayment = roundMoney(freeMoney - remainingFree);
+    }
+
+    detail.forEach(function (d) {
+      const prepay = prepayments[d.state.debt.id] || 0;
+      let remaining = roundMoney(d.afterRequired - prepay);
+      if (remaining <= 0.005) remaining = 0;
+      d.state.remaining = remaining;
+      if (remaining === 0 && d.state.open) {
+        d.state.open = false;
+        d.state.closedAtIndex = idx;
+      }
+    });
+
+    const totalRemaining = roundMoney(
+      states.reduce(function (sum, s) {
+        return sum + s.remaining;
+      }, 0)
+    );
+
+    rows.push({
+      index: idx,
+      year: year,
+      month: month,
+      label: formatMonthLabel(year, month),
+      totalPayment: roundMoney(totalRequired + totalPrepayment),
+      totalRemaining: totalRemaining,
+      debts: detail.map(function (d) {
+        return {
+          debtId: d.state.debt.id,
+          name: d.state.debt.name,
+          required: d.required,
+          prepayment: prepayments[d.state.debt.id] || 0,
+          remaining: d.state.remaining,
+          closed: d.state.closedAtIndex === idx,
+        };
+      }),
+    });
+  }
+
+  const payoff = {};
+  states.forEach(function (s) {
+    if (s.closedAtIndex != null) {
+      const y = Math.floor(s.closedAtIndex / 12);
+      const m = s.closedAtIndex % 12;
+      payoff[s.debt.id] = {
+        isInfinite: false,
+        closedAtIndex: s.closedAtIndex,
+        payoffLabel: formatMonthLabel(y, m),
+        totalInterest: s.interestPaid,
+      };
+    } else {
+      payoff[s.debt.id] = {
+        isInfinite: true,
+        totalInterest: s.interestPaid,
+      };
+    }
+  });
+
+  return { rows: rows, balancesBefore: balancesBefore, payoff: payoff };
+}
+
+/**
+ * Привести payoff к единому виду: добавить количество месяцев «от текущего
+ * месяца» и общую длительность погашения (от месяца создания конфигурации).
+ *
+ * @param {Object<string, Object>} payoff
+ * @param {number} startIndex   Абсолютный индекс месяца создания конфигурации.
+ * @param {number} currentIndex Абсолютный индекс текущего месяца.
+ * @returns {Object<string, Object>}
+ */
+function normalizePayoff(payoff, startIndex, currentIndex) {
+  const out = {};
+  Object.keys(payoff).forEach(function (id) {
+    const p = payoff[id];
+    if (p.isInfinite) {
+      out[id] = { isInfinite: true, totalInterest: p.totalInterest };
+    } else {
+      out[id] = {
+        isInfinite: false,
+        monthsFromNow: p.closedAtIndex - currentIndex, // 0 = текущий месяц
+        totalMonths: p.closedAtIndex - startIndex + 1, // всего месяцев от создания
+        payoffLabel: p.payoffLabel,
+        totalInterest: p.totalInterest,
+      };
+    }
+  });
+  return out;
+}
+
+/**
+ * Построить полный график погашения долгов.
+ *
+ * Учитывает дату создания конфигурации и текущую дату: прошедшие месяцы
+ * «прокручиваются» по рекомендациям, чтобы вычислить остаток каждого долга
+ * на сегодня, а сам график строится на 24 месяца вперёд от текущего месяца.
+ *
+ * @param {Object} config Объект с полями monthlyIncome, livingExpenses, debts, createdAt.
+ * @param {Date} asOfDate Текущая дата.
+ * @returns {{
+ *   currentBalances: Object<string, number>,
+ *   scheduleRows: Array<Object>,
+ *   payoffWith: Object<string, Object>,
+ *   payoffWithout: Object<string, Object>
+ * }}
+ */
+function buildRepaymentSchedule(config, asOfDate) {
+  const HORIZON = 600;
+  const SCHEDULE_MONTHS = 24;
+
+  const createdAt = parseLocalDate(config.createdAt) || asOfDate;
+  const currentIndex = monthIndex(asOfDate.getFullYear(), asOfDate.getMonth());
+  const startIndex = monthIndex(createdAt.getFullYear(), createdAt.getMonth());
+  const endIndex = currentIndex + HORIZON - 1;
+
+  const prepared = config.debts.map(function (debt) {
+    return Object.assign({}, debt, {
+      firstPaymentIndex: firstPaymentMonthIndex(createdAt, debt.paymentDay),
+    });
+  });
+
+  // История + будущее по рекомендациям — одной симуляцией.
+  const main = simulateRepaymentPlan(
+    prepared,
+    config.monthlyIncome,
+    config.livingExpenses,
+    startIndex,
+    endIndex,
+    true
+  );
+
+  const currentBalances = main.balancesBefore[currentIndex] || {};
+
+  const scheduleRows = main.rows
+    .filter(function (r) {
+      return r.index >= currentIndex;
+    })
+    .slice(0, SCHEDULE_MONTHS);
+
+  const payoffWith = normalizePayoff(main.payoff, startIndex, currentIndex);
+
+  // Сценарий «без досрочки»: от сегодняшних остатков только обязательные платежи.
+  const withoutPrepared = prepared.map(function (d) {
+    return Object.assign({}, d, {
+      balance: currentBalances[d.id] || 0,
+      firstPaymentIndex: currentIndex,
+    });
+  });
+  const without = simulateRepaymentPlan(
+    withoutPrepared,
+    config.monthlyIncome,
+    config.livingExpenses,
+    currentIndex,
+    endIndex,
+    false
+  );
+  const payoffWithout = normalizePayoff(without.payoff, currentIndex, currentIndex);
+
+  return {
+    currentBalances: currentBalances,
+    scheduleRows: scheduleRows,
+    payoffWith: payoffWith,
+    payoffWithout: payoffWithout,
+  };
 }

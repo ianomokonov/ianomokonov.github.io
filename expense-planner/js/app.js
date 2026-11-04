@@ -68,6 +68,11 @@
     return date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
   }
 
+  function formatDateFull(date) {
+    if (!date) return '—';
+    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   function debounce(fn, ms) {
     let timer;
     return function () {
@@ -323,6 +328,13 @@
             '</section>' +
           '</div>' +
         '</div>' +
+
+        '<section class="card shadow-sm mt-4">' +
+          '<div class="card-header bg-white fw-semibold">' +
+            '<i class="bi bi-calendar3 me-2 text-primary"></i>График платежей на 2 года' +
+          '</div>' +
+          '<div class="card-body" id="schedule-content"></div>' +
+        '</section>' +
       '</div>';
 
     $('#today-label').textContent =
@@ -375,12 +387,13 @@
         const type = debt.termMonths != null && debt.termMonths > 0
           ? debt.termMonths + ' мес'
           : 'бессрочный';
+        const payDay = ' · платёж ' + (debt.paymentDay || 1) + ' числа';
         return (
           '<div class="debt-config-item d-flex align-items-center justify-content-between gap-2 py-2 border-bottom">' +
             '<div class="min-width-0">' +
               '<div class="fw-semibold text-truncate" title="' + escapeHtml(debt.name) + '">' + escapeHtml(debt.name) + '</div>' +
               '<div class="small text-muted">' +
-                formatMoney(debt.balance) + ' · ' + formatPercent(debt.annualRate) + ' · ' + type +
+                formatMoney(debt.balance) + ' · ' + formatPercent(debt.annualRate) + ' · ' + type + payDay +
               '</div>' +
             '</div>' +
             '<div class="d-flex gap-1 flex-shrink-0">' +
@@ -422,14 +435,20 @@
   // ----------------------------------------------------------------------
 
   function renderCalculations() {
-    const debts = config.debts;
+    const schedule = buildRepaymentSchedule(config, new Date());
+    const currentBalances = schedule.currentBalances;
+
     const totalRequired = roundMoney(
-      debts.reduce(function (sum, d) {
-        return sum + requiredMonthlyPayment(d);
+      config.debts.reduce(function (sum, d) {
+        return sum + requiredPaymentForDebt(d, currentBalances[d.id] || 0);
       }, 0)
     );
     const freeMoney = roundMoney(config.monthlyIncome - config.livingExpenses - totalRequired);
-    const recommendation = recommendPrepayment(debts, freeMoney);
+
+    const currentDebts = config.debts.map(function (d) {
+      return Object.assign({}, d, { balance: currentBalances[d.id] || 0 });
+    });
+    const recommendation = recommendPrepayment(currentDebts, freeMoney);
     const recommendedTotal = roundMoney(
       recommendation.reduce(function (sum, r) {
         return sum + r.amount;
@@ -437,11 +456,12 @@
     );
     const leftover = freeMoney > 0 ? roundMoney(freeMoney - recommendedTotal) : null;
 
-    renderSummary(totalRequired, freeMoney, recommendation, recommendedTotal, leftover);
-    renderForecast(debts, recommendation);
+    renderSummary(totalRequired, freeMoney, recommendation, recommendedTotal, leftover, schedule);
+    renderForecast(recommendation, schedule, currentBalances);
+    renderSchedule(schedule, currentBalances);
   }
 
-  function renderSummary(totalRequired, freeMoney, recommendation, recommendedTotal, leftover) {
+  function renderSummary(totalRequired, freeMoney, recommendation, recommendedTotal, leftover, schedule) {
     const el = $('#summary-content');
     if (!el) return;
 
@@ -512,44 +532,56 @@
       recoHtml +
       '<hr>' +
       '<div class="fw-semibold mb-2">' +
-        '<i class="bi bi-arrow-left-right me-1"></i>Эффект досрочного погашения' +
+        '<i class="bi bi-arrow-left-right me-1"></i>Эффект продолжения досрочного погашения' +
       '</div>' +
-      renderPrepaymentEffect(recommendation);
+      renderPrepaymentEffect(schedule);
   }
 
-  function renderPrepaymentEffect(recommendation) {
+  function renderPrepaymentEffect(schedule) {
     if (!config.debts.length) {
       return '<div class="text-muted">Нет долгов для сравнения.</div>';
     }
 
-    const byId = {};
-    recommendation.forEach(function (r) {
-      byId[r.debtId] = r.amount;
-    });
-
     let totalSaved = 0;
     const rows = config.debts
       .map(function (debt) {
-        const extra = byId[debt.id] || 0;
-        const without = simulatePayoff(debt, 0);
-        const withRec = simulatePayoff(debt, extra);
+        if ((schedule.currentBalances[debt.id] || 0) <= 0) {
+          return (
+            '<tr>' +
+              '<td>' + escapeHtml(debt.name) + '</td>' +
+              '<td class="text-muted" colspan="4">уже погашен</td>' +
+            '</tr>'
+          );
+        }
 
-        const withoutText = without.isInfinite ? '∞' : without.monthsLeft + ' мес';
-        const withText = withRec.isInfinite ? '∞' : withRec.monthsLeft + ' мес';
+        const withRec = schedule.payoffWith[debt.id];
+        const withoutRec = schedule.payoffWithout[debt.id];
+
+        const withoutInf = !withoutRec || withoutRec.isInfinite;
+        const withInf = !withRec || withRec.isInfinite;
+
+        function monthsText(p, inf) {
+          if (inf) return '∞';
+          if (p.monthsFromNow === 0) return 'в этом мес';
+          return p.monthsFromNow + ' мес';
+        }
+
+        const withoutText = monthsText(withoutRec, withoutInf);
+        const withText = monthsText(withRec, withInf);
 
         let resultText;
         let savedText;
 
-        if (without.isInfinite && withRec.isInfinite) {
+        if (withoutInf && withInf) {
           resultText = '<span class="text-muted">не закрывается</span>';
           savedText = '—';
-        } else if (without.isInfinite && !withRec.isInfinite) {
+        } else if (withoutInf && !withInf) {
           resultText =
-            '<span class="text-success">станет погашаемым: ' + withRec.monthsLeft + ' мес</span>';
+            '<span class="text-success">станет погашаемым: ' + monthsText(withRec, false) + '</span>';
           savedText = '—';
         } else {
-          const diff = Math.max(0, without.monthsLeft - withRec.monthsLeft);
-          const saved = roundMoney(without.totalInterest - withRec.totalInterest);
+          const diff = Math.max(0, withoutRec.monthsFromNow - withRec.monthsFromNow);
+          const saved = roundMoney(withoutRec.totalInterest - withRec.totalInterest);
           totalSaved = roundMoney(totalSaved + saved);
           resultText =
             diff > 0
@@ -586,56 +618,70 @@
     );
   }
 
-  function renderForecast(debts, recommendation) {
+  function renderForecast(recommendation, schedule, currentBalances) {
     const el = $('#forecast-content');
     if (!el) return;
 
-    if (!debts.length) {
+    if (!config.debts.length) {
       el.innerHTML = '<div class="col-12"><div class="text-muted">Долгов нет.</div></div>';
       return;
     }
 
-    const byId = {};
+    const recByDebt = {};
     recommendation.forEach(function (r) {
-      byId[r.debtId] = r.amount;
+      recByDebt[r.debtId] = r.amount;
     });
 
-    el.innerHTML = debts
+    el.innerHTML = config.debts
       .map(function (debt) {
-        return renderDebtForecastCard(debt, byId[debt.id] || 0);
+        const currentBalance = currentBalances[debt.id] || 0;
+        return renderDebtForecastCard(
+          debt,
+          currentBalance,
+          recByDebt[debt.id] || 0,
+          schedule.payoffWith[debt.id]
+        );
       })
       .join('');
   }
 
-  function renderDebtForecastCard(debt, extra) {
-    const required = requiredMonthlyPayment(debt);
-    const sim = simulatePayoff(debt, extra);
+  function renderDebtForecastCard(debt, currentBalance, extra, payoff) {
+    const required = requiredPaymentForDebt(debt, currentBalance);
     const isPerpetual = !(debt.termMonths != null && debt.termMonths > 0);
 
     let payoffHtml;
-    if (sim.isInfinite) {
+    if (currentBalance <= 0 && payoff && !payoff.isInfinite) {
+      payoffHtml =
+        '<div class="text-success fw-semibold">' +
+        '<i class="bi bi-check-circle-fill me-1"></i>Долг погашен: ' + payoff.payoffLabel +
+        '</div>';
+    } else if (!payoff || payoff.isInfinite) {
       payoffHtml =
         '<div class="text-danger fw-semibold">' +
         '<i class="bi bi-infinity me-1"></i>Не будет погашен при текущих платежах' +
         '</div>';
+    } else if (payoff.monthsFromNow === 0) {
+      payoffHtml =
+        '<div class="text-success fw-semibold">Погашение: ' + payoff.payoffLabel +
+        ' <span class="text-muted fw-normal small">(в этом месяце)</span></div>';
     } else {
       payoffHtml =
-        '<div class="text-success fw-semibold">Погашение: ' +
-        formatDate(sim.payoffDate) +
-        ' <span class="text-muted fw-normal small">(через ' + sim.monthsLeft + ' мес)</span></div>';
+        '<div class="text-success fw-semibold">Погашение: ' + payoff.payoffLabel +
+        ' <span class="text-muted fw-normal small">(через ' + payoff.monthsFromNow + ' мес)</span></div>';
     }
 
     let termHtml = '';
-    if (!isPerpetual && !sim.isInfinite) {
-      if (sim.monthsLeft > debt.termMonths) {
+    if (!isPerpetual && payoff && !payoff.isInfinite) {
+      const totalMonths = payoff.totalMonths;
+      if (totalMonths > debt.termMonths) {
         termHtml =
           '<div class="small text-danger mt-1">' +
-          '<i class="bi bi-exclamation-triangle-fill me-1"></i>Прогноз ' + sim.monthsLeft +
+          '<i class="bi bi-exclamation-triangle-fill me-1"></i>Прогноз ' + totalMonths +
           ' мес — дольше срока ' + debt.termMonths + ' мес</div>';
-      } else if (sim.monthsLeft < debt.termMonths) {
+      } else if (totalMonths < debt.termMonths) {
         termHtml =
           '<div class="small text-success mt-1">' +
-          '<i class="bi bi-check-circle-fill me-1"></i>Прогноз ' + sim.monthsLeft +
+          '<i class="bi bi-check-circle-fill me-1"></i>Прогноз ' + totalMonths +
           ' мес — раньше срока ' + debt.termMonths + ' мес</div>';
       } else {
         termHtml =
@@ -646,26 +692,156 @@
 
     return (
       '<div class="col-md-6">' +
-        '<div class="card h-100 shadow-sm' + (sim.isInfinite ? ' border-warning' : '') + '">' +
+        '<div class="card h-100 shadow-sm' + (payoff && payoff.isInfinite ? ' border-warning' : '') + '">' +
           '<div class="card-body">' +
             '<div class="d-flex justify-content-between align-items-start gap-2">' +
               '<div class="min-width-0">' +
                 '<h3 class="h6 mb-0 text-truncate" title="' + escapeHtml(debt.name) + '">' + escapeHtml(debt.name) + '</h3>' +
-                '<div class="small text-muted">' + (isPerpetual ? 'Бессрочный' : 'Срок: ' + debt.termMonths + ' мес') + '</div>' +
+                '<div class="small text-muted">' +
+                  (isPerpetual ? 'Бессрочный' : 'Срок: ' + debt.termMonths + ' мес') +
+                  ' · платёж ' + (debt.paymentDay || 1) + ' числа' +
+                '</div>' +
               '</div>' +
               '<span class="badge text-bg-light border flex-shrink-0">' + formatPercent(debt.annualRate) + '</span>' +
             '</div>' +
             '<div class="row g-2 mt-3">' +
-              '<div class="col-6"><div class="small text-muted">Остаток</div><div class="fw-semibold">' + formatMoney(debt.balance) + '</div></div>' +
+              '<div class="col-6"><div class="small text-muted">Остаток на сегодня</div><div class="fw-semibold">' + formatMoney(currentBalance) + '</div></div>' +
               '<div class="col-6"><div class="small text-muted">Обязательный платёж/мес</div><div class="fw-semibold">' + formatMoney(required) + '</div></div>' +
               '<div class="col-6"><div class="small text-muted">Досрочка по рекомендации</div><div class="fw-semibold' + (extra > 0 ? ' text-success' : '') + '">' + (extra > 0 ? formatMoney(extra) : '—') + '</div></div>' +
-              '<div class="col-6"><div class="small text-muted">Проценты до погашения</div><div class="fw-semibold">' + (sim.isInfinite ? '∞' : formatMoney(sim.totalInterest)) + '</div></div>' +
+              '<div class="col-6"><div class="small text-muted">Проценты до погашения</div><div class="fw-semibold">' + ((!payoff || payoff.isInfinite) ? '∞' : formatMoney(payoff.totalInterest)) + '</div></div>' +
             '</div>' +
             '<div class="mt-3">' + payoffHtml + termHtml + '</div>' +
           '</div>' +
         '</div>' +
       '</div>'
     );
+  }
+
+  function renderSchedule(schedule, currentBalances) {
+    const el = $('#schedule-content');
+    if (!el) return;
+
+    const currentTotal = roundMoney(
+      Object.keys(currentBalances).reduce(function (sum, id) {
+        return sum + (currentBalances[id] || 0);
+      }, 0)
+    );
+
+    const headerHtml =
+      '<div class="d-flex flex-wrap gap-4 mb-3">' +
+        '<div>' +
+          '<div class="text-muted small">Остаток долга на сегодня</div>' +
+          '<div class="fs-4 fw-bold summary-number">' + formatMoney(currentTotal) + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<div class="text-muted small">Конфигурация создана</div>' +
+          '<div class="fw-semibold">' + formatDateFull(parseLocalDate(config.createdAt)) + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<div class="text-muted small">Период графика</div>' +
+          '<div class="fw-semibold">24 месяца</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="text-muted small mb-3">' +
+        'График построен при условии, что вы следуете всем рекомендациям (метод «лавина»). ' +
+        'Остатки на сегодня уже учитывают прошедшие платежи от даты создания конфигурации. ' +
+        'Платежи текущего месяца показаны в графике.' +
+      '</div>';
+
+    if (!config.debts.length) {
+      el.innerHTML = headerHtml + '<div class="text-muted">Нет долгов для построения графика.</div>';
+      return;
+    }
+
+    if (currentTotal <= 0) {
+      el.innerHTML =
+        headerHtml +
+        '<div class="alert alert-success mb-0">' +
+        '<i class="bi bi-check-circle-fill me-1"></i>Все долги уже погашены — платежей не требуется.' +
+        '</div>';
+      return;
+    }
+
+    const rowsHtml = schedule.scheduleRows
+      .map(function (row, i) {
+        const hasDetail = row.debts.length > 0;
+        const chevron = hasDetail
+          ? '<button type="button" class="btn btn-sm btn-outline-secondary schedule-toggle" data-index="' + i + '" aria-label="Раскрыть"><i class="bi bi-chevron-right"></i></button>'
+          : '<span class="btn btn-sm btn-outline-secondary disabled opacity-25"><i class="bi bi-chevron-right"></i></span>';
+
+        let detailHtml = '';
+        if (hasDetail) {
+          const detailRows = row.debts
+            .map(function (d) {
+              const closedBadge = d.closed
+                ? ' <span class="badge text-bg-success ms-1">закрыт</span>'
+                : '';
+              return (
+                '<tr>' +
+                  '<td>' + escapeHtml(d.name) + closedBadge + '</td>' +
+                  '<td class="text-end">' + formatMoney(d.required) + '</td>' +
+                  '<td class="text-end">' + (d.prepayment > 0 ? formatMoney(d.prepayment) : '—') + '</td>' +
+                  '<td class="text-end">' + formatMoney(d.remaining) + '</td>' +
+                '</tr>'
+              );
+            })
+            .join('');
+          detailHtml =
+            '<tr class="schedule-detail d-none" data-detail="' + i + '">' +
+              '<td colspan="4">' +
+                '<div class="p-2 bg-light rounded">' +
+                  '<table class="table table-sm mb-0">' +
+                    '<thead><tr class="small text-muted">' +
+                      '<th>Долг</th>' +
+                      '<th class="text-end">Обязательный платёж</th>' +
+                      '<th class="text-end">Досрочное погашение</th>' +
+                      '<th class="text-end">Остаток долга</th>' +
+                    '</tr></thead>' +
+                    '<tbody>' + detailRows + '</tbody>' +
+                  '</table>' +
+                '</div>' +
+              '</td>' +
+            '</tr>';
+        }
+
+        return (
+          '<tr class="schedule-summary schedule-toggle-row" data-index="' + i + '">' +
+            '<td>' + chevron + '</td>' +
+            '<td class="fw-semibold">' + row.label + '</td>' +
+            '<td class="text-end">' + formatMoney(row.totalPayment) + '</td>' +
+            '<td class="text-end">' + formatMoney(row.totalRemaining) + '</td>' +
+          '</tr>' + detailHtml
+        );
+      })
+      .join('');
+
+    el.innerHTML =
+      headerHtml +
+      '<div class="table-responsive">' +
+        '<table class="table table-hover align-middle mb-0" id="schedule-table">' +
+          '<thead><tr class="text-muted small text-uppercase">' +
+            '<th style="width:44px"></th>' +
+            '<th>Месяц</th>' +
+            '<th class="text-end">Общая сумма платежей</th>' +
+            '<th class="text-end">Общий остаток долга</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
+      '</div>';
+
+    $all('#schedule-content .schedule-toggle-row').forEach(function (row) {
+      row.addEventListener('click', function () {
+        const idx = row.getAttribute('data-index');
+        const detail = el.querySelector('[data-detail="' + idx + '"]');
+        const chevron = row.querySelector('.schedule-toggle i');
+        if (!detail) return;
+        detail.classList.toggle('d-none');
+        if (chevron) {
+          chevron.classList.toggle('bi-chevron-right');
+          chevron.classList.toggle('bi-chevron-down');
+        }
+      });
+    });
   }
 
   // ----------------------------------------------------------------------
@@ -688,7 +864,7 @@
     return (
       '<div class="debt-form ' + wrapperClass + '" ' + modeAttr + ' data-debt-id="' + escapeHtml(d.id || '') + '">' +
         '<div class="row g-2 align-items-end">' +
-          '<div class="col-12 col-md-4">' +
+          '<div class="col-12 col-md-3">' +
             '<label class="form-label small text-muted mb-1">Название долга</label>' +
             '<input type="text" class="form-control" data-field="name" value="' + escapeHtml(d.name || '') + '" placeholder="Например: Ипотека">' +
             '<div class="invalid-feedback"></div>' +
@@ -706,6 +882,11 @@
           '<div class="col-6 col-md-2">' +
             '<label class="form-label small text-muted mb-1">Срок, мес <span class="fw-normal">(необяз.)</span></label>' +
             '<input type="number" class="form-control" data-field="term" min="1" step="1" value="' + (d.termMonths != null ? d.termMonths : '') + '" placeholder="—">' +
+            '<div class="invalid-feedback"></div>' +
+          '</div>' +
+          '<div class="col-6 col-md-2">' +
+            '<label class="form-label small text-muted mb-1">Дата платежа (число)</label>' +
+            '<input type="number" class="form-control" data-field="paymentDay" min="1" max="31" step="1" value="' + (d.paymentDay != null ? d.paymentDay : 1) + '" placeholder="1">' +
             '<div class="invalid-feedback"></div>' +
           '</div>' +
           removeButton +
@@ -743,12 +924,14 @@
     const balanceEl = row.querySelector('[data-field="balance"]');
     const rateEl = row.querySelector('[data-field="rate"]');
     const termEl = row.querySelector('[data-field="term"]');
-    [nameEl, balanceEl, rateEl, termEl].forEach(clearFieldInvalid);
+    const paymentDayEl = row.querySelector('[data-field="paymentDay"]');
+    [nameEl, balanceEl, rateEl, termEl, paymentDayEl].forEach(clearFieldInvalid);
 
     const name = nameEl.value.trim();
     const balanceRaw = balanceEl.value;
     const rateRaw = rateEl.value;
     const termRaw = termEl.value;
+    const paymentDayRaw = paymentDayEl.value;
 
     if (skipEmpty && !name && !balanceRaw && !rateRaw && !termRaw) {
       return { valid: true, isEmpty: true, debt: null };
@@ -784,6 +967,17 @@
       }
     }
 
+    let paymentDay = 1;
+    if (paymentDayRaw !== '') {
+      const pd = Number(paymentDayRaw);
+      if (!isFinite(pd) || pd < 1 || pd > 31 || !Number.isInteger(pd)) {
+        markFieldInvalid(paymentDayEl, 'Число 1–31');
+        valid = false;
+      } else {
+        paymentDay = pd;
+      }
+    }
+
     if (!valid) {
       return { valid: false, debt: null };
     }
@@ -796,6 +990,7 @@
         balance: roundMoney(balance),
         annualRate: roundMoney(rate),
         termMonths: termMonths, // undefined = бессрочный
+        paymentDay: paymentDay,
       },
     };
   }

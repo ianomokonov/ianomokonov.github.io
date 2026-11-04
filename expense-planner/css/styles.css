@@ -34,6 +34,19 @@ body {
   border-bottom: none !important;
 }
 
+/* Раскрываемые строки графика платежей */
+.schedule-toggle-row {
+  cursor: pointer;
+}
+
+.schedule-toggle-row:hover {
+  background-color: rgba(13, 110, 253, 0.04);
+}
+
+.schedule-toggle-row .schedule-toggle i {
+  transition: transform 0.15s ease;
+}
+
 /* Аккуратный фокус на полях */
 #onboarding .form-control:focus,
 #dashboard .form-control:focus {

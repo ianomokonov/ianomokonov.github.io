@@ -9,6 +9,7 @@
  * @property {number} monthlyIncome
  * @property {number} livingExpenses
  * @property {Debt[]} debts
+ * @property {string} createdAt — локальная дата создания конфигурации 'YYYY-MM-DD'
  * @property {number} _version
  */
 
@@ -73,13 +74,29 @@ function validateConfig(data) {
       }
     }
 
+    // День месяца платежа: 1–31, по умолчанию 1 (для старых конфигураций).
+    let paymentDay = 1;
+    if (d.paymentDay != null && d.paymentDay !== '') {
+      const pd = Number(d.paymentDay);
+      if (isFinite(pd) && Number.isInteger(pd) && pd >= 1 && pd <= 31) {
+        paymentDay = pd;
+      }
+    }
+
     debts.push({
       id: typeof d.id === 'string' && d.id ? d.id : generateId(),
       name,
       balance: roundMoney(balance),
       annualRate: roundMoney(annualRate),
       termMonths, // undefined = бессрочный
+      paymentDay,
     });
+  }
+
+  // Дата создания конфигурации: для старых записей считаем «сегодня».
+  let createdAt = localDateKey(new Date());
+  if (typeof data.createdAt === 'string' && parseLocalDate(data.createdAt)) {
+    createdAt = data.createdAt;
   }
 
   return {
@@ -88,6 +105,7 @@ function validateConfig(data) {
       monthlyIncome: roundMoney(income),
       livingExpenses: roundMoney(living),
       debts,
+      createdAt,
       _version: CONFIG_VERSION,
     },
   };
@@ -132,10 +150,14 @@ function loadConfig() {
 
 /**
  * Сохранить конфигурацию в localStorage.
+ * Дата создания проставляется один раз при первом сохранении и сохраняется.
  * @param {Config} config
  * @returns {boolean} Успешно ли сохранение.
  */
 function saveConfig(config) {
+  if (!config.createdAt) {
+    config.createdAt = localDateKey(new Date());
+  }
   config._version = CONFIG_VERSION;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
