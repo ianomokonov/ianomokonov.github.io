@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fbf6ed" />
+  <meta name="description" content="Звёздные привычки — детский трекер полезных привычек с наградами, сериями и наглядной статистикой." />
+  <title>Звёздные привычки — детский трекер</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- SVG-спрайт: иконки интерфейса -->
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-star" viewBox="0 0 24 24">
+      <path d="M12 2.7l2.9 5.9 6.5.95-4.7 4.58 1.1 6.47L12 17.54l-5.8 3.06 1.1-6.47L2.6 9.55l6.5-.95L12 2.7Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 12.2l2.7 2.7L16.3 9.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path d="M3.5 10.7L12 3l8.5 7.7M5.5 9.2V21h13V9.2M9.6 21v-6.6h4.8V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24">
+      <rect x="3.2" y="8.5" width="17.6" height="12.5" rx="2.3" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M2.5 8.5h19M12 8.5V21M12 8.5H8.2a2.6 2.6 0 1 1 0-5.2C10.8 3.3 12 8.5 12 8.5ZM12 8.5h3.8a2.6 2.6 0 1 0 0-5.2C13.2 3.3 12 8.5 12 8.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M4 20V4M4 20h16M8 16v-4M12.7 16V7.5M17.3 16v-6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24">
+      <path d="M12.1 22c4.2 0 6.9-2.7 6.9-6.5 0-2.9-1.6-5.3-4-7.6-.4 1.8-1.4 2.9-2.5 3.5.1-3.5-1.3-6.6-3.6-8.4.2 2.7-1 4.4-2.3 6.1C5.4 11.2 5 13 5 14.9 5 19.1 7.8 22 12.1 22Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-target" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.7" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="12" cy="12" r="4.7" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="12" cy="12" r="1.3" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24">
+      <path d="M8 4h8v5.2a4 4 0 0 1-8 0V4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M8 6H4.8v1.8A3.7 3.7 0 0 0 8.6 11.5M16 6h3.2v1.8a3.7 3.7 0 0 1-3.8 3.7M12 13.2V17M8.5 21h7M10 17h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24">
+      <path d="M12 2.8c.6 5.6 2.7 7.7 8.3 8.3-5.6.6-7.7 2.7-8.3 8.3-.6-5.6-2.7-7.7-8.3-8.3 5.6-.6 7.7-2.7 8.3-8.3Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h9M17 18h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="15" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="9" cy="12" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="15" cy="18" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24">
+      <path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24">
+      <path d="M4 20l4.2-1 10.9-10.9a2.3 2.3 0 0 0-3.2-3.2L5 15.8 4 20ZM14.5 6.5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24">
+      <path d="M4 7h16M9 7V4.8h6V7M6.5 7l.8 13h9.4l.8-13M10 11v5M14 11v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24">
+      <rect x="3.3" y="5.3" width="17.4" height="15.4" rx="2.4" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M7.5 3v4M16.5 3v4M3.3 10h17.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="4.5" y="10" width="15" height="10.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="15.2" r="1.3" fill="currentColor"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#today" data-view="today" aria-label="Звёздные привычки — на главную">
+        <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg></span>
+        <span class="brand-copy"><strong>Звёздные</strong><span>привычки</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Разделы приложения" role="tablist">
+        <button class="nav-tab is-active" type="button" role="tab" id="tab-today" aria-selected="true" aria-controls="view-today" data-view="today">
+          <svg class="icon" aria-hidden="true"><use href="#i-home"></use></svg>
+          <span>Сегодня</span>
+        </button>
+        <button class="nav-tab" type="button" role="tab" id="tab-rewards" aria-selected="false" aria-controls="view-rewards" data-view="rewards">
+          <svg class="icon" aria-hidden="true"><use href="#i-gift"></use></svg>
+          <span>Награды</span>
+        </button>
+        <button class="nav-tab" type="button" role="tab" id="tab-stats" aria-selected="false" aria-controls="view-stats" data-view="stats">
+          <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+          <span>Статистика</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="star-wallet" id="headerWallet" type="button" data-view="rewards" aria-label="Открыть копилку звёзд">
+          <svg class="icon star-wallet-icon" aria-hidden="true"><use href="#i-star"></use></svg>
+          <strong id="headerBalance">0</strong>
+        </button>
+        <button class="profile-chip" id="profileButton" type="button" aria-label="Настройки профиля">
+          <span class="profile-avatar" id="headerAvatar" aria-hidden="true">🦊</span>
+          <span class="profile-name" id="headerName">Дружок</span>
+          <svg class="icon profile-gear" aria-hidden="true"><use href="#i-settings"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <!-- ЭКРАН «СЕГОДНЯ» -->
+    <section class="view is-active" id="view-today" role="tabpanel" aria-labelledby="tab-today" tabindex="-1">
+      <section class="hero" aria-labelledby="heroTitle">
+        <span class="hero-deco hero-deco-1" aria-hidden="true">✦</span>
+        <span class="hero-deco hero-deco-2" aria-hidden="true">✦</span>
+        <span class="hero-deco hero-deco-3" aria-hidden="true">✦</span>
+        <div class="hero-copy">
+          <p class="eyebrow" id="todayDate">Сегодня</p>
+          <h1 id="heroTitle">Привет, <span id="heroName">Дружок</span>! <span class="wave" aria-hidden="true">👋</span></h1>
+          <p class="hero-sub" id="heroMessage">Новый день — новые звёзды. Начни с одной маленькой привычки.</p>
+          <div class="hero-chips">
+            <span class="hero-chip">
+              <svg class="icon hero-chip-flame" aria-hidden="true"><use href="#i-flame"></use></svg>
+              <strong id="heroStreak">0</strong>
+              <span id="heroStreakLabel">дней подряд</span>
+            </span>
+            <span class="hero-chip">
+              <svg class="icon hero-chip-star" aria-hidden="true"><use href="#i-star"></use></svg>
+              <strong id="heroEarned">0</strong>
+              <span>звёзд всего</span>
+            </span>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-dark" type="button" data-open-habit>
+              <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Добавить привычку
+            </button>
+            <button class="btn btn-ghost" type="button" data-view="rewards">
+              Смотреть награды
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <span class="hero-orbit"></span>
+          <svg class="mascot" viewBox="0 0 320 310" role="presentation">
+            <defs>
+              <linearGradient id="mascotFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FFE681" />
+                <stop offset="0.58" stop-color="#FFD14F" />
+                <stop offset="1" stop-color="#FFAE3D" />
+              </linearGradient>
+              <linearGradient id="mascotStroke" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#46361F" />
+                <stop offset="1" stop-color="#2C241B" />
+              </linearGradient>
+            </defs>
+            <ellipse cx="160" cy="287" rx="82" ry="14" fill="#9B6A28" opacity="0.16" />
+            <path d="M160 25l31 65 71 8-53 49 14 70-63-35-63 35 14-70-53-49 71-8 31-65Z" fill="url(#mascotFill)" stroke="url(#mascotStroke)" stroke-width="9" stroke-linejoin="round" />
+            <path d="M136 105c8-13 18-19 29-22" fill="none" stroke="#FFF4BA" stroke-width="8" stroke-linecap="round" opacity="0.8" />
+            <circle cx="132" cy="158" r="8.5" fill="#352A1F" />
+            <circle cx="188" cy="158" r="8.5" fill="#352A1F" />
+            <circle cx="135" cy="155" r="2.7" fill="#FFFFFF" />
+            <circle cx="191" cy="155" r="2.7" fill="#FFFFFF" />
+            <ellipse cx="108" cy="180" rx="14" ry="7.5" fill="#FF8B78" opacity="0.68" />
+            <ellipse cx="212" cy="180" rx="14" ry="7.5" fill="#FF8B78" opacity="0.68" />
+            <path d="M143 182c4 10 10 14 17 14s13-4 17-14" fill="none" stroke="#352A1F" stroke-width="6.5" stroke-linecap="round" />
+            <path d="M250 58l4.4 10.2L265 72l-8.1 7 1.8 10.7-9.7-5.3-9.7 5.3 1.8-10.7-8.1-7 10.6-3.8L250 58Z" fill="#FFF6D2" opacity="0.9" />
+            <path d="M58 216l3.2 7.5 8.1 1.1-5.9 5.5 1.4 8-6.8-3.9-6.8 3.9 1.4-8-5.9-5.5 8.1-1.1L58 216Z" fill="#FFF6D2" opacity="0.8" />
+          </svg>
+          <div class="hero-progress">
+            <div class="progress-ring" id="todayRing" style="--p: 0%">
+              <div class="ring-inner">
+                <strong id="ringDone">0</strong><span class="ring-sep">/</span><span id="ringTotal">0</span>
+                <small>сделано</small>
+              </div>
+            </div>
+            <div class="hero-progress-copy">
+              <span class="hero-progress-label">Прогресс дня</span>
+              <strong id="ringCaption">Пора начинать!</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="today-layout">
+        <div class="today-main">
+          <div class="section-heading">
+            <div>
+              <h2>Привычки на сегодня</h2>
+              <p id="todaySubtitle">Маленькие шаги — большие перемены.</p>
+            </div>
+            <button class="btn btn-soft btn-sm" type="button" data-open-habit>
+              <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Добавить
+            </button>
+          </div>
+
+          <div class="habit-grid" id="habitGrid" aria-live="polite"></div>
+
+          <div class="empty-state" id="habitEmpty" hidden>
+            <span class="empty-emoji" aria-hidden="true">🌱</span>
+            <h3>Здесь пока пусто</h3>
+            <p>Добавь первую привычку — и начни собирать звёзды уже сегодня.</p>
+            <button class="btn btn-primary" type="button" data-open-habit>
+              <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Создать привычку
+            </button>
+          </div>
+
+          <div class="all-done-banner" id="allDoneBanner" hidden>
+            <span class="all-done-spark" aria-hidden="true">✨</span>
+            <div>
+              <strong>Идеальный день!</strong>
+              <p>Все привычки выполнены. Ты настоящая звезда!</p>
+            </div>
+            <span class="all-done-stars" aria-hidden="true">⭐</span>
+          </div>
+        </div>
+
+        <aside class="today-aside" aria-label="Копилка, неделя и достижения">
+          <section class="wallet-card">
+            <span class="wallet-glow wallet-glow-1" aria-hidden="true"></span>
+            <span class="wallet-glow wallet-glow-2" aria-hidden="true"></span>
+            <div class="wallet-top">
+              <span>Моя копилка</span>
+              <svg class="icon wallet-star" aria-hidden="true"><use href="#i-star"></use></svg>
+            </div>
+            <div class="wallet-amount">
+              <span id="walletBalance">0</span>
+              <span class="wallet-amount-label" id="walletBalanceWord">звёзд</span>
+            </div>
+            <p class="wallet-goal" id="walletGoal">Добавь награду, чтобы копить было интереснее.</p>
+            <div class="progress-track progress-track-light" role="progressbar" id="walletProgress" aria-label="Прогресс до следующей награды" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="progress-fill" id="walletProgressFill" style="width: 0%"></span>
+            </div>
+            <button class="btn btn-light" type="button" data-view="rewards">
+              Перейти к наградам
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+            </button>
+          </section>
+
+          <section class="week-card">
+            <div class="card-heading">
+              <div>
+                <h3>Эта неделя</h3>
+                <p id="weekStars">0 звёзд за 7 дней</p>
+              </div>
+              <button class="text-link" type="button" data-view="stats">
+                Подробнее
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+              </button>
+            </div>
+            <div class="week-bars" id="weekBars" aria-label="Звёзды, заработанные за последние семь дней"></div>
+            <p class="week-note" id="weekNote">Заполняй привычки — и столбики будут расти.</p>
+          </section>
+
+          <section class="next-badge-card" id="nextBadgeCard">
+            <div class="next-badge-top">
+              <span class="next-badge-icon" id="nextBadgeIcon" aria-hidden="true">🌱</span>
+              <div>
+                <p class="eyebrow">Следующая цель</p>
+                <h3 id="nextBadgeTitle">Первый шаг</h3>
+              </div>
+            </div>
+            <p class="next-badge-desc" id="nextBadgeDesc">Выполни первую привычку и получи значок.</p>
+            <div class="progress-track" role="progressbar" id="nextBadgeProgress" aria-label="Прогресс до следующего значка" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="progress-fill" id="nextBadgeProgressFill" style="width: 0%"></span>
+            </div>
+            <button class="text-link" type="button" data-view="stats">
+              Все достижения
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+            </button>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ЭКРАН «НАГРАДЫ» -->
+    <section class="view" id="view-rewards" role="tabpanel" aria-labelledby="tab-rewards" tabindex="-1" hidden>
+      <div class="view-heading">
+        <div>
+          <p class="eyebrow">Звёздный магазин</p>
+          <h1>Награды за старания</h1>
+          <p class="view-subtitle">Копи звёзды за выполненные привычки и обменивай их на приятные подарки.</p>
+        </div>
+        <button class="btn btn-primary" type="button" data-open-reward>
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+          Добавить награду
+        </button>
+      </div>
+
+      <section class="rewards-banner" aria-labelledby="rewardsBalanceLabel">
+        <span class="rewards-banner-deco" aria-hidden="true">✦</span>
+        <div class="rewards-banner-copy">
+          <p class="eyebrow">Моя копилка</p>
+          <div class="rewards-balance-row">
+            <svg class="icon rewards-big-star" aria-hidden="true"><use href="#i-star"></use></svg>
+            <strong id="rewardsBalance">0</strong>
+            <span id="rewardsBalanceLabel">звёзд</span>
+          </div>
+          <p class="rewards-banner-text">Каждая звёздочка — это маленькая победа. Продолжай в том же духе!</p>
+          <div class="rewards-meta">
+            <span><span class="meta-dot meta-dot-yellow" aria-hidden="true"></span>Заработано: <strong id="rewardsEarned">0</strong></span>
+            <span><span class="meta-dot meta-dot-pink" aria-hidden="true"></span>Потрачено: <strong id="rewardsSpent">0</strong></span>
+          </div>
+        </div>
+        <svg class="jar-illustration" viewBox="0 0 220 240" role="presentation" aria-hidden="true">
+          <ellipse cx="110" cy="222" rx="70" ry="12" fill="#1B1536" opacity="0.25" />
+          <rect x="57" y="34" width="106" height="27" rx="10" fill="#FFD166" stroke="#FFF1BD" stroke-width="3" />
+          <rect x="69" y="25" width="82" height="17" rx="8" fill="#FFB84D" />
+          <path d="M48 73c0-12 10-22 22-22h80c12 0 22 10 22 22v105c0 23-19 42-42 42H90c-23 0-42-19-42-42V73Z" fill="#FFFFFF" fill-opacity="0.1" stroke="#FFF1BD" stroke-opacity="0.55" stroke-width="3" />
+          <path d="M62 88c0-8 6-14 14-14h8" fill="none" stroke="#FFF8DD" stroke-width="7" stroke-linecap="round" opacity="0.7" />
+          <path d="M110 96l8.7 17.7 19.5 2.8-14.1 13.8 3.3 19.4-17.4-9.2-17.4 9.2 3.3-19.4-14.1-13.8 19.5-2.8L110 96Z" fill="#FFD166" />
+          <path d="M78 167l5.4 11 12.1 1.7-8.8 8.5 2.1 12-10.8-5.7-10.8 5.7 2.1-12-8.8-8.5 12.1-1.7 5.4-11Z" fill="#FF9F68" opacity="0.95" />
+          <path d="M146 157l4.2 8.6 9.5 1.4-6.9 6.7 1.6 9.5-8.4-4.5-8.4 4.5 1.6-9.5-6.9-6.7 9.5-1.4 4.2-8.6Z" fill="#FF8FBE" opacity="0.95" />
+          <circle cx="90" cy="134" r="3" fill="#FFF8DD" opacity="0.8" />
+          <circle cx="151" cy="125" r="2.5" fill="#FFF8DD" opacity="0.6" />
+          <circle cx="135" cy="204" r="2.5" fill="#FFF8DD" opacity="0.5" />
+        </svg>
+      </section>
+
+      <div class="section-heading rewards-section-heading">
+        <div>
+          <h2>Что можно получить</h2>
+          <p>Выбирай награду, которая радует именно тебя.</p>
+        </div>
+      </div>
+
+      <div class="reward-grid" id="rewardGrid" aria-live="polite"></div>
+
+      <div class="empty-state" id="rewardEmpty" hidden>
+        <span class="empty-emoji" aria-hidden="true">🎁</span>
+        <h3>Наград пока нет</h3>
+        <p>Добавь первую награду, ради которой хочется стараться.</p>
+        <button class="btn btn-primary" type="button" data-open-reward>
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+          Создать награду
+        </button>
+      </div>
+
+      <section class="history-card" aria-labelledby="historyTitle">
+        <div class="card-heading">
+          <div>
+            <h2 id="historyTitle">История наград</h2>
+            <p>Твои уже полученные приятности.</p>
+          </div>
+          <span class="history-count" id="redemptionCount">0</span>
+        </div>
+        <div class="redemption-list" id="redemptionList"></div>
+        <div class="history-empty" id="historyEmpty">
+          <span aria-hidden="true">🕐</span>
+          <p>Здесь появятся обменянные награды. Всё ещё впереди!</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ЭКРАН «СТАТИСТИКА» -->
+    <section class="view" id="view-stats" role="tabpanel" aria-labelledby="tab-stats" tabindex="-1" hidden>
+      <div class="view-heading">
+        <div>
+          <p class="eyebrow">Твой прогресс</p>
+          <h1>Статистика побед</h1>
+          <p class="view-subtitle">Смотри, как маленькие шаги превращаются в большие результаты.</p>
+        </div>
+        <span class="stats-date-chip">
+          <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+          <span id="statsDate">Сегодня</span>
+        </span>
+      </div>
+
+      <div class="stats-cards">
+        <article class="stat-card">
+          <span class="stat-icon stat-icon-yellow" aria-hidden="true"><svg class="icon"><use href="#i-star"></use></svg></span>
+          <span class="stat-value" id="statStars">0</span>
+          <span class="stat-label">Звёзд заработано</span>
+          <span class="stat-sub">за всё время</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon stat-icon-coral" aria-hidden="true"><svg class="icon"><use href="#i-flame"></use></svg></span>
+          <span class="stat-value" id="statStreak">0</span>
+          <span class="stat-label">Лучшая серия</span>
+          <span class="stat-sub" id="statStreakSub">дней подряд</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon stat-icon-mint" aria-hidden="true"><svg class="icon"><use href="#i-target"></use></svg></span>
+          <span class="stat-value" id="statRate">0%</span>
+          <span class="stat-label">Успешность</span>
+          <span class="stat-sub">за последние 30 дней</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon stat-icon-purple" aria-hidden="true"><svg class="icon"><use href="#i-check-circle"></use></svg></span>
+          <span class="stat-value" id="statDone">0</span>
+          <span class="stat-label">Привычек выполнено</span>
+          <span class="stat-sub" id="statDoneSub">за всё время</span>
+        </article>
+      </div>
+
+      <div class="stats-layout">
+        <section class="analytics-card chart-card" aria-labelledby="weekChartTitle">
+          <div class="card-heading">
+            <div>
+              <h2 id="weekChartTitle">Последние 7 дней</h2>
+              <p id="weekChartSub">Сколько привычек выполнено</p>
+            </div>
+            <span class="chart-legend"><span class="legend-dot" aria-hidden="true"></span>процент выполнения</span>
+          </div>
+          <div class="bar-chart" id="statsChart" aria-label="График выполнения привычек за последние семь дней"></div>
+        </section>
+
+        <section class="analytics-card heatmap-card" aria-labelledby="heatmapTitle">
+          <div class="card-heading">
+            <div>
+              <h2 id="heatmapTitle">Активность</h2>
+              <p>Последние 5 недель</p>
+            </div>
+          </div>
+          <div class="heatmap-container" id="heatmapContainer" role="img" aria-label="Тепловая карта активности за последние пять недель"></div>
+          <div class="heatmap-legend" aria-hidden="true">
+            <span>меньше</span>
+            <i class="heat-cell level-0"></i>
+            <i class="heat-cell level-1"></i>
+            <i class="heat-cell level-2"></i>
+            <i class="heat-cell level-3"></i>
+            <i class="heat-cell level-4"></i>
+            <span>больше</span>
+          </div>
+          <p class="heatmap-summary" id="heatmapSummary">Пока нет данных</p>
+        </section>
+      </div>
+
+      <section class="analytics-card habits-stats-card" aria-labelledby="habitStatsTitle">
+        <div class="card-heading">
+          <div>
+            <h2 id="habitStatsTitle">Привычки в деталях</h2>
+            <p>Успешность, серия и количество выполнений.</p>
+          </div>
+        </div>
+        <div class="habit-stats-list" id="habitStatsList"></div>
+        <div class="history-empty" id="habitStatsEmpty">
+          <span aria-hidden="true">🌱</span>
+          <p>Добавь привычки, чтобы увидеть подробную статистику.</p>
+        </div>
+      </section>
+
+      <section class="analytics-card achievements-card" aria-labelledby="achievementsTitle">
+        <div class="card-heading">
+          <div>
+            <h2 id="achievementsTitle">Мои достижения</h2>
+            <p>Значки за упорство и маленькие победы.</p>
+          </div>
+          <span class="achievements-counter" id="achievementsCounter">0 из 6</span>
+        </div>
+        <div class="achievement-grid" id="achievementGrid"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>Сделано для маленьких больших побед <span aria-hidden="true">⭐</span></span>
+      <span>Данные хранятся только на этом устройстве</span>
+    </div>
+  </footer>
+
+  <nav class="bottom-nav" aria-label="Мобильная навигация">
+    <button class="bottom-nav-item is-active" type="button" data-view="today">
+      <svg class="icon" aria-hidden="true"><use href="#i-home"></use></svg>
+      <span>Сегодня</span>
+    </button>
+    <button class="bottom-nav-item" type="button" data-view="rewards">
+      <svg class="icon" aria-hidden="true"><use href="#i-gift"></use></svg>
+      <span>Награды</span>
+    </button>
+    <button class="bottom-nav-item" type="button" data-view="stats">
+      <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+      <span>Статистика</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg class="icon toast-icon" aria-hidden="true"><use href="#i-star"></use></svg>
+    <span id="toastText"></span>
+  </div>
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+  <!-- Модальное окно привычки -->
+  <dialog class="modal" id="habitDialog" aria-labelledby="habitDialogTitle">
+    <form class="modal-card" id="habitForm" novalidate>
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">Привычка</p>
+          <h2 id="habitDialogTitle">Новая привычка</h2>
+        </div>
+        <button class="icon-button" type="button" data-close aria-label="Закрыть">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <span class="field-label" id="habitEmojiLabel">Иконка</span>
+          <div class="emoji-picker" id="habitEmojiPicker" role="radiogroup" aria-labelledby="habitEmojiLabel"></div>
+        </div>
+        <label class="field" for="habitTitle">
+          <span class="field-label">Название</span>
+          <input class="input" id="habitTitle" name="title" type="text" maxlength="40" placeholder="Например, почистить зубы" autocomplete="off" required />
+        </label>
+        <div class="field-row">
+          <div class="field">
+            <span class="field-label" id="habitStarsLabel">Звёзд за выполнение</span>
+            <div class="star-picker" id="habitStarPicker" role="radiogroup" aria-labelledby="habitStarsLabel"></div>
+          </div>
+          <div class="field">
+            <span class="field-label" id="habitColorLabel">Цвет</span>
+            <div class="color-picker" id="habitColorPicker" role="radiogroup" aria-labelledby="habitColorLabel"></div>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-label">Дни недели</span>
+          <div class="weekday-picker" id="habitDays" role="group" aria-label="Дни недели для привычки"></div>
+          <p class="field-hint">В выбранные дни привычка будет появляться в списке.</p>
+        </div>
+        <p class="form-error" id="habitError" role="alert" hidden></p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-danger-ghost" id="deleteHabitButton" type="button" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg>
+          Удалить
+        </button>
+        <span class="modal-foot-spacer"></span>
+        <button class="btn btn-ghost" type="button" data-close>Отмена</button>
+        <button class="btn btn-primary" type="submit" id="habitSubmitButton">Добавить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Модальное окно награды -->
+  <dialog class="modal" id="rewardDialog" aria-labelledby="rewardDialogTitle">
+    <form class="modal-card" id="rewardForm" novalidate>
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">Награда</p>
+          <h2 id="rewardDialogTitle">Новая награда</h2>
+        </div>
+        <button class="icon-button" type="button" data-close aria-label="Закрыть">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <span class="field-label" id="rewardEmojiLabel">Иконка</span>
+          <div class="emoji-picker" id="rewardEmojiPicker" role="radiogroup" aria-labelledby="rewardEmojiLabel"></div>
+        </div>
+        <label class="field" for="rewardTitle">
+          <span class="field-label">Название</span>
+          <input class="input" id="rewardTitle" name="title" type="text" maxlength="40" placeholder="Например, мультик на 30 минут" autocomplete="off" required />
+        </label>
+        <div class="field-row">
+          <label class="field" for="rewardCost">
+            <span class="field-label">Стоимость, звёзд</span>
+            <input class="input" id="rewardCost" name="cost" type="number" min="1" max="999" step="1" value="10" inputmode="numeric" required />
+          </label>
+          <div class="field">
+            <span class="field-label" id="rewardColorLabel">Цвет</span>
+            <div class="color-picker" id="rewardColorPicker" role="radiogroup" aria-labelledby="rewardColorLabel"></div>
+          </div>
+        </div>
+        <p class="field-hint">Ребёнок сможет обменять награду, когда накопит нужное количество звёзд.</p>
+        <p class="form-error" id="rewardError" role="alert" hidden></p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-danger-ghost" id="deleteRewardButton" type="button" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg>
+          Удалить
+        </button>
+        <span class="modal-foot-spacer"></span>
+        <button class="btn btn-ghost" type="button" data-close>Отмена</button>
+        <button class="btn btn-primary" type="submit" id="rewardSubmitButton">Добавить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Настройки профиля -->
+  <dialog class="modal" id="profileDialog" aria-labelledby="profileDialogTitle">
+    <form class="modal-card" id="profileForm" novalidate>
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">Настройки</p>
+          <h2 id="profileDialogTitle">Мой профиль</h2>
+        </div>
+        <button class="icon-button" type="button" data-close aria-label="Закрыть">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <span class="field-label" id="profileAvatarLabel">Аватар</span>
+          <div class="emoji-picker avatar-picker" id="profileAvatarPicker" role="radiogroup" aria-labelledby="profileAvatarLabel"></div>
+        </div>
+        <label class="field" for="profileName">
+          <span class="field-label">Имя</span>
+          <input class="input" id="profileName" name="name" type="text" maxlength="20" placeholder="Как тебя зовут?" autocomplete="off" required />
+        </label>
+        <div class="profile-note">
+          <svg class="icon" aria-hidden="true"><use href="#i-sparkle"></use></svg>
+          <p>Имя и аватар видны только на этом устройстве. Все звёзды и привычки хранятся в браузере.</p>
+        </div>
+        <div class="profile-danger">
+          <div>
+            <strong>Начать заново</strong>
+            <p>Удалить привычки, звёзды и награды. Имя и аватар останутся.</p>
+          </div>
+          <button class="btn btn-danger-ghost btn-sm" type="button" id="resetButton">Сбросить прогресс</button>
+        </div>
+        <p class="form-error" id="profileError" role="alert" hidden></p>
+      </div>
+      <div class="modal-foot">
+        <span class="modal-foot-spacer"></span>
+        <button class="btn btn-ghost" type="button" data-close>Отмена</button>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Подтверждение действия -->
+  <dialog class="modal modal-small" id="confirmDialog" aria-labelledby="confirmTitle">
+    <form class="modal-card" method="dialog">
+      <div class="confirm-body">
+        <span class="confirm-icon" aria-hidden="true">?</span>
+        <h2 id="confirmTitle">Подтверди действие</h2>
+        <p id="confirmMessage">Это действие нельзя отменить.</p>
+      </div>
+      <div class="modal-foot modal-foot-center">
+        <button class="btn btn-ghost" type="submit" value="cancel" id="confirmCancelButton">Отмена</button>
+        <button class="btn btn-danger" type="submit" value="confirm" id="confirmOkButton">Подтвердить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Поздравление с наградой -->
+  <dialog class="modal modal-celebration" id="celebrationDialog" aria-labelledby="celebrationTitle">
+    <div class="celebration-card">
+      <div class="celebration-sparkles" aria-hidden="true">
+        <span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span>
+      </div>
+      <span class="celebration-emoji" id="celebrationEmoji" aria-hidden="true">🎁</span>
+      <p class="eyebrow celebration-eyebrow">Заслуженно!</p>
+      <h2 id="celebrationTitle">Награда твоя!</h2>
+      <p class="celebration-text" id="celebrationText">Отличная работа. Продолжай собирать звёзды!</p>
+      <button class="btn btn-celebration" type="button" data-close>Ура!</button>
+    </div>
+  </dialog>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
