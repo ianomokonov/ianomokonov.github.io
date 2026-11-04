@@ -1,0 +1,64 @@
+/* ============================================================
+   Учёт часов стажёров — кастомные стили приложения.
+   Здесь только то, что не покрывает Bootstrap.
+   ============================================================ */
+
+body {
+  background-color: #f6f8fa;
+}
+
+/* Бейдж пользователя в шапке */
+.user-badge {
+  color: #495057;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* Кликабельная строка таблицы записей */
+.entry-row {
+  cursor: pointer;
+}
+.entry-row:hover {
+  background-color: #eef4ff;
+}
+
+/* Карточки записей на мобильных */
+.entry-card .card-body {
+  padding: 0.75rem 1rem;
+}
+
+/* Имя стажёра в списке управления */
+.trainee-name {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* Итог за месяц */
+#monthTotal .card-body {
+  font-size: 0.95rem;
+}
+
+/* Таблица статистики: горизонтальная прокрутка на узких экранах */
+#statsTable {
+  min-width: 520px;
+  font-size: 0.9rem;
+}
+#statsTable th,
+#statsTable td {
+  white-space: nowrap;
+}
+#statsTable th {
+  background-color: #f7f7f7;
+}
+
+/* Тосты */
+.toast {
+  max-width: 360px;
+}
+
+/* Мелкая адаптация на телефонах */
+@media (max-width: 575.98px) {
+  .app-header h1 {
+    font-size: 1.05rem;
+  }
+}
