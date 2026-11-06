@@ -45,6 +45,18 @@
     person: 'перевод получателю'
   };
 
+  const INCOME_TYPE_LABELS = {
+    salary: 'Зарплата',
+    vacation: 'Отпускные',
+    advance: 'Зарплата за первую половину'
+  };
+
+  const INCOME_TYPE_SHORT_LABELS = {
+    salary: 'Зарплата',
+    vacation: 'Отпускные',
+    advance: 'Первая половина'
+  };
+
   /* ------------------------------------------------------------------------
      Утилиты
      ------------------------------------------------------------------------ */
@@ -166,6 +178,13 @@
       excludedTableWrap: byId('excludedTableWrap'),
       excludedTableBody: byId('excludedTableBody'),
       excludedEmpty: byId('excludedEmpty'),
+      incomeMonthsCountBadge: byId('incomeMonthsCountBadge'),
+      incomeMonthlyCards: byId('incomeMonthlyCards'),
+      incomeEmpty: byId('incomeEmpty'),
+      incomeCountLabel: byId('incomeCountLabel'),
+      incomeTableWrap: byId('incomeTableWrap'),
+      incomeTableBody: byId('incomeTableBody'),
+      incomeTableEmpty: byId('incomeTableEmpty'),
       txTableHead: document.querySelector('.tx-table thead'),
       txTableBody: byId('txTableBody'),
       txTableWrap: byId('txTableWrap'),
@@ -513,6 +532,7 @@
         parsed: null,
         expenses: [],
         excludedExpenses: [],
+        incomes: [],
         errors: [],
         warnings: [],
         error: '',
@@ -594,8 +614,12 @@
 
       const expenseRows = parsed.transactions.filter((transaction) => transaction.amount < 0);
       const excludedExpenses = expenseRows.filter((transaction) => transaction.excludeReason);
+      const incomeRows = parsed.transactions.filter((transaction) => (
+        transaction.amount > 0 && transaction.incomeType
+      ));
       entry.expenses = expenseRows;
       entry.excludedExpenses = excludedExpenses;
+      entry.incomes = incomeRows;
       entry.warnings = parsed.warnings ? parsed.warnings.slice() : [];
 
       if (excludedExpenses.length) {
@@ -612,17 +636,10 @@
         entry.warnings.push(`Исключены из анализа: ${details}. Их можно вернуть в таблице исключённых расходов.`);
       }
 
-      if (!entry.expenses.length) {
+      if (!entry.expenses.length && !entry.incomes.length) {
         entry.status = 'error';
-        entry.errors = ['В выписке нет расходных операций — учитывать нечего.'];
+        entry.errors = ['В выписке нет расходов или подходящих доходов — учитывать нечего.'];
         return;
-      }
-
-      const incomeCount = parsed.transactions.filter((transaction) => (
-        transaction.amount > 0 && !transaction.excludeReason
-      )).length;
-      if (incomeCount > 0) {
-        entry.warnings.push(`Доходные операции (${incomeCount}) не учитываются в анализе.`);
       }
 
       entry.status = 'ready';
@@ -669,6 +686,9 @@
       if (entry.excludedExpenses.length) {
         fileMeta.push(`${formatNumber(entry.excludedExpenses.length)} исключено`);
       }
+      if (entry.incomes.length) {
+        fileMeta.push(`${formatNumber(entry.incomes.length)} ${plural(entry.incomes.length, 'доход', 'дохода', 'доходов')}`);
+      }
       if (entry.parsed.bankName) fileMeta.push(entry.parsed.bankName);
     }
 
@@ -689,13 +709,14 @@
       </div>`;
     } else if (entry.status === 'ready') {
       const countable = entry.expenses.filter((row) => !row.excludeReason);
-      const previewRows = (countable.length ? countable : entry.expenses).slice(0, 4);
+      const previewSource = countable.length ? countable : (entry.expenses.length ? entry.expenses : entry.incomes);
+      const previewRows = previewSource.slice(0, 4);
       const preview = previewRows.map((row) => `
         <tr>
           <td>${escapeHtml(formatDate(row.date))}</td>
           <td class="preview-cat">${escapeHtml(row.category)}</td>
           <td class="preview-cat">${escapeHtml(String(row.description).slice(0, 70))}</td>
-          <td class="text-danger">${escapeHtml(Charts.formatMoney(row.amount))}</td>
+          <td class="${row.amount < 0 ? 'text-danger' : 'text-success'}">${escapeHtml(Charts.formatMoney(row.amount))}</td>
         </tr>
       `).join('');
 
@@ -707,7 +728,7 @@
         ${(entry.warnings || []).map((warning) => `<div class="upload-warning"><i class="bi bi-info-circle" aria-hidden="true"></i><span>${escapeHtml(warning)}</span></div>`).join('')}
         ${(entry.parsed.errors || []).map((error) => `<div class="upload-error"><i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>${escapeHtml(error)}</span></div>`).join('')}
         <div class="file-preview">
-          <div class="file-preview-title">Первые расходы</div>
+          <div class="file-preview-title">Первые операции</div>
           <table><tbody>${preview}</tbody></table>
         </div>
       </div>`;
@@ -754,7 +775,7 @@
         name,
         sourceFile: entry.file.name,
         fileHash: entry.hash,
-        transactions: entry.expenses,
+        transactions: [...entry.expenses, ...entry.incomes],
         accountNumber: entry.parsed.detectedAccountNumber,
         bankName: entry.parsed.bankName
       }, state.accounts);
@@ -856,6 +877,7 @@
     renderCategoryMatrix();
     renderTable();
     renderExcludedTable();
+    renderIncome();
 
     if (!lastDashboardVisible) {
       lastDashboardVisible = true;
@@ -884,7 +906,12 @@
   function renderMonthlyKpis() {
     const filter = getFilter();
     const summaries = Analytics.getMonthlySummaries(state.accounts, filter);
-    const months = Analytics.getAvailableMonths(state.accounts, filter);
+    const incomeMonths = Analytics.getMonthlyIncomeSummaries(state.accounts, filter)
+      .map((item) => item.month);
+    const months = Array.from(new Set([
+      ...Analytics.getAvailableMonths(state.accounts, filter),
+      ...incomeMonths
+    ])).sort((a, b) => b.localeCompare(a));
     const accountCount = state.selectedAccountIds.size;
     const totalCount = summaries.reduce((sum, item) => sum + item.count, 0);
 
@@ -1363,6 +1390,75 @@
     }
   }
 
+  function renderIncome() {
+    const filter = getFilter();
+    const incomes = Analytics.getIncomeTransactions(state.accounts, filter);
+    const summaries = Analytics.getMonthlyIncomeSummaries(state.accounts, filter);
+    const accountCount = new Set(incomes.map((transaction) => transaction.accountId)).size;
+
+    dom.incomeMonthsCountBadge.textContent = String(summaries.length);
+    dom.incomeEmpty.classList.toggle('d-none', summaries.length > 0);
+    dom.incomeMonthlyCards.classList.toggle('d-none', summaries.length === 0);
+
+    dom.incomeMonthlyCards.innerHTML = summaries.slice().reverse().map((summary) => {
+      const details = ['salary', 'vacation', 'advance'].map((type) => {
+        const amount = summary.byType[type] || 0;
+        return `<div class="month-kpi-detail">
+          <span>${escapeHtml(INCOME_TYPE_SHORT_LABELS[type])}</span>
+          <strong>${amount > 0 ? escapeHtml(Charts.formatMoney(amount)) : '—'}</strong>
+        </div>`;
+      }).join('');
+
+      return `<article class="card month-kpi-card income-card" style="--month-color:#059669">
+        <div class="card-body">
+          <div class="month-kpi-head">
+            <span class="month-kpi-month">${escapeHtml(summary.label)}</span>
+            <span class="month-kpi-count">${formatNumber(summary.count)} ${plural(summary.count, 'поступление', 'поступления', 'поступлений')}</span>
+          </div>
+          <div class="month-kpi-total">${escapeHtml(Charts.formatMoney(summary.total))}</div>
+          <div class="month-kpi-details income-breakdown">${details}</div>
+        </div>
+      </article>`;
+    }).join('');
+
+    if (!incomes.length) {
+      dom.incomeTableWrap.classList.add('d-none');
+      dom.incomeTableEmpty.classList.remove('d-none');
+      dom.incomeCountLabel.textContent = 'Нет доходов';
+      dom.incomeTableBody.replaceChildren();
+      return;
+    }
+
+    dom.incomeTableWrap.classList.remove('d-none');
+    dom.incomeTableEmpty.classList.add('d-none');
+    dom.incomeCountLabel.textContent =
+      `${formatNumber(incomes.length)} ${plural(incomes.length, 'доход', 'дохода', 'доходов')} · `
+      + `${formatNumber(summaries.length)} ${plural(summaries.length, 'месяц', 'месяца', 'месяцев')} · `
+      + `${formatNumber(accountCount)} ${plural(accountCount, 'счёт', 'счёта', 'счетов')}`;
+
+    dom.incomeTableBody.innerHTML = incomes.map((tx) => {
+      const accountColor = tx.accountColor || '#94a3b8';
+      const typeLabel = INCOME_TYPE_LABELS[tx.incomeType] || 'Доход';
+      const descTitle = [tx.description, `Счёт: ${tx.accountName}`, `Источник: ${tx.sourceFile}`]
+        .filter(Boolean).join('\n');
+
+      return `<tr>
+        <td class="tx-date">${escapeHtml(formatDate(tx.date))}</td>
+        <td>
+          <div class="tx-account">
+            <span class="account-dot" style="--account-color:${escapeHtml(accountColor)}" aria-hidden="true"></span>
+            <span class="tx-account-name" title="${escapeHtml(tx.accountName)}">${escapeHtml(tx.accountName)}</span>
+          </div>
+        </td>
+        <td><span class="income-type income-type-${escapeHtml(tx.incomeType)}">${escapeHtml(typeLabel)}</span></td>
+        <td class="tx-desc" title="${escapeHtml(descTitle)}">
+          <div class="tx-desc-text">${escapeHtml(tx.description)}</div>
+        </td>
+        <td class="tx-amount text-end income-amount">+${escapeHtml(Charts.formatMoney(tx.amount))}</td>
+      </tr>`;
+    }).join('');
+  }
+
   function compareTransactions(a, b) {
     const key = state.txSort.key;
     const direction = state.txSort.dir === 'asc' ? 1 : -1;
@@ -1521,10 +1617,11 @@
   function openDeleteAccount(accountId) {
     const account = state.accounts.find((item) => item.id === accountId);
     if (!account) return;
+    const transactionCount = account.transactions.length;
 
     openConfirm({
       title: 'Удалить счёт?',
-      text: `Счёт «${account.name}» и все его расходы (${formatNumber(account.transactions.length)}) будут удалены из текущего анализа.`,
+      text: `Счёт «${account.name}» и все его операции (${formatNumber(transactionCount)}) будут удалены из текущего анализа.`,
       confirmLabel: 'Удалить счёт',
       onConfirm() {
         state.accounts = Accounts.removeAccount(state.accounts, account.id);

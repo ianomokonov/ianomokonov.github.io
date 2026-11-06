@@ -6,7 +6,7 @@
   /** @typedef {{ date: string, month: string, amount: number, category: string,
    *              bankCategory: string, description: string, mcc: string,
    *              status: string, isOwnTransfer: boolean,
-   *              excludeReason: string,
+   *              excludeReason: string, incomeType: string, isSalaryIncome: boolean,
    *              type: 'income'|'expense' }} ParsedTransaction */
 
   const PREVIEW_ROWS = 4;
@@ -632,6 +632,23 @@
     return '';
   }
 
+  /**
+   * Определяет тип дохода только по разрешённым формулировкам.
+   * @param {string} description
+   * @param {string} bankCategory
+   * @returns {'advance'|'vacation'|'salary'|''}
+   */
+  function detectIncomeType(description, bankCategory) {
+    const text = cleanText(`${description || ''} ${bankCategory || ''}`)
+      .toLowerCase()
+      .replace(/ё/g, 'е');
+
+    if (/зарплат[а-яё]*\s+за\s+(?:первую|1-?ю)\s+половину/.test(text)) return 'advance';
+    if (/отпускн[а-яё]*/.test(text)) return 'vacation';
+    if (/заработн[а-яё]*\s+плат[а-яё]*/.test(text)) return 'salary';
+    return '';
+  }
+
   function getPreview(transactions) {
     return transactions.slice(0, PREVIEW_ROWS).map((tx) => ({
       date: tx.date,
@@ -720,6 +737,7 @@
         mcc
       });
       const exclusionReason = detectExclusionReason(description, bankCategory);
+      const incomeType = amount > 0 ? detectIncomeType(description, bankCategory) : '';
 
       transactions.push({
         date: parsedDate.iso,
@@ -732,6 +750,8 @@
         status,
         excludeReason: exclusionReason,
         isOwnTransfer: exclusionReason === 'own-transfer',
+        incomeType,
+        isSalaryIncome: Boolean(incomeType),
         type: amount > 0 ? 'income' : 'expense'
       });
     }
@@ -897,7 +917,8 @@
       isLoanRepayment,
       isExcludedPhoneTransfer,
       isExcludedPersonTransfer,
-      detectExclusionReason
+      detectExclusionReason,
+      detectIncomeType
     }
   };
 })(window);

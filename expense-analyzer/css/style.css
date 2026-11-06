@@ -630,6 +630,41 @@ select {
   font-weight: 700;
 }
 
+.app-tabs {
+  gap: 4px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.app-tabs .nav-link {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 10px 10px 0 0;
+  color: var(--muted);
+  background: transparent;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.app-tabs .nav-link:hover {
+  color: var(--ink-soft);
+  background: #f8faff;
+}
+
+.app-tabs .nav-link.active {
+  color: var(--brand-600);
+  border-bottom-color: var(--brand);
+  background: transparent;
+}
+
+.app-tabs .nav-link i {
+  font-size: .9rem;
+}
+
 .accounts-panel {
   margin-bottom: 20px;
 }
@@ -1069,6 +1104,51 @@ select {
 .monthly-kpi-empty i {
   color: #cbd5e1;
   font-size: 1.1rem;
+}
+
+/* Доходы */
+
+.income-card .month-kpi-total {
+  color: var(--income);
+}
+
+.income-breakdown {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.income-table-card {
+  margin-bottom: 22px;
+}
+
+.income-type {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #047857;
+  background: #ecfdf5;
+  font-size: .67rem;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.income-type-vacation {
+  color: #92400e;
+  background: #fffbeb;
+}
+
+.income-type-advance {
+  color: #0e7490;
+  background: #ecfeff;
+}
+
+.income-amount {
+  color: var(--income) !important;
+  font-weight: 800;
+}
+
+.income-table .tx-desc {
+  max-width: 460px;
 }
 
 /* Графики */

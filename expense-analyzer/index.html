@@ -25,7 +25,7 @@
           <h1 class="upload-title">Расходы под контролем</h1>
           <p class="upload-lead">
             Загрузите одну или несколько Excel-выписок — приложение соберёт счета и покажет,
-            куда уходят деньги. В анализ попадают только расходы; переводы между счетами, погашения кредитов и переводы указанным получателям не учитываются.
+            куда уходят деньги. В расходы не попадают переводы и погашения кредитов, а в доходы — только зарплата, отпускные и зарплата за первую половину.
           </p>
         </div>
 
@@ -133,7 +133,7 @@
       <div class="page-intro">
         <div>
           <div class="eyebrow">Дашборд</div>
-          <h2 class="page-title">Анализ расходов</h2>
+          <h2 class="page-title">Расходы и доходы</h2>
           <p class="page-subtitle" id="dashboardSubtitle">Загрузка данных…</p>
         </div>
         <div class="period-badge" id="periodBadge">
@@ -148,7 +148,24 @@
         <button type="button" class="btn btn-sm btn-link ms-auto" id="selectAllNoticeBtn">Выбрать все</button>
       </div>
 
-      <section class="accounts-panel" aria-labelledby="accountsTitle">
+      <ul class="nav nav-tabs app-tabs" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="expensesTabBtn" data-bs-toggle="tab" data-bs-target="#expensesTab"
+                  type="button" role="tab" aria-controls="expensesTab" aria-selected="true">
+            <i class="bi bi-receipt" aria-hidden="true"></i> Расходы
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="incomeTabBtn" data-bs-toggle="tab" data-bs-target="#incomeTab"
+                  type="button" role="tab" aria-controls="incomeTab" aria-selected="false">
+            <i class="bi bi-cash-coin" aria-hidden="true"></i> Доходы
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content app-tab-content">
+        <div class="tab-pane fade show active" id="expensesTab" role="tabpanel" aria-labelledby="expensesTabBtn" tabindex="0">
+          <section class="accounts-panel" aria-labelledby="accountsTitle">
         <div class="section-head">
           <h3 class="section-title" id="accountsTitle">
             Счета <span class="count-badge" id="accountsCountBadge">0</span>
@@ -402,10 +419,59 @@
           <p>Все расходы учитываются в анализе.</p>
         </div>
       </section>
+        </div>
+
+        <div class="tab-pane fade" id="incomeTab" role="tabpanel" aria-labelledby="incomeTabBtn" tabindex="0">
+          <section class="monthly-kpi-section income-kpi-section" aria-labelledby="incomeMonthlyTitle">
+            <div class="section-head">
+              <h3 class="section-title" id="incomeMonthlyTitle">
+                Доходы по месяцам
+                <span class="count-badge" id="incomeMonthsCountBadge">0</span>
+              </h3>
+              <span class="section-hint d-none d-md-inline">Зарплата, отпускные и зарплата за первую половину</span>
+            </div>
+            <div id="incomeMonthlyCards" class="monthly-kpi-scroll"></div>
+            <div id="incomeEmpty" class="monthly-kpi-empty">
+              <i class="bi bi-cash-stack" aria-hidden="true"></i>
+              <span>Нет доходов: зарплата, отпускные и зарплата за первую половину не найдены.</span>
+            </div>
+          </section>
+
+          <section class="card table-card income-table-card" aria-labelledby="incomeTableTitle">
+            <div class="table-toolbar">
+              <div>
+                <h3 class="section-title" id="incomeTableTitle">Доходы</h3>
+                <p class="table-subtitle" id="incomeCountLabel">Нет доходов</p>
+              </div>
+            </div>
+
+            <div class="table-responsive" id="incomeTableWrap">
+              <table class="table tx-table income-table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col" class="col-date">Дата</th>
+                    <th scope="col" class="col-account">Счёт</th>
+                    <th scope="col" class="col-category">Тип дохода</th>
+                    <th scope="col" class="col-description">Описание</th>
+                    <th scope="col" class="col-amount text-end">Сумма</th>
+                  </tr>
+                </thead>
+                <tbody id="incomeTableBody"></tbody>
+              </table>
+            </div>
+
+            <div id="incomeTableEmpty" class="table-empty d-none">
+              <span class="empty-icon" aria-hidden="true"><i class="bi bi-cash-stack"></i></span>
+              <h4>Доходов не найдено</h4>
+              <p>Загрузите выписки с зарплатой, отпускными или зарплатой за первую половину.</p>
+            </div>
+          </section>
+        </div>
+      </div>
 
       <footer class="app-footer">
         <i class="bi bi-shield-lock" aria-hidden="true"></i>
-        Данные обрабатываются локально и исчезают после перезагрузки. В анализе только расходы, без переводов между счетами, погашений кредитов и переводов указанным получателям.
+        Данные обрабатываются локально и исчезают после перезагрузки. В доходы попадают только зарплата, отпускные и зарплата за первую половину; переводы и погашения кредитов не учитываются.
       </footer>
     </main>
   </div>
@@ -418,7 +484,7 @@
           <div>
             <div class="eyebrow">Импорт</div>
             <h2 class="modal-title fs-4" id="uploadModalLabel">Новые выписки</h2>
-            <p class="modal-subtitle mb-0">Проверьте названия счетов. Учитываются только расходы; переводы между счетами, погашения кредитов и переводы указанным получателям исключаются.</p>
+            <p class="modal-subtitle mb-0">Проверьте названия счетов. В доходы попадут только зарплата, отпускные и зарплата за первую половину.</p>
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
         </div>

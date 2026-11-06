@@ -524,6 +524,82 @@
     return getMonthScope(accounts, filter).sort((a, b) => b.localeCompare(a));
   }
 
+  /**
+   * Только доходы разрешённых типов: зарплата, отпускные,
+   * зарплата за первую половину месяца.
+   * @param {Array<Object>} accounts
+   * @param {Object} [filter]
+   * @returns {Array<Object>}
+   */
+  function getIncomeTransactions(accounts, filter) {
+    const normalized = normalizeFilter(filter);
+    const selected = getSelectedAccounts(accounts, normalized);
+    const result = [];
+
+    for (const account of selected) {
+      for (const transaction of account.transactions || []) {
+        if (transaction.amount <= 0 || !transaction.incomeType) continue;
+        if (normalized.month && transaction.month !== normalized.month) continue;
+
+        result.push({
+          ...transaction,
+          accountId: account.id,
+          accountName: account.name,
+          accountColor: account.color,
+          accountNumber: account.accountNumber || '',
+          sourceFile: account.sourceFile || ''
+        });
+      }
+    }
+
+    return result.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
+  }
+
+  /**
+   * Доходы отдельно по каждому месяцу и по типам.
+   * @param {Array<Object>} accounts
+   * @param {Object} [filter]
+   * @returns {Array<{month: string, label: string, shortLabel: string, total: number,
+   *   count: number, byType: {salary: number, vacation: number, advance: number}}>}
+   */
+  function getMonthlyIncomeSummaries(accounts, filter) {
+    const incomes = getIncomeTransactions(accounts, filter);
+    const months = new Map();
+
+    for (const transaction of incomes) {
+      let item = months.get(transaction.month);
+      if (!item) {
+        item = {
+          month: transaction.month,
+          label: getMonthLabel(transaction.month),
+          shortLabel: getMonthShortLabel(transaction.month),
+          total: 0,
+          count: 0,
+          byType: { salary: 0, vacation: 0, advance: 0 }
+        };
+        months.set(transaction.month, item);
+      }
+
+      item.total += transaction.amount;
+      item.count += 1;
+      if (item.byType[transaction.incomeType] !== undefined) {
+        item.byType[transaction.incomeType] += transaction.amount;
+      }
+    }
+
+    return Array.from(months.values())
+      .sort((a, b) => a.month.localeCompare(b.month))
+      .map((item) => ({
+        ...item,
+        total: round2(item.total),
+        byType: {
+          salary: round2(item.byType.salary),
+          vacation: round2(item.byType.vacation),
+          advance: round2(item.byType.advance)
+        }
+      }));
+  }
+
   app.analytics = {
     getSelectedAccounts,
     getFilteredTransactions,
@@ -539,6 +615,8 @@
     getMonthlySummaries,
     getKpi,
     getAvailableMonths,
+    getIncomeTransactions,
+    getMonthlyIncomeSummaries,
     getMonthLabel,
     getMonthShortLabel,
     CATEGORY_ORDER
