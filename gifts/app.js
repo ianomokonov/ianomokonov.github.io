@@ -22,6 +22,7 @@
 
   const elements = {};
   let giftItemSequence = 0;
+  let draggedRecipient = null;
 
   function init() {
     cacheElements();
@@ -39,6 +40,7 @@
     elements.summaryRemainingCard = document.getElementById('summaryRemainingCard');
     elements.giftCount = document.getElementById('giftCount');
     elements.recipientCount = document.getElementById('recipientCount');
+    elements.sortHint = document.getElementById('sortHint');
     elements.addGiftBtn = document.getElementById('addGiftBtn');
     elements.clearGiftsBtn = document.getElementById('clearGiftsBtn');
     elements.giftsTableBody = document.getElementById('giftsTableBody');
@@ -237,6 +239,8 @@
       groups.get(gift.recipient).push(gift);
     });
 
+    elements.sortHint.classList.toggle('d-none', groups.size < 2);
+
     if (groups.size === 0) {
       renderEmptyState(tbody);
       return;
@@ -250,10 +254,25 @@
       const isOverBudget = totalPrice > budget;
       const row = document.createElement('tr');
 
+      row.dataset.recipient = recipient;
       if (isOverBudget) row.classList.add('table-danger');
 
       // 1. Кому
       const recipientCell = document.createElement('td');
+      const recipientInfo = document.createElement('div');
+      recipientInfo.className = 'd-flex align-items-start gap-2';
+
+      const dragHandle = document.createElement('span');
+      dragHandle.className = 'drag-handle';
+      dragHandle.draggable = true;
+      dragHandle.dataset.dragHandle = '';
+      dragHandle.title = 'Перетащите, чтобы изменить порядок';
+      dragHandle.setAttribute('aria-hidden', 'true');
+
+      const dragIcon = document.createElement('i');
+      dragIcon.className = 'bi bi-grip-vertical';
+      dragHandle.append(dragIcon);
+
       const recipientName = document.createElement('div');
       recipientName.className = 'recipient-name';
       recipientName.textContent = recipient;
@@ -261,7 +280,11 @@
       const giftsCount = document.createElement('div');
       giftsCount.className = 'recipient-gifts-count';
       giftsCount.textContent = `${gifts.length} ${getGiftsWord(gifts.length)}`;
-      recipientCell.append(recipientName, giftsCount);
+
+      const recipientDetails = document.createElement('div');
+      recipientDetails.append(recipientName, giftsCount);
+      recipientInfo.append(dragHandle, recipientDetails);
+      recipientCell.append(recipientInfo);
 
       // 2. Подарки получателя
       const giftsCell = document.createElement('td');
@@ -509,6 +532,12 @@
     // Делегирование кликов для кнопок, которые пересоздаются при рендере.
     elements.giftsTableBody.addEventListener('click', handleTableClick);
 
+    // Сортировка получателей перетаскиванием за ручку.
+    elements.giftsTableBody.addEventListener('dragstart', handleRecipientDragStart);
+    elements.giftsTableBody.addEventListener('dragover', handleRecipientDragOver);
+    elements.giftsTableBody.addEventListener('drop', handleRecipientDrop);
+    elements.giftsTableBody.addEventListener('dragend', handleRecipientDragEnd);
+
     elements.giftModal.addEventListener('hidden.bs.modal', resetGiftModal);
     elements.giftModal.addEventListener('shown.bs.modal', () => {
       elements.recipient.focus();
@@ -580,6 +609,121 @@
   function handleAddGiftItem() {
     const giftItem = appendGiftItem();
     giftItem.querySelector('[data-field="title"]').focus();
+  }
+
+  function handleRecipientDragStart(event) {
+    const dragHandle = event.target.closest('[data-drag-handle]');
+    if (!dragHandle) return;
+
+    const row = dragHandle.closest('tr[data-recipient]');
+    if (!row) return;
+
+    draggedRecipient = row.dataset.recipient;
+    row.classList.add('is-dragging');
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', draggedRecipient);
+
+      try {
+        event.dataTransfer.setDragImage(row, 24, 24);
+      } catch {
+        // В некоторых браузерах элемент таблицы нельзя использовать как drag image.
+      }
+    }
+  }
+
+  function handleRecipientDragOver(event) {
+    if (!draggedRecipient) return;
+
+    const row = event.target.closest('tr[data-recipient]');
+    clearDropIndicators();
+
+    if (!row || row.dataset.recipient === draggedRecipient) return;
+
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+
+    const rowRect = row.getBoundingClientRect();
+    const placeAfter = event.clientY > rowRect.top + rowRect.height / 2;
+    row.classList.add(placeAfter ? 'drop-after' : 'drop-before');
+  }
+
+  function handleRecipientDrop(event) {
+    if (!draggedRecipient) return;
+
+    const row = event.target.closest('tr[data-recipient]');
+    if (!row) return;
+
+    event.preventDefault();
+
+    const targetRecipient = row.dataset.recipient;
+    const rowRect = row.getBoundingClientRect();
+    const placeAfter = event.clientY > rowRect.top + rowRect.height / 2;
+    const sourceRecipient = draggedRecipient;
+
+    endRecipientDrag();
+
+    if (sourceRecipient !== targetRecipient) {
+      reorderRecipients(sourceRecipient, targetRecipient, placeAfter);
+    }
+  }
+
+  function handleRecipientDragEnd() {
+    endRecipientDrag();
+  }
+
+  function endRecipientDrag() {
+    draggedRecipient = null;
+    elements.giftsTableBody
+      .querySelectorAll('tr.is-dragging')
+      .forEach((row) => row.classList.remove('is-dragging'));
+    clearDropIndicators();
+  }
+
+  function clearDropIndicators() {
+    elements.giftsTableBody
+      .querySelectorAll('tr.drop-before, tr.drop-after')
+      .forEach((row) => row.classList.remove('drop-before', 'drop-after'));
+  }
+
+  /**
+   * Меняет порядок получателей и сохраняет его в localStorage, переставляя
+   * подарки в массиве state.gifts (таблица группирует их по получателю).
+   */
+  function reorderRecipients(sourceRecipient, targetRecipient, placeAfter) {
+    const recipients = [];
+
+    state.gifts.forEach((gift) => {
+      if (!recipients.includes(gift.recipient)) {
+        recipients.push(gift.recipient);
+      }
+    });
+
+    const sourceIndex = recipients.indexOf(sourceRecipient);
+    if (sourceIndex === -1) return;
+
+    recipients.splice(sourceIndex, 1);
+
+    const targetIndex = recipients.indexOf(targetRecipient);
+    if (targetIndex === -1) return;
+
+    recipients.splice(placeAfter ? targetIndex + 1 : targetIndex, 0, sourceRecipient);
+
+    const giftsByRecipient = new Map(
+      recipients.map((recipient) => [recipient, []])
+    );
+    state.gifts.forEach((gift) => {
+      giftsByRecipient.get(gift.recipient)?.push(gift);
+    });
+
+    state.gifts = recipients.flatMap(
+      (recipient) => giftsByRecipient.get(recipient) ?? []
+    );
+    saveState();
+    render();
   }
 
   function handleGiftItemsClick(event) {

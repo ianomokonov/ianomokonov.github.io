@@ -80,6 +80,42 @@ body {
   font-weight: 600;
 }
 
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.15rem;
+  color: var(--bs-secondary-color);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-handle:hover {
+  color: var(--bs-primary);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+#giftsTableBody tr.is-dragging {
+  opacity: 0.45;
+}
+
+#giftsTableBody tr.is-dragging > td {
+  background-color: var(--bs-secondary-bg);
+}
+
+#giftsTableBody tr.drop-before > td {
+  box-shadow: inset 0 2px 0 var(--bs-primary);
+}
+
+#giftsTableBody tr.drop-after > td {
+  box-shadow: inset 0 -2px 0 var(--bs-primary);
+}
+
 .recipient-gifts-count {
   margin-top: 0.15rem;
   font-size: 0.75rem;

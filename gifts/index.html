@@ -97,6 +97,9 @@
                 <span aria-hidden="true">•</span>
                 <span><i class="bi bi-people me-1" aria-hidden="true"></i>Получателей: <strong id="recipientCount">0</strong></span>
               </div>
+              <div id="sortHint" class="small text-secondary mt-1 d-none">
+                <i class="bi bi-grip-vertical me-1" aria-hidden="true"></i>Перетащите получателей за ручку, чтобы изменить порядок.
+              </div>
             </div>
 
             <div class="action-panel d-grid gap-2 d-sm-flex justify-content-sm-end">
@@ -136,60 +139,58 @@
   <!-- Единственное модальное окно: получатель и несколько его подарков. -->
   <div class="modal fade" id="giftModal" tabindex="-1" aria-labelledby="giftModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <form id="giftForm" novalidate>
-          <div class="modal-header">
-            <h2 class="modal-title fs-5" id="giftModalLabel">Добавить получателя</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-          </div>
+      <form id="giftForm" class="modal-content" novalidate>
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="giftModalLabel">Добавить получателя</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
 
-          <div class="modal-body">
-            <div class="row g-3 mb-4">
-              <div class="col-12 col-md-6">
-                <label for="recipient" class="form-label">Кому <span class="text-danger" aria-hidden="true">*</span></label>
-                <input type="text" class="form-control" id="recipient" list="recipientSuggestions" required autocomplete="off">
-                <datalist id="recipientSuggestions"></datalist>
-                <div class="invalid-feedback">Введите имя получателя.</div>
-                <div class="form-text">Можно указать несколько подарков для одного человека.</div>
-              </div>
-
-              <div class="col-12 col-md-6">
-                <label for="individualBudget" class="form-label">Индивидуальный бюджет, ₽</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="individualBudget"
-                  min="0"
-                  step="0.01"
-                  inputmode="decimal"
-                  placeholder="оставьте пустым — распределится автоматически"
-                  aria-describedby="individualBudgetHelp"
-                >
-                <div class="invalid-feedback">Бюджет должен быть неотрицательным числом.</div>
-                <div id="individualBudgetHelp" class="form-text">Пустое поле — бюджет распределится автоматически.</div>
-              </div>
+        <div class="modal-body">
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+              <label for="recipient" class="form-label">Кому <span class="text-danger" aria-hidden="true">*</span></label>
+              <input type="text" class="form-control" id="recipient" list="recipientSuggestions" required autocomplete="off">
+              <datalist id="recipientSuggestions"></datalist>
+              <div class="invalid-feedback">Введите имя получателя.</div>
+              <div class="form-text">Можно указать несколько подарков для одного человека.</div>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-              <h3 class="h6 mb-0">Подарки</h3>
-              <span class="small text-secondary">Один или несколько</span>
+            <div class="col-12 col-md-6">
+              <label for="individualBudget" class="form-label">Индивидуальный бюджет, ₽</label>
+              <input
+                type="number"
+                class="form-control"
+                id="individualBudget"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="оставьте пустым — распределится автоматически"
+                aria-describedby="individualBudgetHelp"
+              >
+              <div class="invalid-feedback">Бюджет должен быть неотрицательным числом.</div>
+              <div id="individualBudgetHelp" class="form-text">Пустое поле — бюджет распределится автоматически.</div>
             </div>
-
-            <div id="giftItems"></div>
-
-            <button type="button" class="btn btn-sm btn-outline-primary" id="addGiftItemBtn">
-              <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Добавить ещё подарок
-            </button>
           </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-            <button type="submit" class="btn btn-primary" id="giftModalSaveBtn">
-              <i class="bi bi-check-lg me-1" aria-hidden="true"></i>Сохранить
-            </button>
+          <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <h3 class="h6 mb-0">Подарки</h3>
+            <span class="small text-secondary">Один или несколько</span>
           </div>
-        </form>
-      </div>
+
+          <div id="giftItems"></div>
+
+          <button type="button" class="btn btn-sm btn-outline-primary" id="addGiftItemBtn">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Добавить ещё подарок
+          </button>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="submit" class="btn btn-primary" id="giftModalSaveBtn">
+            <i class="bi bi-check-lg me-1" aria-hidden="true"></i>Сохранить
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
