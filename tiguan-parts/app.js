@@ -13,7 +13,13 @@ const esc = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const norm = (s) => s.toLowerCase().replace(/ё/g, 'е').replace(/[\s\-·]/g, '');
 
-const LS = { oem: 'tiguan.oem.v1', fav: 'tiguan.fav.v1', fluid: 'tiguan.fluid.v1' };
+const LS = {
+  oem: 'tiguan.oem.v1',
+  fav: 'tiguan.fav.v1',
+  fluid: 'tiguan.fluid.v1',
+  custom: 'tiguan.custom.v1',
+  log: 'tiguan.log.v1'
+};
 const readJSON = (key, fallback) => {
   try {
     const raw = localStorage.getItem(key);
@@ -35,8 +41,8 @@ const writeJSON = (key, value) => {
 /* ------------------------------------------------------------------ */
 
 const DATA = window.TIGUAN_DATA;
-const PARTS = new Map(DATA.parts.map((p) => [p.id, p]));
 const SYSTEMS = new Map(DATA.systems.map((s) => [s.id, s]));
+SYSTEMS.set('fluids', { id: 'fluids', title: 'Жидкости и масла' });
 const DIAGRAM_INFO = new Map(DATA.diagrams.map((d) => [d.id, d]));
 const FLUIDS = new Map((DATA.fluids || []).map((f) => [f.id, f]));
 const ZONES = new Map(DATA.zones.map((z) => [z.id, z]));
@@ -44,15 +50,73 @@ const ZONES = new Map(DATA.zones.map((z) => [z.id, z]));
 const CONF = {
   high: { label: 'сверено', cls: 'high' },
   medium: { label: 'вероятно', cls: 'medium' },
-  low: { label: 'проверить', cls: 'low' }
+  low: { label: 'проверить', cls: 'low' },
+  custom: { label: 'своя', cls: 'medium' }
 };
+
+// свои детали и журнал замен живут только в браузере
+let customParts = readJSON(LS.custom, []);
+let logBook = readJSON(LS.log, {});
+
+const FLUID_PARTS = (DATA.fluids || []).map((f) => ({
+  id: `fluid:${f.id}`,
+  fluidId: f.id,
+  isFluid: true,
+  name: f.title,
+  oem: f.code,
+  system: 'fluids',
+  qty: 1,
+  confidence: 'medium',
+  location: 'Жидкость',
+  note: '',
+  diagram: null,
+  zone: null
+}));
+
+let PARTS = new Map();
+function rebuildParts() {
+  PARTS = new Map([...DATA.parts, ...customParts, ...FLUID_PARTS].map((p) => [p.id, p]));
+}
+rebuildParts();
+
+const allParts = () => DATA.parts.concat(customParts, FLUID_PARTS);
 
 let oemOverrides = readJSON(LS.oem, {});
 let fluidOverrides = readJSON(LS.fluid, {});
 let favorites = new Set(readJSON(LS.fav, []));
-const oemOf = (p) => oemOverrides[p.id] || p.oem;
 const fluidCodeOf = (f) => fluidOverrides[f.id] || f.code;
+const oemOf = (p) => (p.isFluid ? fluidCodeOf(FLUIDS.get(p.fluidId)) : oemOverrides[p.id] || p.oem);
 const isFav = (id) => favorites.has(id);
+
+const logOf = (key) => logBook[key] || [];
+
+function addLog(key, date, km) {
+  if (!logBook[key]) logBook[key] = [];
+  logBook[key].push({
+    id: `l${Date.now()}${Math.random().toString(16).slice(2, 6)}`,
+    date,
+    km: Number(km)
+  });
+  writeJSON(LS.log, logBook);
+}
+
+function delLog(key, id) {
+  logBook[key] = logOf(key).filter((r) => r.id !== id);
+  if (!logBook[key].length) delete logBook[key];
+  writeJSON(LS.log, logBook);
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
+  return `${d}.${m}.${y}`;
+}
+
+function todayISO() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 
 /* ------------------------------------------------------------------ */
 /*  состояние и маршруты                                               */
@@ -209,12 +273,15 @@ function renderPanel(partId) {
 }
 
 function cardHTML(p) {
+  if (p.isFluid) return fluidCardHTML(p);
+
   const oem = oemOf(p);
   const changed = !!oemOverrides[p.id];
   const conf = CONF[p.confidence] || CONF.medium;
   const sys = SYSTEMS.get(p.system);
   const fluid = p.fluid ? FLUIDS.get(p.fluid) : null;
   const drawn = !!document.querySelector(`#schemaBody [data-part="${p.id}"]`);
+  const isCustom = !!p.custom;
 
   return `
     <div class="card-head">
@@ -232,16 +299,75 @@ function cardHTML(p) {
     <dl class="meta">
       <div><dt>Система</dt><dd>${esc(sys.title)}</dd></div>
       <div><dt>Количество</dt><dd>${p.qty} шт.</dd></div>
-      <div><dt>Где искать</dt><dd>${esc(p.location)}</dd></div>
+      <div><dt>Где искать</dt><dd>${esc(p.location || '—')}</dd></div>
     </dl>
     ${serviceBlock(p)}
+    ${logSection(p)}
     ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
     ${fluid ? fluidBlock(fluid) : ''}
     ${p.zone ? miniMap(p.zone) : ''}
     <div class="panel-actions">
       <button type="button" class="btn" data-act="catalog">Все детали системы</button>
+      ${isCustom ? `<button type="button" class="btn" data-act="custom-edit">Изменить</button><button type="button" class="btn btn-danger" data-act="custom-del">Удалить</button>` : ''}
       ${drawn || p.diagram ? `<button type="button" class="btn btn-primary" data-act="diagram">${drawn ? 'Показать на схеме' : 'Схема узла'}</button>` : ''}
     </div>`;
+}
+
+function fluidCardHTML(p) {
+  const f = FLUIDS.get(p.fluidId);
+  const code = fluidCodeOf(f);
+  const changed = !!fluidOverrides[f.id];
+
+  return `
+    <div class="card-head">
+      <span class="badge badge-fluid">жидкость</span>
+      <button type="button" class="icon-btn ${isFav(p.id) ? 'is-on' : ''}" data-act="fav" title="В избранное">★</button>
+      <button type="button" class="icon-btn" data-act="close" title="Закрыть (Esc)">✕</button>
+    </div>
+    <h3>${esc(f.title)}</h3>
+    <div class="oem-row" data-fluid-code-row>
+      <code class="oem">${esc(code)}</code>
+      <button type="button" class="icon-btn" data-act="fluid-code-edit" title="Исправить код">✎</button>
+    </div>
+    ${changed ? `<div class="oem-note">код изменён вручную <span class="orig">${esc(f.code)}</span><button type="button" data-act="fluid-code-reset">вернуть</button></div>` : ''}
+    <dl class="meta">
+      <div><dt>Тип</dt><dd>Жидкость</dd></div>
+      <div><dt>Характеристики</dt><dd>${esc(f.spec)}</dd></div>
+      <div><dt>Объём</dt><dd>${esc(f.volume)}</dd></div>
+      <div><dt>Интервал</dt><dd>${esc(f.interval)}</dd></div>
+    </dl>
+    ${logSection(p)}
+    <div class="panel-actions">
+      <button type="button" class="btn" data-act="fluids">Все жидкости</button>
+    </div>`;
+}
+
+function logSection(p) {
+  const recs = logOf(p.id)
+    .slice()
+    .sort((a, b) => a.km - b.km || String(a.date).localeCompare(String(b.date)));
+
+  return `<div class="log">
+    <div class="log-title">Замены <span class="log-count">${recs.length}</span></div>
+    ${
+      recs.length
+        ? recs
+            .map(
+              (r) => `<div class="log-row">
+        <span class="log-date">${fmtDate(r.date)}</span>
+        <span class="log-km">${fmtKm(r.km)}</span>
+        <button type="button" class="icon-btn mini" data-act="log-del" data-id="${r.id}" title="Удалить запись">✕</button>
+      </div>`
+            )
+            .join('')
+        : `<div class="log-empty">Пока нет записей</div>`
+    }
+    <div class="log-add">
+      <input type="date" id="logDate" value="${todayISO()}" aria-label="Дата замены">
+      <input type="number" id="logKm" min="0" step="1000" placeholder="Пробег, км" aria-label="Пробег">
+      <button type="button" class="btn" data-act="log-add">Добавить</button>
+    </div>
+  </div>`;
 }
 
 function fmtKm(n) {
@@ -295,13 +421,28 @@ function startFluidEdit(f) {
     <button type="button" class="icon-btn" data-act="fluid-save" title="Сохранить">✓</button>
     <button type="button" class="icon-btn" data-act="fluid-cancel" title="Отмена">✕</button>
   </dd>`;
-  const input = $('#fluidInput');
+  bindFluidInput(f, '#fluidInput', 'fluid-save');
+}
+
+function startFluidCodeEdit(f) {
+  const row = document.querySelector('[data-fluid-code-row]');
+  if (!row) return;
+  row.innerHTML = `
+    <input class="oem-edit" id="fluidCodeInput" value="${esc(fluidCodeOf(f))}" spellcheck="false" autocomplete="off">
+    <button type="button" class="icon-btn" data-act="fluid-code-save" title="Сохранить">✓</button>
+    <button type="button" class="icon-btn" data-act="fluid-code-cancel" title="Отмена">✕</button>`;
+  bindFluidInput(f, '#fluidCodeInput', 'fluid-code-save');
+}
+
+function bindFluidInput(f, selector, saveAct) {
+  const input = $(selector);
+  if (!input) return;
   input.focus();
   input.select();
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      const btn = document.querySelector('[data-act="fluid-save"]');
+      const btn = document.querySelector(`[data-act="${saveAct}"]`);
       if (btn) btn.click();
     }
     if (e.key === 'Escape') {
@@ -369,6 +510,59 @@ $('#panelBody').addEventListener('click', async (e) => {
       renderPanel(p.id);
       toast('Вернул исходный код');
     }
+  } else if (act === 'log-add') {
+    const dateEl = $('#logDate');
+    const kmEl = $('#logKm');
+    if (!dateEl || !kmEl) return;
+    const km = Number(kmEl.value);
+    if (!dateEl.value || !km) {
+      toast('Укажите дату и пробег');
+      return;
+    }
+    addLog(p.id, dateEl.value, km);
+    renderPanel(p.id);
+    renderCatalog(current.system, current.view === 'favorites');
+    toast('Замена добавлена');
+  } else if (act === 'log-del') {
+    delLog(p.id, btn.dataset.id);
+    renderPanel(p.id);
+    renderCatalog(current.system, current.view === 'favorites');
+    toast('Запись удалена');
+  } else if (act === 'fluid-code-edit') {
+    const f = FLUIDS.get(p.fluidId);
+    if (f) startFluidCodeEdit(f);
+  } else if (act === 'fluid-code-save') {
+    const f = FLUIDS.get(p.fluidId);
+    const input = $('#fluidCodeInput');
+    if (!f || !input) return;
+    const value = input.value.trim().replace(/\s+/g, ' ');
+    if (!value) return;
+    if (value === f.code) delete fluidOverrides[f.id];
+    else fluidOverrides[f.id] = value;
+    writeJSON(LS.fluid, fluidOverrides);
+    renderPanel(p.id);
+    toast('Код сохранён в этом браузере');
+  } else if (act === 'fluid-code-cancel') {
+    renderPanel(p.id);
+  } else if (act === 'fluid-code-reset') {
+    const f = FLUIDS.get(p.fluidId);
+    if (f) {
+      delete fluidOverrides[f.id];
+      writeJSON(LS.fluid, fluidOverrides);
+      renderPanel(p.id);
+      toast('Вернул исходный код');
+    }
+  } else if (act === 'custom-edit') {
+    openPartForm(p);
+  } else if (act === 'custom-del') {
+    if (!window.confirm(`Удалить «${p.name}»?`)) return;
+    customParts = customParts.filter((x) => x.id !== p.id);
+    writeJSON(LS.custom, customParts);
+    rebuildParts();
+    go(`#/catalog/${p.system}`);
+    toast('Деталь удалена');
+  } else if (act === 'fluids') {
+    go('#/catalog/fluids');
   } else if (act === 'reset') {
     delete oemOverrides[p.id];
     writeJSON(LS.oem, oemOverrides);
@@ -448,24 +642,43 @@ async function copyText(text) {
 /*  каталог                                                            */
 /* ------------------------------------------------------------------ */
 
-function renderCatalog(system, favMode) {
-  const parts = DATA.parts.filter((p) => (favMode ? isFav(p.id) : !system || p.system === system));
+const collapsedGroups = new Set(
+  readJSON('tiguan.collapsed.v1', DATA.systems.map((s) => s.id).concat('fluids'))
+);
 
-  $('#catalogTitle').textContent = favMode ? 'Избранное' : system ? SYSTEMS.get(system).title : 'Все детали';
+function partCardHTML(p) {
+  const isFluid = !!p.isFluid;
+  const changed = isFluid ? !!fluidOverrides[p.fluidId] : !!oemOverrides[p.id];
+  const status = isFluid
+    ? `Жидкость${changed ? ' · код изменён' : ''}`
+    : p.custom
+      ? 'Своя деталь'
+      : `${esc(SYSTEMS.get(p.system).title)}${changed ? ' · номер изменён' : ''}`;
+  const recs = logOf(p.id).length;
+
+  return `<div class="part-card ${isFluid ? 'is-fluid' : ''}" role="button" tabindex="0" data-part="${p.id}">
+    <span class="pc-name">${esc(p.name)}</span>
+    <span class="pc-oem">${esc(oemOf(p))}</span>
+    <span class="pc-system">${status}</span>
+    ${p.service ? `<span class="pc-service">${esc(p.service.action || 'замена')} ${p.service.atKm ? 'на ' + p.service.atKm.map(fmtKm).join(', ') : p.service.everyKm ? 'каждые ' + fmtKm(p.service.everyKm) : ''}</span>` : ''}
+    ${recs ? `<span class="pc-log">замен: ${recs}</span>` : ''}
+    <button type="button" class="pc-fav ${isFav(p.id) ? 'is-on' : ''}" data-fav="${p.id}" title="В избранное">★</button>
+  </div>`;
+}
+
+function renderCatalog(system, favMode) {
+  const parts = favMode ? allParts().filter((p) => isFav(p.id)) : allParts();
+
+  $('#catalogTitle').textContent = favMode ? 'Избранное' : 'Каталог';
   $('#catalogSub').textContent = favMode
     ? `${parts.length} отмечено · звёздочка в карточке`
-    : `${parts.length} из ${DATA.parts.length} · номер можно исправить в карточке`;
+    : `${parts.length} деталей и жидкостей · журнал замен и свои запчасти хранятся в браузере`;
 
-  const chips = [];
-  if (system && !favMode) chips.push(`<button type="button" class="chip" data-system="all">Все системы</button>`);
-  DATA.systems.forEach((s) => {
-    const count = DATA.parts.filter((p) => p.system === s.id && (!favMode || isFav(p.id))).length;
-    if (!count) return;
-    chips.push(
-      `<button type="button" class="chip ${system === s.id ? 'is-active' : ''}" data-system="${s.id}">${esc(s.title)} <span class="chip-count">${count}</span></button>`
-    );
-  });
-  $('#catalogFilters').innerHTML = chips.join('');
+  $('#catalogFilters').innerHTML = `
+    <button type="button" class="btn" data-act="expand-all">Развернуть</button>
+    <button type="button" class="btn" data-act="collapse-all">Свернуть</button>
+    <button type="button" class="btn" data-act="pdf">Экспорт PDF</button>
+    <button type="button" class="btn btn-primary" data-act="add-part">+ Деталь</button>`;
 
   const banner = $('#catalogBanner');
   if (catalogNote) {
@@ -476,33 +689,71 @@ function renderCatalog(system, favMode) {
     banner.hidden = true;
   }
 
-  $('#catalogBody').innerHTML = parts.length
-    ? parts
-        .map(
-          (p) => `
-      <div class="part-card" role="button" tabindex="0" data-part="${p.id}">
-        <span class="pc-name">${esc(p.name)}</span>
-        <span class="pc-oem">${esc(oemOf(p))}</span>
-        <span class="pc-system">${esc(SYSTEMS.get(p.system).title)}${oemOverrides[p.id] ? ' · номер изменён' : ''}</span>
-        ${p.service ? `<span class="pc-service">${esc(p.service.action || 'замена')} ${p.service.atKm ? 'на ' + p.service.atKm.map(fmtKm).join(', ') : p.service.everyKm ? 'каждые ' + fmtKm(p.service.everyKm) : ''}</span>` : ''}
-        <button type="button" class="pc-fav ${isFav(p.id) ? 'is-on' : ''}" data-fav="${p.id}" title="В избранное">★</button>
-      </div>`
-        )
-        .join('')
-    : `<p class="catalog-empty">${favMode ? 'Пока ничего не отмечено. Откройте деталь и нажмите ★.' : 'Ничего не найдено.'}</p>`;
+  if (!parts.length) {
+    $('#catalogBody').innerHTML = `<p class="catalog-empty">${
+      favMode ? 'Пока ничего не отмечено. Откройте деталь и нажмите ★.' : 'Ничего не найдено.'
+    }</p>`;
+    return;
+  }
+
+  const groups = new Map();
+  parts.forEach((p) => {
+    if (!groups.has(p.system)) groups.set(p.system, []);
+    groups.get(p.system).push(p);
+  });
+
+  const order = DATA.systems.map((s) => s.id).concat('fluids');
+  const sorted = order.filter((id) => groups.has(id)).map((id) => [id, groups.get(id)]);
+
+  $('#catalogBody').innerHTML = sorted
+    .map(([id, items]) => {
+      const open = system ? id === system : !collapsedGroups.has(id);
+      return `<section class="acc ${open ? 'is-open' : ''}" data-group="${id}">
+        <button type="button" class="acc-head" data-acc="${id}">
+          <span class="acc-title">${esc(SYSTEMS.get(id).title)}</span>
+          <span class="acc-count">${items.length}</span>
+          <span class="acc-chevron">›</span>
+        </button>
+        <div class="acc-body" ${open ? '' : 'hidden'}>
+          <div class="part-grid">${items.map(partCardHTML).join('')}</div>
+        </div>
+      </section>`;
+    })
+    .join('');
+
+  if (system) {
+    const el = $(`#catalogBody [data-group="${system}"]`);
+    if (el) el.scrollIntoView({ block: 'start' });
+  }
 }
 
 $('#catalogBody').addEventListener('click', (e) => {
+  const acc = e.target.closest('[data-acc]');
+  if (acc) {
+    const id = acc.dataset.acc;
+    const section = acc.closest('.acc');
+    const body = section.querySelector('.acc-body');
+    const open = body.hidden;
+    body.hidden = !open;
+    section.classList.toggle('is-open', open);
+    if (open) collapsedGroups.delete(id);
+    else collapsedGroups.add(id);
+    writeJSON('tiguan.collapsed.v1', [...collapsedGroups]);
+    return;
+  }
+
   const fav = e.target.closest('.pc-fav');
   if (fav) {
     e.stopPropagation();
     toggleFav(fav.dataset.fav);
     return;
   }
+
   const card = e.target.closest('.part-card');
   if (!card) return;
   const p = PARTS.get(card.dataset.part);
-  if (p) go(p.diagram ? `#/d/${p.diagram}/${p.id}` : `#/p/${p.id}`);
+  if (!p) return;
+  go(p.diagram ? `#/d/${p.diagram}/${p.id}` : `#/p/${p.id}`);
 });
 
 $('#catalogBody').addEventListener('keydown', (e) => {
@@ -514,10 +765,184 @@ $('#catalogBody').addEventListener('keydown', (e) => {
 });
 
 $('#catalogFilters').addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-system]');
+  const btn = e.target.closest('[data-act]');
   if (!btn) return;
-  const v = btn.dataset.system;
-  go(v === 'all' ? '#/catalog' : `#/catalog/${v}`);
+  const act = btn.dataset.act;
+
+  if (act === 'expand-all') {
+    collapsedGroups.clear();
+    writeJSON('tiguan.collapsed.v1', []);
+    $$('#catalogBody .acc').forEach((sec) => {
+      sec.classList.add('is-open');
+      const body = sec.querySelector('.acc-body');
+      if (body) body.hidden = false;
+    });
+  } else if (act === 'collapse-all') {
+    $$('#catalogBody .acc').forEach((sec) => {
+      sec.classList.remove('is-open');
+      const body = sec.querySelector('.acc-body');
+      if (body) body.hidden = true;
+      collapsedGroups.add(sec.dataset.group);
+    });
+    writeJSON('tiguan.collapsed.v1', [...collapsedGroups]);
+  } else if (act === 'pdf') {
+    exportPdf();
+  } else if (act === 'add-part') {
+    openPartForm(null);
+  }
+});
+
+/* ---------- модальное окно и свои детали ---------- */
+
+let editingPartId = null;
+
+function openModal(html) {
+  $('#modalCard').innerHTML = html;
+  $('#modal').hidden = false;
+}
+
+function closeModal() {
+  $('#modal').hidden = true;
+  $('#modalCard').innerHTML = '';
+  editingPartId = null;
+}
+
+function openPartForm(existing) {
+  editingPartId = existing ? existing.id : null;
+  const systems = DATA.systems
+    .map(
+      (s) =>
+        `<option value="${s.id}" ${existing && existing.system === s.id ? 'selected' : ''}>${esc(s.title)}</option>`
+    )
+    .join('');
+
+  openModal(`
+    <h3>${existing ? 'Изменить деталь' : 'Своя деталь'}</h3>
+    <div class="form">
+      <label>Название<input id="cpName" value="${existing ? esc(existing.name) : ''}" placeholder="например, патрубок интеркулера"></label>
+      <label>Оригинальный номер<input id="cpOem" value="${existing ? esc(existing.oem) : ''}" placeholder="5Q0 ..."></label>
+      <label>Группа<select id="cpSystem">${systems}</select></label>
+      <label>Количество<input id="cpQty" type="number" min="1" step="1" value="${existing ? existing.qty : 1}"></label>
+      <label>Где искать / примечание<textarea id="cpNote" rows="3" placeholder="Перед двигателем, под кожухом…">${existing ? esc(existing.note || '') : ''}</textarea></label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-act="cp-cancel">Отмена</button>
+      <button type="button" class="btn btn-primary" data-act="cp-save">${existing ? 'Сохранить' : 'Добавить'}</button>
+    </div>
+  `);
+  const name = $('#cpName');
+  if (name) name.focus();
+}
+
+function savePartForm() {
+  const nameEl = $('#cpName');
+  if (!nameEl) return;
+  const name = nameEl.value.trim();
+  if (!name) {
+    toast('Укажите название детали');
+    return;
+  }
+  const oem = ($('#cpOem').value || '').trim();
+  const system = $('#cpSystem').value;
+  const qty = Math.max(1, Number($('#cpQty').value) || 1);
+  const note = ($('#cpNote').value || '').trim();
+
+  if (editingPartId) {
+    const p = PARTS.get(editingPartId);
+    if (p) Object.assign(p, { name, oem, system, qty, note });
+    delete oemOverrides[editingPartId];
+    writeJSON(LS.oem, oemOverrides);
+  } else {
+    customParts.push({
+      id: `custom-${Date.now()}`,
+      name,
+      oem,
+      system,
+      qty,
+      note,
+      location: '',
+      confidence: 'custom',
+      custom: true,
+      diagram: null,
+      zone: null
+    });
+  }
+
+  writeJSON(LS.custom, customParts);
+  rebuildParts();
+  const targetSystem = system;
+  collapsedGroups.delete(targetSystem);
+  writeJSON('tiguan.collapsed.v1', [...collapsedGroups]);
+  closeModal();
+  renderCatalog(current.system, current.view === 'favorites');
+  if (current.part) renderPanel(current.part);
+  const section = document.querySelector(`[data-group="${targetSystem}"]`);
+  if (section) section.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  toast(editingPartId ? 'Сохранено' : 'Деталь добавлена');
+}
+
+$('#modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') closeModal();
+  if (e.target.closest('[data-act="cp-cancel"]')) closeModal();
+  if (e.target.closest('[data-act="cp-save"]')) savePartForm();
+});
+
+/* ---------- экспорт PDF ---------- */
+
+function exportPdf() {
+  const rows = [];
+  allParts().forEach((p) => {
+    logOf(p.id).forEach((r) => {
+      rows.push({ km: Number(r.km) || 0, date: r.date, name: p.name, code: oemOf(p), kind: p.isFluid ? 'жидкость' : 'деталь' });
+    });
+  });
+  rows.sort((a, b) => a.km - b.km || String(a.date).localeCompare(String(b.date)));
+
+  const groups = new Map();
+  rows.forEach((r) => {
+    if (!groups.has(r.km)) groups.set(r.km, []);
+    groups.get(r.km).push(r);
+  });
+
+  const body = rows.length
+    ? [...groups.entries()]
+        .map(
+          ([km, items]) => `
+      <section class="print-group">
+        <h2>${fmtKm(km)}</h2>
+        <table>
+          <thead><tr><th>Дата</th><th>Деталь / жидкость</th><th>Номер / код</th><th>Тип</th></tr></thead>
+          <tbody>
+            ${items
+              .map(
+                (r) =>
+                  `<tr><td>${fmtDate(r.date)}</td><td>${esc(r.name)}</td><td class="mono">${esc(r.code)}</td><td>${r.kind}</td></tr>`
+              )
+              .join('')}
+          </tbody>
+        </table>
+      </section>`
+        )
+        .join('')
+    : `<p>Записей о заменах пока нет. Добавьте их в карточках деталей и жидкостей.</p>`;
+
+  $('#printArea').innerHTML = `
+    <div class="print-doc">
+      <h1>Tiguan II — журнал замен</h1>
+      <p class="print-meta">VIN ${esc(DATA.vehicle.vin)} · ${esc(DATA.vehicle.meta)} · сформировано ${fmtDate(
+        todayISO()
+      )} · записей: ${rows.length}</p>
+      ${body}
+    </div>`;
+
+  document.body.classList.add('printing');
+  setTimeout(() => window.print(), 120);
+}
+
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('printing');
+  const area = $('#printArea');
+  if (area) area.innerHTML = '';
 });
 
 
@@ -633,7 +1058,7 @@ function renderCrumbs() {
   } else if (current.view === 'schedule') {
     items.push(`<span class="sep">›</span><span class="current">Регламент ТО</span>`);
   } else if (current.view === 'catalog') {
-    items.push(`<span class="sep">›</span><span class="current">${esc(current.system ? SYSTEMS.get(current.system).title : 'Все детали')}</span>`);
+    items.push(`<span class="sep">›</span><span class="current">${esc(current.system ? SYSTEMS.get(current.system).title : 'Каталог')}</span>`);
     if (current.part) items.push(`<span class="sep">›</span><span class="current">${esc(PARTS.get(current.part).name)}</span>`);
   } else if (current.view === 'favorites') {
     items.push(`<span class="sep">›</span><span class="current">Избранное</span>`);
@@ -677,7 +1102,7 @@ function refreshSearch() {
     return;
   }
 
-  searchItems = DATA.parts
+  searchItems = allParts()
     .filter((p) => norm(p.name).includes(q) || norm(oemOf(p)).includes(q))
     .slice(0, 8);
 
