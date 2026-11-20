@@ -58,6 +58,33 @@ const CONF = {
 let customParts = readJSON(LS.custom, []);
 let logBook = readJSON(LS.log, {});
 
+// однократно вливаем записи, распознанные из выписок
+const SEED_KEY = 'tiguan.log.seed.v1';
+const SEED_VERSION = 1;
+(function applyLogSeed() {
+  if (!window.TIGUAN_LOG_SEED) return;
+  let applied = 0;
+  try {
+    applied = Number(localStorage.getItem(SEED_KEY) || 0);
+  } catch {
+    applied = 0;
+  }
+  if (applied >= SEED_VERSION) return;
+
+  Object.entries(window.TIGUAN_LOG_SEED).forEach(([key, recs]) => {
+    if (!logBook[key]) logBook[key] = [];
+    recs.forEach((r) => {
+      if (!logBook[key].some((x) => x.id === r.id)) logBook[key].push({ ...r });
+    });
+  });
+  writeJSON(LS.log, logBook);
+  try {
+    localStorage.setItem(SEED_KEY, String(SEED_VERSION));
+  } catch {
+    /* приватный режим */
+  }
+})();
+
 const FLUID_PARTS = (DATA.fluids || []).map((f) => ({
   id: `fluid:${f.id}`,
   fluidId: f.id,
