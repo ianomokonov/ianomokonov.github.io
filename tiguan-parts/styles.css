@@ -1251,3 +1251,21 @@ button.sched-item:hover { background: var(--surface-2); }
   .print-group td { padding: 5px 6px; border-bottom: 1px solid #e3e6ea; }
   .print-group .mono { font-family: ui-monospace, Menlo, monospace; }
 }
+
+.modal-note { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.modal-note code { font-family: var(--mono); color: var(--cyan); }
+.seed-box {
+  width: 100%;
+  height: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0a1119;
+  color: #cfe0f0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+a.btn { display: inline-flex; align-items: center; text-decoration: none; }

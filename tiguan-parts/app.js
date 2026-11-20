@@ -58,33 +58,6 @@ const CONF = {
 let customParts = readJSON(LS.custom, []);
 let logBook = readJSON(LS.log, {});
 
-// однократно вливаем записи, распознанные из выписок
-const SEED_KEY = 'tiguan.log.seed.v1';
-const SEED_VERSION = 1;
-(function applyLogSeed() {
-  if (!window.TIGUAN_LOG_SEED) return;
-  let applied = 0;
-  try {
-    applied = Number(localStorage.getItem(SEED_KEY) || 0);
-  } catch {
-    applied = 0;
-  }
-  if (applied >= SEED_VERSION) return;
-
-  Object.entries(window.TIGUAN_LOG_SEED).forEach(([key, recs]) => {
-    if (!logBook[key]) logBook[key] = [];
-    recs.forEach((r) => {
-      if (!logBook[key].some((x) => x.id === r.id)) logBook[key].push({ ...r });
-    });
-  });
-  writeJSON(LS.log, logBook);
-  try {
-    localStorage.setItem(SEED_KEY, String(SEED_VERSION));
-  } catch {
-    /* приватный режим */
-  }
-})();
-
 const FLUID_PARTS = (DATA.fluids || []).map((f) => ({
   id: `fluid:${f.id}`,
   fluidId: f.id,
@@ -104,6 +77,41 @@ let PARTS = new Map();
 function rebuildParts() {
   PARTS = new Map([...DATA.parts, ...customParts, ...FLUID_PARTS].map((p) => [p.id, p]));
 }
+rebuildParts();
+
+// слияние записей и своих деталей из data/log-seed.js (идемпотентно, с учётом удалений)
+const deletedIds = readJSON('tiguan.deleted.v1', { log: [], custom: [] });
+if (!Array.isArray(deletedIds.log)) deletedIds.log = [];
+if (!Array.isArray(deletedIds.custom)) deletedIds.custom = [];
+
+(function applySeeds() {
+  let customTouched = false;
+  if (Array.isArray(window.TIGUAN_CUSTOM_SEED)) {
+    window.TIGUAN_CUSTOM_SEED.forEach((p) => {
+      if (!p || !p.id || deletedIds.custom.includes(p.id)) return;
+      if (!customParts.some((x) => x.id === p.id)) {
+        customParts.push(p);
+        customTouched = true;
+      }
+    });
+    if (customTouched) writeJSON(LS.custom, customParts);
+  }
+
+  if (window.TIGUAN_LOG_SEED) {
+    Object.entries(window.TIGUAN_LOG_SEED).forEach(([key, recs]) => {
+      if (!Array.isArray(recs)) return;
+      if (!logBook[key]) logBook[key] = [];
+      recs.forEach((r) => {
+        if (!r || !r.id || deletedIds.log.includes(r.id)) return;
+        if (!logBook[key].some((x) => x.id === r.id)) {
+          logBook[key].push({ id: r.id, date: r.date, km: Number(r.km) || 0 });
+        }
+      });
+    });
+    writeJSON(LS.log, logBook);
+  }
+})();
+
 rebuildParts();
 
 const allParts = () => DATA.parts.concat(customParts, FLUID_PARTS);
@@ -128,6 +136,10 @@ function addLog(key, date, km) {
 }
 
 function delLog(key, id) {
+  if (!deletedIds.log.includes(id)) {
+    deletedIds.log.push(id);
+    writeJSON('tiguan.deleted.v1', deletedIds);
+  }
   logBook[key] = logOf(key).filter((r) => r.id !== id);
   if (!logBook[key].length) delete logBook[key];
   writeJSON(LS.log, logBook);
@@ -584,6 +596,10 @@ $('#panelBody').addEventListener('click', async (e) => {
   } else if (act === 'custom-del') {
     if (!window.confirm(`Удалить «${p.name}»?`)) return;
     customParts = customParts.filter((x) => x.id !== p.id);
+    if (!deletedIds.custom.includes(p.id)) {
+      deletedIds.custom.push(p.id);
+      writeJSON('tiguan.deleted.v1', deletedIds);
+    }
     writeJSON(LS.custom, customParts);
     rebuildParts();
     go(`#/catalog/${p.system}`);
@@ -705,7 +721,9 @@ function renderCatalog(system, favMode) {
     <button type="button" class="btn" data-act="expand-all">Развернуть</button>
     <button type="button" class="btn" data-act="collapse-all">Свернуть</button>
     <button type="button" class="btn" data-act="pdf">Экспорт PDF</button>
-    <button type="button" class="btn btn-primary" data-act="add-part">+ Деталь</button>`;
+    <button type="button" class="btn" data-act="seed">Скопировать log-seed.js</button>
+    <button type="button" class="btn btn-primary" data-act="add-part">+ Деталь</button>
+    <a class="btn" href="mobile.html">Мобильная</a>`;
 
   const banner = $('#catalogBanner');
   if (catalogNote) {
@@ -814,6 +832,8 @@ $('#catalogFilters').addEventListener('click', (e) => {
     writeJSON('tiguan.collapsed.v1', [...collapsedGroups]);
   } else if (act === 'pdf') {
     exportPdf();
+  } else if (act === 'seed') {
+    exportSeed();
   } else if (act === 'add-part') {
     openPartForm(null);
   }
@@ -912,6 +932,14 @@ $('#modal').addEventListener('click', (e) => {
   if (e.target.id === 'modal') closeModal();
   if (e.target.closest('[data-act="cp-cancel"]')) closeModal();
   if (e.target.closest('[data-act="cp-save"]')) savePartForm();
+  if (e.target.closest('[data-act="seed-close"]')) closeModal();
+  if (e.target.closest('[data-act="seed-copy"]')) {
+    const box = $('#seedBox');
+    if (box) {
+      copyText(box.value);
+      toast('Скопировано');
+    }
+  }
 });
 
 /* ---------- экспорт PDF ---------- */
@@ -964,6 +992,48 @@ function exportPdf() {
 
   document.body.classList.add('printing');
   setTimeout(() => window.print(), 120);
+}
+
+function exportSeed() {
+  const seed = {};
+  Object.keys(logBook)
+    .sort()
+    .forEach((key) => {
+      const recs = logBook[key].filter((r) => r && r.id);
+      if (!recs.length) return;
+      seed[key] = recs
+        .slice()
+        .sort((a, b) => Number(a.km) - Number(b.km) || String(a.date).localeCompare(String(b.date)))
+        .map((r) => ({ id: r.id, date: r.date, km: Number(r.km) || 0 }));
+    });
+
+  const entries = Object.keys(seed).map((key) => {
+    const rows = seed[key]
+      .map((r) => `    { "id": ${JSON.stringify(r.id)}, "date": ${JSON.stringify(r.date)}, "km": ${r.km} }`)
+      .join(',\n');
+    return `  ${JSON.stringify(key)}: [\n${rows}\n  ]`;
+  });
+
+  const text = `// Записи журнала замен и свои детали.
+// Экспортировано из приложения ${todayISO()}.
+// Вставьте этот текст в data/log-seed.js и запушьте.
+window.TIGUAN_LOG_SEED = {
+${entries.join(',\n')}
+};
+
+window.TIGUAN_CUSTOM_SEED = ${JSON.stringify(customParts, null, 2)};
+`;
+
+  copyText(text);
+  openModal(`
+    <h3>log-seed.js</h3>
+    <p class="modal-note">Скопировано в буфер. Вставьте в <code>data/log-seed.js</code> целиком, сохраните и запушьте — на другом устройстве записи появятся после обновления страницы.</p>
+    <textarea class="seed-box" id="seedBox" readonly spellcheck="false">${esc(text)}</textarea>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-act="seed-copy">Скопировать ещё раз</button>
+      <button type="button" class="btn btn-primary" data-act="seed-close">Готово</button>
+    </div>
+  `);
 }
 
 window.addEventListener('afterprint', () => {

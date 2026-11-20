@@ -125,16 +125,29 @@
         { path: "./daily-tasks-tracker/index.html", name: "Трекер задач" },
         { path: "./expense-planner/index.html", name: "Планировщик расходов и долгов" },
         { path: "./todo-list/index.html", name: "Todo List" },
-        { path: "./tiguan-parts/index.html", name: "Tiguan II — разбор по деталям" },
+        {
+          path: "./tiguan-parts/index.html",
+          mobilePath: "./tiguan-parts/mobile.html",
+          name: "Tiguan II — разбор по деталям"
+        },
         // { path: "/мой-новый-проект", name: "Новый проект" },
       ];
 
       const grid = document.getElementById("projects");
 
+      // на телефоне ведём в лёгкую мобильную версию, на компьютере — в полную
+      function isMobileView() {
+        return (
+          window.matchMedia("(max-width: 820px)").matches ||
+          /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+        );
+      }
+
       projects.forEach((p) => {
         const a = document.createElement("a");
         a.className = "card";
-        a.href = p.path;
+        const target = p.mobilePath && isMobileView() ? p.mobilePath : p.path;
+        a.href = target;
 
         const name = document.createElement("div");
         name.className = "name";
@@ -142,7 +155,17 @@
 
         const path = document.createElement("div");
         path.className = "path";
-        path.textContent = p.path;
+        path.textContent = target;
+
+        if (p.mobilePath) {
+          a.addEventListener("click", (e) => {
+            const next = isMobileView() ? p.mobilePath : p.path;
+            if (a.getAttribute("href") !== next) {
+              e.preventDefault();
+              window.location.href = next;
+            }
+          });
+        }
 
         a.appendChild(name);
         a.appendChild(path);

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b11">
+  <meta name="description" content="Tiguan II: журнал замен и регламент ТО — просмотр с телефона.">
+  <title>Tiguan II — журнал замен</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+<body data-view="journal">
+
+  <header class="m-header">
+    <div class="m-brand">
+      <span class="m-mark">T</span>
+      <div>
+        <strong>Tiguan II</strong>
+        <small>журнал замен</small>
+      </div>
+      <span class="m-vin">XW8ZZZ5N*****1080</span>
+    </div>
+
+    <div class="m-actions">
+      <div class="m-tabs" id="tabs">
+        <button type="button" data-view="journal" class="is-active">Журнал</button>
+        <button type="button" data-view="schedule">Регламент</button>
+      </div>
+      <button type="button" class="m-pdf" id="btnPdf" title="Экспорт в PDF">PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="journal" class="m-section">
+      <p class="m-hint" id="journalSub"></p>
+      <div id="journalBody" class="m-list"></div>
+    </section>
+
+    <section id="schedule" class="m-section" hidden>
+      <p class="m-hint">Заводской интервал — 15 000 км или 1 год. В тяжёлых условиях масло и фильтры меняют чаще.</p>
+      <div class="m-km" id="kmRow"></div>
+      <div id="scheduleBody" class="m-list"></div>
+    </section>
+  </main>
+
+  <footer class="m-footer">
+    Только просмотр · данные из data/log-seed.js
+  </footer>
+
+  <div id="printArea" aria-hidden="true"></div>
+
+  <script src="data/parts.js"></script>
+  <script src="data/log-seed.js"></script>
+  <script src="mobile.js"></script>
+</body>
+</html>
