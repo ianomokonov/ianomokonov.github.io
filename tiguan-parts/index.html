@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Интерактивный разбор Volkswagen Tiguan II: где находится деталь, как называется и её оригинальный номер.">
+  <title>Tiguan II — разбор по деталям</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body data-view="car">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">T</span>
+      <span class="brand-text">
+        <strong>Tiguan II</strong>
+        <small>разбор по деталям</small>
+      </span>
+      <span class="vin" title="VIN скрыт намеренно">XW8ZZZ5N*****1080</span>
+    </div>
+
+    <div class="search" role="search">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5 21 21"></path></svg>
+      <input id="search" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Деталь или номер: «масляный», 5Q0 129 620">
+      <div id="searchResults" class="search-results" hidden></div>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button type="button" data-view="car">3D-модель</button>
+      <button type="button" data-view="catalog">Каталог</button>
+      <button type="button" data-view="schedule">Регламент</button>
+      <button type="button" data-view="favorites">Избранное</button>
+    </nav>
+  </header>
+
+  <nav class="crumbs" id="crumbs" aria-label="Хлебные крошки"></nav>
+
+  <main id="main">
+    <section id="stage" class="stage">
+      <canvas id="scene"></canvas>
+
+      <div class="stage-hint" id="hint">
+        <strong>Крутите мышью.</strong> Кликните по панели кузова — откроется схема с деталями.
+      </div>
+
+      <div class="stage-tools">
+        <button type="button" class="tool" id="btnReset">Сбросить вид</button>
+        <button type="button" class="tool is-on" id="btnSpin">Авто-вращение</button>
+      </div>
+
+      <div class="zonebar" id="zonebar"></div>
+
+      <div class="tooltip" id="tooltip" hidden></div>
+      <div class="overlay" id="loading">Собираю модель…</div>
+    </section>
+
+    <section id="schema" class="schema" hidden>
+      <div class="schema-head">
+        <div>
+          <h2 id="schemaTitle"></h2>
+          <p id="schemaSub" class="muted"></p>
+        </div>
+        <div class="schema-related" id="schemaRelated"></div>
+      </div>
+      <div class="schema-body" id="schemaBody"></div>
+      <p class="schema-note">
+        Схема — ориентир по узлам, а не чертёж. Номера собраны по открытым каталогам:
+        перед заказом сверяйте по VIN и PR-кодам. Любой номер можно исправить — правка сохранится в браузере.
+      </p>
+    </section>
+
+    <section id="schedule" class="schedule" hidden>
+      <div class="schedule-head">
+        <div>
+          <h2>Регламент ТО</h2>
+          <p class="muted" id="scheduleSub"></p>
+        </div>
+      </div>
+      <p class="schedule-hint">
+        Заводской интервал — 15 000 км или 1 год. В тяжёлых условиях (город, пробки, короткие поездки,
+        зима) масло и фильтры меняют чаще: каждые 7 500–10 000 км. Таблица — рекомендация, а не гарантия:
+        сверяйтесь с сервисной книжкой и состоянием узлов. Таблица покрывает пробег до 250 000 км.
+      </p>
+      <div class="km-row" id="kmRow"></div>
+      <div class="schedule-body" id="scheduleBody"></div>
+    </section>
+
+    <section id="catalog" class="catalog" hidden>
+      <div class="catalog-head">
+        <div>
+          <h2 id="catalogTitle">Все детали</h2>
+          <p id="catalogSub" class="muted"></p>
+        </div>
+        <div class="catalog-filters" id="catalogFilters"></div>
+      </div>
+      <div class="banner" id="catalogBanner" hidden></div>
+      <div class="catalog-body" id="catalogBody"></div>
+    </section>
+  </main>
+
+  <aside id="panel" class="panel" aria-label="Карточка детали">
+    <div id="panelBody"></div>
+  </aside>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- данные и схемы — обычные скрипты, поэтому работают и по file:// -->
+  <script src="data/parts.js"></script>
+  <script src="diagrams.js"></script>
+
+  <script>
+    // если CDN недоступен, честно об этом сообщаем
+    setTimeout(function () {
+      if (!window.__threeReady) {
+        var el = document.getElementById('loading');
+        if (el) el.textContent = 'Не удалось загрузить three.js с CDN. Проверьте интернет и обновите страницу.';
+      }
+    }, 8000);
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+    window.THREE = THREE;
+    window.OrbitControls = OrbitControls;
+    window.RoomEnvironment = RoomEnvironment;
+    window.RoundedBoxGeometry = RoundedBoxGeometry;
+    window.__threeReady = true;
+
+    // app.js подключаем классическим скриптом уже после three.js,
+    // иначе по file:// модуль с локального диска браузер не отдаст
+    const app = document.createElement('script');
+    app.src = 'app.js';
+    app.onerror = function () {
+      const el = document.getElementById('loading');
+      if (el) el.textContent = 'Не удалось загрузить app.js';
+    };
+    document.body.appendChild(app);
+  </script>
+</body>
+</html>
