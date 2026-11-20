@@ -1,6 +1,6 @@
 // three.js и данные приходят глобальными: см. index.html.
 const THREE = window.THREE;
-const { OrbitControls, RoomEnvironment, RoundedBoxGeometry } = window;
+const { OrbitControls, RoomEnvironment, GLTFLoader, DRACOLoader } = window;
 const DIAGRAMS = window.DIAGRAMS;
 
 /* ------------------------------------------------------------------ */
@@ -806,7 +806,7 @@ function initThree() {
   grid.position.y = 0.002;
   scene.add(grid);
 
-  buildCar();
+  loadCar();
 
   raycaster = new THREE.Raycaster();
   resize();
@@ -820,312 +820,182 @@ function initThree() {
 
   controls.addEventListener('start', stopSpinOnInteraction);
 
+  window.__tiguan = { camera, controls, scene, renderer, meshesByZone, pickables };
+
   requestAnimationFrame(tick);
 }
 
-function buildCar() {
-  const car = new THREE.Group();
-  scene.add(car);
+function loadCar() {
+  const loader = new GLTFLoader();
+  const draco = new DRACOLoader();
+  draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+  loader.setDRACOLoader(draco);
 
-  const paint = new THREE.MeshPhysicalMaterial({
-    color: 0x1a4170,
-    metalness: 0.62,
-    roughness: 0.3,
-    clearcoat: 0.9,
-    clearcoatRoughness: 0.2,
-    envMapIntensity: 1.15
-  });
-  const paintDark = new THREE.MeshPhysicalMaterial({
-    color: 0x14395c,
-    metalness: 0.6,
-    roughness: 0.34,
-    clearcoat: 0.7,
-    envMapIntensity: 1.1
-  });
-  const plastic = new THREE.MeshStandardMaterial({ color: 0x0a0d12, roughness: 0.92, metalness: 0.05 });
-  const glass = new THREE.MeshBasicMaterial({
-    color: 0x0b1722,
-    transparent: true,
-    opacity: 0.88,
-    side: THREE.DoubleSide
-  });
-  const chrome = new THREE.MeshStandardMaterial({ color: 0xb9c4cf, metalness: 1, roughness: 0.3 });
-  const tyre = new THREE.MeshStandardMaterial({ color: 0x0a0b0d, roughness: 0.95, metalness: 0.03 });
-  const rim = new THREE.MeshStandardMaterial({ color: 0xa8b3bf, metalness: 0.95, roughness: 0.28 });
-  const lamp = new THREE.MeshStandardMaterial({
-    color: 0x7d94a8,
-    emissive: 0x24445f,
-    emissiveIntensity: 0.25,
-    metalness: 0.3,
-    roughness: 0.1
-  });
-  const lampBright = new THREE.MeshStandardMaterial({
-    color: 0xeaf4ff,
-    emissive: 0x7fb4e0,
-    emissiveIntensity: 0.9,
-    metalness: 0.1,
-    roughness: 0.1
-  });
-  const tailLamp = new THREE.MeshStandardMaterial({
-    color: 0x6b0f14,
-    emissive: 0x8c1218,
-    emissiveIntensity: 0.5,
-    metalness: 0.3,
-    roughness: 0.3
-  });
+  const bin = atob(window.TIGUAN_GLB_B64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
 
-  const rb = (w, h, d, mat, x, y, z, r = 0.04) => {
-    const rr = Math.max(0.002, Math.min(r, w / 2 - 0.002, h / 2 - 0.002, d / 2 - 0.002));
-    const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, rr), mat);
-    m.position.set(x, y, z);
-    car.add(m);
-    return m;
-  };
+  loader.parse(
+    bytes.buffer,
+    '',
+    (gltf) => {
+      const group = new THREE.Group();
+      const model = gltf.scene;
+      group.add(model);
+      scene.add(group);
 
-  const extrude = (pts, width, mat, bevel) => {
-    const shape = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y)));
-    const geo = new THREE.ExtrudeGeometry(shape, {
-      depth: width,
-      bevelEnabled: true,
-      bevelThickness: bevel,
-      bevelSize: bevel,
-      bevelSegments: 3,
-      steps: 1,
-      curveSegments: 8
-    });
-    geo.translate(0, 0, -width / 2);
-    const m = new THREE.Mesh(geo, mat);
-    car.add(m);
-    return m;
-  };
+      // масштаб и посадка на землю
+      let box = new THREE.Box3().setFromObject(model);
+      let size = box.getSize(new THREE.Vector3());
+      if (size.z > size.x) model.rotation.y = Math.PI / 2;
+      model.updateMatrixWorld(true);
 
-  const bar = (x1, y1, x2, y2, z, thick, mat, depth = 0.06) => {
-    const len = Math.hypot(x2 - x1, y2 - y1);
-    const m = new THREE.Mesh(
-      new RoundedBoxGeometry(thick, len, depth, 2, Math.min(thick, depth) * 0.35),
-      mat
-    );
-    m.position.set((x1 + x2) / 2, (y1 + y2) / 2, z);
-    m.rotation.z = Math.atan2(-(x2 - x1), y2 - y1);
-    car.add(m);
-    return m;
-  };
+      box = new THREE.Box3().setFromObject(model);
+      size = box.getSize(new THREE.Vector3());
+      model.scale.setScalar(4.5 / size.x);
+      model.updateMatrixWorld(true);
 
-  // дуга арки: от правой точки к левой через верх
-  const arch = (cx, cy, r, yBase) => {
-    const a = Math.asin((yBase - cy) / r);
-    const steps = 12;
-    const out = [];
-    for (let i = 0; i <= steps; i += 1) {
-      const t = a + (Math.PI - 2 * a) * (i / steps);
-      out.push([cx + r * Math.cos(t), cy + r * Math.sin(t)]);
+      box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.x -= center.x;
+      model.position.z -= center.z;
+      model.position.y -= box.min.y;
+      model.updateMatrixWorld(true);
+
+      // перед — там, где фары
+      let hlX = 0;
+      let hlN = 0;
+      model.traverse((o) => {
+        if (o.isMesh && /headlight/i.test(o.name)) {
+          hlX += new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3()).x;
+          hlN += 1;
+        }
+      });
+      if (hlN && hlX / hlN > 0) {
+        group.rotation.y = Math.PI;
+        group.updateMatrixWorld(true);
+      }
+
+      // материалы
+      model.traverse((o) => {
+        if (!o.isMesh) return;
+        o.castShadow = true;
+        o.receiveShadow = true;
+        const m = o.material;
+        if (!m) return;
+        if (m.transmission) {
+          m.transmission = 0;
+          m.transparent = true;
+          m.opacity = 0.6;
+          m.depthWrite = false;
+        }
+        if (m.name === 'carpaint') {
+          m.color.setHex(0x1b3f66);
+          m.metalness = 0.55;
+          m.roughness = 0.32;
+        }
+        m.envMapIntensity = 0.9;
+      });
+
+      // зоны
+      const rules = [
+        [/lf_door|lf_volkswagen/i, 'doorFL'],
+        [/rf_door|rf_volkswagen/i, 'doorFR'],
+        [/lr_door/i, 'doorRL'],
+        [/rr_door/i, 'doorRR'],
+        [/trunk/i, 'tailgate']
+      ];
+      model.traverse((o) => {
+        if (!o.isMesh) return;
+        const n = `${o.name} ${o.parent && o.parent.name ? o.parent.name : ''}`;
+        for (const [re, zone] of rules) {
+          if (re.test(n)) {
+            tag(o, zone);
+            return;
+          }
+        }
+        if (/headlight/i.test(n)) {
+          tag(o, 'headlightL');
+          return;
+        }
+        if (/tire|hub|brake/i.test(n)) {
+          const c = new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());
+          tag(o, c.x < 0 ? 'wheelFL' : 'wheelRL');
+        }
+      });
+
+      // капот в модели — часть меша кузова: вырезаем его геометрию
+      // и подсвечиваем так же, как двери (emissive), а не плёнкой
+      const bodyMeshes = [];
+      model.traverse((o) => {
+        if (o.isMesh && o.material && o.material.name === 'carpaint') bodyMeshes.push(o);
+      });
+
+      const hp = [];
+      const hn = [];
+      const hu = [];
+      const a = new THREE.Vector3();
+      const b = new THREE.Vector3();
+      const c = new THREE.Vector3();
+      const na = new THREE.Vector3();
+      const nb = new THREE.Vector3();
+      const nc = new THREE.Vector3();
+      const centroid = new THREE.Vector3();
+
+      bodyMeshes.forEach((m) => {
+        m.updateWorldMatrix(true, false);
+        const geo = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry;
+        const pos = geo.attributes.position;
+        const nor = geo.attributes.normal;
+        const uvs = geo.attributes.uv || null;
+        for (let i = 0; i + 2 < pos.count; i += 3) {
+          a.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+          b.fromBufferAttribute(pos, i + 1).applyMatrix4(m.matrixWorld);
+          c.fromBufferAttribute(pos, i + 2).applyMatrix4(m.matrixWorld);
+          centroid.copy(a).add(b).add(c).multiplyScalar(1 / 3);
+          if (centroid.y < 0.88) continue;
+          if (centroid.x > -0.84 || centroid.x < -2.16) continue;
+          if (Math.abs(centroid.z) > 0.7) continue;
+          na.fromBufferAttribute(nor, i).transformDirection(m.matrixWorld);
+          nb.fromBufferAttribute(nor, i + 1).transformDirection(m.matrixWorld);
+          nc.fromBufferAttribute(nor, i + 2).transformDirection(m.matrixWorld);
+          if (na.y < 0.35 || nb.y < 0.35 || nc.y < 0.35) continue;
+          hp.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+          hn.push(na.x, na.y, na.z, nb.x, nb.y, nb.z, nc.x, nc.y, nc.z);
+          if (uvs) {
+            hu.push(uvs.getX(i), uvs.getY(i), uvs.getX(i + 1), uvs.getY(i + 1), uvs.getX(i + 2), uvs.getY(i + 2));
+          }
+        }
+      });
+
+      if (hp.length) {
+        const hoodGeo = new THREE.BufferGeometry();
+        hoodGeo.setAttribute('position', new THREE.Float32BufferAttribute(hp, 3));
+        hoodGeo.setAttribute('normal', new THREE.Float32BufferAttribute(hn, 3));
+        if (hu.length) hoodGeo.setAttribute('uv', new THREE.Float32BufferAttribute(hu, 2));
+        const paint = bodyMeshes[0].material.clone();
+        paint.polygonOffset = true;
+        paint.polygonOffsetFactor = -2;
+        paint.polygonOffsetUnits = -2;
+        const hoodMesh = new THREE.Mesh(hoodGeo, paint);
+        hoodMesh.position.y = 0.0006;
+        hoodMesh.userData.zone = 'hood';
+        hoodMesh.userData.baseEmissive = 0x000000;
+        hoodMesh.userData.baseEmissiveIntensity = 1;
+        scene.add(hoodMesh);
+        pickables.push(hoodMesh);
+        if (!meshesByZone.has('hood')) meshesByZone.set('hood', []);
+        meshesByZone.get('hood').push(hoodMesh);
+      }
+
+      window.__carLoaded = true;
+      hideLoader();
+    },
+    (err) => {
+      console.error('GLTF error', err);
+      hideLoader();
     }
-    return out;
-  };
-
-  const wheelR = 0.385;
-  const archR = 0.46;
-  const wheelX = 1.34;
-
-  // ---------- кузов с вырезами арок ----------
-  const profile = [
-    [-2.04, 0.3],
-    [-2.24, 0.34],
-    [-2.28, 0.62],
-    [-2.26, 0.96],
-    [-2.16, 1.02],
-    [-1.55, 1.06],
-    [-0.85, 1.12],
-    [0.2, 1.16],
-    [1.2, 1.17],
-    [1.95, 1.15],
-    [2.16, 1.08],
-    [2.24, 0.86],
-    [2.22, 0.42],
-    [2.04, 0.3],
-    [wheelX + 0.465, 0.3],
-    ...arch(wheelX, 0.37, archR, 0.3),
-    [wheelX - 0.465, 0.3],
-    [-wheelX + 0.465, 0.3],
-    ...arch(-wheelX, 0.37, archR, 0.3),
-    [-wheelX - 0.465, 0.3]
-  ];
-  extrude(profile, 1.76, paint, 0.04);
-
-  // ---------- остекление: трапеция с наклоном внутрь ----------
-  const roofLine = [
-    [-0.82, 1.13],
-    [-0.55, 1.33],
-    [-0.25, 1.52],
-    [0.0, 1.6],
-    [0.4, 1.635],
-    [0.8, 1.645],
-    [1.1, 1.64],
-    [1.35, 1.6],
-    [1.6, 1.46],
-    [1.8, 1.26],
-    [1.95, 1.13]
-  ];
-  const y0 = 1.12;
-  const zb = 0.83;
-  const zt = 0.7;
-  const ringAt = (y1) => [
-    [zb, y0],
-    [zb, y0 + (y1 - y0) * 0.65],
-    [zt, y1 - 0.05],
-    [zt - 0.05, y1],
-    [-zt + 0.05, y1],
-    [-zt, y1 - 0.05],
-    [-zb, y0 + (y1 - y0) * 0.65],
-    [-zb, y0]
-  ];
-
-  const glassPos = [];
-  const glassIdx = [];
-  roofLine.forEach(([x, yTop]) => {
-    ringAt(yTop).forEach(([z, y]) => glassPos.push(x, y, z));
-  });
-  const N = 8;
-  for (let i = 0; i < roofLine.length - 1; i += 1) {
-    for (let j = 0; j < N; j += 1) {
-      const a = i * N + j;
-      const b = i * N + ((j + 1) % N);
-      const c = (i + 1) * N + ((j + 1) % N);
-      const d = (i + 1) * N + j;
-      glassIdx.push(a, b, c, a, c, d);
-    }
-  }
-  const glassGeo = new THREE.BufferGeometry();
-  glassGeo.setAttribute('position', new THREE.Float32BufferAttribute(glassPos, 3));
-  glassGeo.setIndex(glassIdx);
-  glassGeo.computeVertexNormals();
-  const glassMesh = new THREE.Mesh(glassGeo, glass);
-  car.add(glassMesh);
-
-  const interior = new THREE.MeshStandardMaterial({ color: 0x0b0f14, roughness: 0.95, metalness: 0.05 });
-  rb(1.5, 0.5, 1.36, interior, 0.5, 1.34, 0, 0.05);
-
-  // крыша, стойки, рейлинги
-  rb(1.46, 0.05, 1.56, paint, 0.62, 1.646, 0, 0.02).rotation.z = 0.014;
-  [-0.76, 0.76].forEach((z) => {
-    bar(-0.82, 1.13, -0.14, 1.6, z, 0.07, paint, 0.12);
-    bar(1.32, 1.6, 1.93, 1.14, z, 0.13, paint, 0.12);
-    rb(0.05, 0.48, 0.1, plastic, 0.35, 1.38, z * 1.01, 0.02);
-    rb(2.42, 0.018, 0.02, chrome, 0.55, 1.15, z * 1.04, 0.006);
-  });
-  [-0.5, 0.5].forEach((z) => rb(1.2, 0.035, 0.05, chrome, 0.6, 1.695, z, 0.015));
-
-  // ---------- двери ----------
-  tag(rb(1.12, 0.84, 0.03, paint, -0.26, 0.71, 0.925, 0.02), 'doorFL');
-  tag(rb(1.12, 0.84, 0.03, paint, -0.26, 0.71, -0.925, 0.02), 'doorFR');
-  tag(rb(0.52, 0.84, 0.03, paint, 0.61, 0.71, 0.925, 0.02), 'doorRL');
-  tag(rb(0.52, 0.84, 0.03, paint, 0.61, 0.71, -0.925, 0.02), 'doorRR');
-
-  // ---------- крылья, капот, бамперы ----------
-  tag(rb(0.30, 0.62, 0.03, paint, -1.96, 0.83, 0.925, 0.02), 'fenderL');
-  tag(rb(0.30, 0.62, 0.03, paint, -1.96, 0.83, -0.925, 0.02), 'fenderR');
-  rb(0.28, 0.62, 0.03, paint, 1.94, 0.83, 0.925, 0.02);
-  rb(0.28, 0.62, 0.03, paint, 1.94, 0.83, -0.925, 0.02);
-
-
-  const hood = rb(1.24, 0.045, 1.28, paint, -1.52, 1.06, 0, 0.03);
-  hood.rotation.z = 0.05;
-  tag(hood, 'hood');
-
-  tag(rb(0.16, 0.64, 1.9, paint, -2.22, 0.6, 0, 0.05), 'bumperF');
-  tag(rb(0.16, 0.64, 1.9, paint, 2.22, 0.6, 0, 0.05), 'tailgate');
-
-  // ---------- перед ----------
-  tag(rb(0.05, 0.18, 1.08, plastic, -2.31, 0.93, 0, 0.015), 'grille');
-  [0.88, 0.94, 1.0].forEach((y) => rb(0.012, 0.012, 0.98, chrome, -2.342, y, 0, 0.004));
-  const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.02, 24), chrome);
-  badge.rotation.z = Math.PI / 2;
-  badge.position.set(-2.35, 0.94, 0);
-  car.add(badge);
-
-  tag(rb(0.05, 0.12, 0.46, lamp, -2.29, 0.94, 0.63, 0.02), 'headlightL');
-  tag(rb(0.05, 0.12, 0.46, lamp, -2.29, 0.94, -0.63, 0.02), 'headlightR');
-  rb(0.02, 0.02, 1.34, chrome, -2.335, 1.015, 0, 0.005);
-  rb(0.015, 0.03, 0.34, lampBright, -2.32, 0.965, 0.64, 0.006);
-  rb(0.015, 0.03, 0.34, lampBright, -2.32, 0.965, -0.64, 0.006);
-
-  rb(0.08, 0.22, 1.68, plastic, -2.33, 0.37, 0, 0.02);
-  rb(0.06, 0.09, 0.9, chrome, -2.35, 0.28, 0, 0.02);
-
-  // ---------- зад ----------
-  tag(rb(0.035, 0.42, 1.56, paint, 2.28, 0.93, 0, 0.02), 'tailgate');
-  rb(0.05, 0.13, 0.32, tailLamp, 2.23, 0.95, 0.62, 0.015);
-  rb(0.05, 0.13, 0.32, tailLamp, 2.23, 0.95, -0.62, 0.015);
-  rb(0.08, 0.22, 1.68, plastic, 2.33, 0.37, 0, 0.02);
-  rb(0.06, 0.09, 0.9, chrome, 2.35, 0.28, 0, 0.02);
-
-  // ---------- зеркала, ручки, молдинги ----------
-  tag(rb(0.06, 0.11, 0.2, paint, -0.7, 1.17, 0.99, 0.03), 'mirrorL');
-  tag(rb(0.06, 0.11, 0.2, paint, -0.7, 1.17, -0.99, 0.03), 'mirrorR');
-  rb(0.1, 0.035, 0.12, plastic, -0.66, 1.16, 0.93, 0.01);
-  rb(0.1, 0.035, 0.12, plastic, -0.66, 1.16, -0.93, 0.01);
-
-  [-1, 1].forEach((s) => {
-    rb(0.14, 0.025, 0.02, chrome, -0.32, 1.02, s * 0.945, 0.006);
-    rb(0.14, 0.025, 0.02, chrome, 0.7, 1.02, s * 0.945, 0.006);
-    rb(2.3, 0.015, 0.02, chrome, 0.1, 0.44, s * 0.915, 0.005);
-  });
-  [-1, 1].forEach((s) => {
-    rb(2.55, 0.022, 0.012, paint, 0.1, 0.93, s * 0.931, 0.006);
-  });
-  tag(rb(2.45, 0.12, 0.05, plastic, 0.1, 0.34, 0.9, 0.03), 'sill');
-  tag(rb(2.45, 0.12, 0.05, plastic, 0.1, 0.34, -0.9, 0.03), 'sill');
-
-  // ---------- арки, подкрылки, колёса ----------
-  [[-wheelX, 1], [-wheelX, -1], [wheelX, 1], [wheelX, -1]].forEach(([x, s]) => {
-    const archFlare = new THREE.Mesh(new THREE.TorusGeometry(archR, 0.042, 8, 30, Math.PI), plastic);
-    archFlare.position.set(x, 0.37, s * 0.918);
-    car.add(archFlare);
-  });
-
-  // тёмная ниша за колесом, чтобы арка не просвечивала
-  rb(0.9, 0.56, 1.78, plastic, -wheelX, 0.55, 0, 0.04);
-  rb(0.9, 0.56, 1.78, plastic, wheelX, 0.55, 0, 0.04);
-
-  const makeWheel = () => {
-    const g = new THREE.Group();
-    const t = new THREE.Mesh(new THREE.CylinderGeometry(wheelR, wheelR, 0.245, 32), tyre);
-    t.rotation.x = Math.PI / 2;
-    g.add(t);
-    const r = new THREE.Mesh(new THREE.CylinderGeometry(0.255, 0.255, 0.25, 30), rim);
-    r.rotation.x = Math.PI / 2;
-    g.add(r);
-    for (let i = 0; i < 5; i += 1) {
-      const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.45, 0.03), rim);
-      spoke.rotation.z = (i * Math.PI) / 5;
-      spoke.position.z = 0.128;
-      g.add(spoke);
-    }
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.26, 20), chrome);
-    hub.rotation.x = Math.PI / 2;
-    g.add(hub);
-    return g;
-  };
-
-  const positions = [
-    [-wheelX, 0.8, 'wheelFL'],
-    [-wheelX, -0.8, 'wheelFR'],
-    [wheelX, 0.8, 'wheelRL'],
-    [wheelX, -0.8, 'wheelRR']
-  ];
-  positions.forEach(([x, z, zone]) => {
-    const w = makeWheel();
-    w.position.set(x, wheelR, z);
-    car.add(w);
-    tag(w, zone);
-  });
-
-  car.traverse((o) => {
-    if (o.isMesh && !o.userData.zone) {
-      o.castShadow = !o.material.transparent;
-      o.receiveShadow = true;
-    }
-  });
+  );
 }
 
 function tag(obj, zone) {
@@ -1195,6 +1065,10 @@ function setHover(zone) {
 
 function paintZone(zone, on) {
   (meshesByZone.get(zone) || []).forEach((m) => {
+    if (m.userData.ghost) {
+      m.material.opacity = on ? 0.26 : 0;
+      return;
+    }
     if (!m.material.emissive) return;
     if (on) {
       m.material.emissive.setHex(0xff4d00);
@@ -1341,10 +1215,13 @@ window.addEventListener('hashchange', route);
 initThree();
 route();
 
-requestAnimationFrame(() => {
-  setTimeout(() => {
-    const loading = $('#loading');
-    loading.classList.add('is-hidden');
-    setTimeout(() => loading.remove(), 600);
-  }, 250);
-});
+let loaderHidden = false;
+function hideLoader() {
+  if (loaderHidden) return;
+  loaderHidden = true;
+  const loading = $('#loading');
+  if (!loading) return;
+  loading.classList.add('is-hidden');
+  setTimeout(() => loading.remove(), 600);
+}
+setTimeout(hideLoader, 15000);

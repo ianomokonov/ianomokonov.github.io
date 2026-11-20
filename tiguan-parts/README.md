@@ -25,6 +25,37 @@ python3 -m http.server 8000   # из корня репозитория
 - **Регламент ТО** — работы на 15 000 … 240 000 км с шагом 15 000.
 - **Масла и жидкости** — характеристики, код, объём и интервал замены прямо в карточке.
 
+## 3D-модель
+
+В `models/` лежит настоящий Tiguan II (L, 2022), предоставленный владельцем:
+исходный Sketchfab-GLB 40 МБ / 812 тыс. треугольников оптимизирован
+`gltf-transform` до 2.5 МБ / 258 тыс. треугольников (Draco + WebP, simplify 0.2)
+с сохранением отдельных групп: двери, багажник, колёса, стёкла, фары.
+
+Для `file://` модель встроена в `models/tiguan-data.js` как base64 (3.2 МБ):
+браузер не отдаёт локальные `.glb` по этому протоколу.
+
+Пересобрать после замены модели:
+
+```bash
+npx @gltf-transform/cli optimize models/tiguan.glb models/tiguan-opt.glb \
+  --compress draco --flatten false --join false --instance false --palette false \
+  --simplify-ratio 0.2 --texture-compress webp --texture-size 1024
+
+node -e "const fs=require('fs');
+const b=fs.readFileSync('models/tiguan-opt.glb').toString('base64');
+fs.writeFileSync('models/tiguan-data.js','window.TIGUAN_GLB_B64=\"'+b+'\";');"
+```
+
+Зоны навешиваются по именам узлов: `lf_door` → передняя левая дверь,
+`rf_door` → передняя правая, `lr_door` / `rr_door` → задние, `trunk` → багажник,
+`tire`/`hub` → колёса, `headlight` → фары.
+
+Капот в модели не отдельный узел. При загрузке его треугольники вырезаются из
+мешей кузова (по координатам, высоте и нормали вверх) в отдельный меш с копией
+краски и UV. Поэтому подсветка капота — тот же emissive, что у дверей, и
+покрывает весь капот, а в спокойном состоянии шва не видно.
+
 ## Структура
 
 ```

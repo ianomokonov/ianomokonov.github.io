@@ -115,6 +115,7 @@
   <div class="toast" id="toast" hidden></div>
 
   <!-- данные и схемы — обычные скрипты, поэтому работают и по file:// -->
+  <script src="models/tiguan-data.js"></script>
   <script src="data/parts.js"></script>
   <script src="diagrams.js"></script>
 
@@ -132,12 +133,14 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-    import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
     window.THREE = THREE;
     window.OrbitControls = OrbitControls;
     window.RoomEnvironment = RoomEnvironment;
-    window.RoundedBoxGeometry = RoundedBoxGeometry;
+    window.GLTFLoader = GLTFLoader;
+    window.DRACOLoader = DRACOLoader;
     window.__threeReady = true;
 
     // app.js подключаем классическим скриптом уже после three.js,
