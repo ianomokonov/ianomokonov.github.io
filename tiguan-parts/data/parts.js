@@ -13,6 +13,10 @@ window.TIGUAN_DATA = {
       "title": "Двигатель и навесное"
     },
     {
+      "id": "exhaust",
+      "title": "Выхлопная система"
+    },
+    {
       "id": "cooling",
       "title": "Охлаждение и кондиционер"
     },
@@ -50,6 +54,10 @@ window.TIGUAN_DATA = {
         {
           "id": "engine-drive",
           "title": "Ремень и навесное"
+        },
+        {
+          "id": "underbody",
+          "title": "Днище и выхлоп"
         }
       ]
     },
@@ -81,6 +89,66 @@ window.TIGUAN_DATA = {
       "title": "Передок: бампер, оптика, радиатор",
       "subtitle": "Бампер показан условно (пунктир): чтобы добраться до радиатора, его снимают.",
       "related": []
+    },
+    {
+      "id": "underbody",
+      "title": "Днище: КПП, приводы, выхлоп",
+      "subtitle": "Вид снизу, перед машины — внизу. По центру тоннель с карданом и выхлопом, по бокам — приводы и рычаги.",
+      "related": [
+        {
+          "id": "engine-bay",
+          "title": "Моторный отсек"
+        },
+        {
+          "id": "brake-front",
+          "title": "Тормоза и подвеска"
+        },
+        {
+          "id": "propshaft",
+          "title": "Кардан"
+        },
+        {
+          "id": "suspension-front",
+          "title": "Подвеска"
+        }
+      ]
+    },
+    {
+      "id": "propshaft",
+      "title": "Карданный вал: детали",
+      "subtitle": "Разрез по узлам: от КПП до заднего редуктора, с опорой и крепежом.",
+      "related": [
+        {
+          "id": "underbody",
+          "title": "Днище и выхлоп"
+        }
+      ]
+    },
+    {
+      "id": "suspension-front",
+      "title": "Передняя подвеска",
+      "subtitle": "Стойка МакФерсон, рычаг, шаровая опора, сайлентблоки, рулевая тяга.",
+      "related": [
+        {
+          "id": "brake-front",
+          "title": "Тормоза"
+        },
+        {
+          "id": "suspension-rear",
+          "title": "Задняя подвеска"
+        }
+      ]
+    },
+    {
+      "id": "suspension-rear",
+      "title": "Задняя подвеска",
+      "subtitle": "Многорычажная схема: пружина и амортизатор раздельно, рычаги и втулки.",
+      "related": [
+        {
+          "id": "suspension-front",
+          "title": "Передняя подвеска"
+        }
+      ]
     }
   ],
   "zones": [
@@ -260,6 +328,15 @@ window.TIGUAN_DATA = {
         "y": 62
       },
       "note": "Схемы днища пока нет — открываю подвеску и тормоза из каталога."
+    },
+    {
+      "id": "underbody",
+      "title": "Днище: КПП, приводы, выхлоп",
+      "diagram": "underbody",
+      "marker": {
+        "x": 100,
+        "y": 62
+      }
     }
   ],
   "parts": [
@@ -321,12 +398,13 @@ window.TIGUAN_DATA = {
       "id": "catalytic",
       "name": "Катализатор",
       "oem": "5Q0 254 200",
-      "system": "engine",
+      "system": "exhaust",
       "qty": 1,
       "confidence": "low",
       "location": "Под днищем, за двигателем",
       "note": "Ошибка эффективности — возможна замена",
-      "zone": "sill"
+      "zone": "sill",
+      "diagram": "underbody"
     },
     {
       "id": "chain-guide",
@@ -422,12 +500,13 @@ window.TIGUAN_DATA = {
       "id": "downpipe",
       "name": "Приёмная труба",
       "oem": "5Q0 253 091",
-      "system": "engine",
+      "system": "exhaust",
       "qty": 1,
       "confidence": "low",
       "location": "От турбины вниз",
       "note": "Проверять на трещины и гофру",
-      "zone": "sill"
+      "zone": "sill",
+      "diagram": "underbody"
     },
     {
       "id": "engine-mount-left",
@@ -500,12 +579,13 @@ window.TIGUAN_DATA = {
       "id": "gpf",
       "name": "Сажевый фильтр (GPF)",
       "oem": "5Q0 254 500",
-      "system": "engine",
+      "system": "exhaust",
       "qty": 1,
       "confidence": "low",
       "location": "В выпуске, после катализатора",
       "note": "Прожиг — по диагностике, не глушить в пробке",
-      "zone": "sill"
+      "zone": "sill",
+      "diagram": "underbody"
     },
     {
       "id": "head-gasket",
@@ -612,31 +692,33 @@ window.TIGUAN_DATA = {
       "id": "lambda-front",
       "name": "Лямбда-зонд передний",
       "oem": "06L 906 262",
-      "system": "engine",
+      "system": "exhaust",
       "qty": 1,
       "confidence": "low",
       "location": "На приёмной трубе",
       "note": "Влияет на смесь и расход",
-      "zone": "hood",
+      "zone": "sill",
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "underbody"
     },
     {
       "id": "lambda-rear",
       "name": "Лямбда-зонд задний",
       "oem": "06L 906 262 B",
-      "system": "engine",
+      "system": "exhaust",
       "qty": 1,
       "confidence": "low",
       "location": "После катализатора",
       "note": "Контроль катализатора",
-      "zone": "hood",
+      "zone": "sill",
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "underbody"
     },
     {
       "id": "maf",
@@ -654,12 +736,13 @@ window.TIGUAN_DATA = {
       "id": "muffler",
       "name": "Глушитель задний",
       "oem": "5Q0 253 609",
-      "system": "engine",
+      "system": "exhaust",
       "qty": 1,
       "confidence": "low",
       "location": "Сзади, под бампером",
       "note": "Прогар и гул — замена",
-      "zone": "tailgate"
+      "zone": "sill",
+      "diagram": "underbody"
     },
     {
       "id": "oil-cap",
@@ -1212,7 +1295,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "ball-joint",
@@ -1227,7 +1311,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "bump-stop",
@@ -1242,14 +1327,15 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "control-arm",
       "name": "Рычаг передней подвески",
       "oem": "5Q0 407 151",
       "system": "suspension",
-      "diagram": "brake-front",
+      "diagram": "suspension-front",
       "zone": "wheelFL",
       "qty": 2,
       "confidence": "medium",
@@ -1273,7 +1359,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 150000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-rear"
     },
     {
       "id": "rear-arm",
@@ -1284,7 +1371,8 @@ window.TIGUAN_DATA = {
       "confidence": "low",
       "location": "Многорычажная подвеска сзади",
       "note": "Проверять сайлентблоки",
-      "zone": "wheelRL"
+      "zone": "wheelRL",
+      "diagram": "suspension-rear"
     },
     {
       "id": "shock-rear",
@@ -1299,7 +1387,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-rear"
     },
     {
       "id": "spring-front",
@@ -1310,7 +1399,8 @@ window.TIGUAN_DATA = {
       "confidence": "low",
       "location": "На передней стойке",
       "note": "Менять парой, по цветовой маркировке",
-      "zone": "wheelFL"
+      "zone": "wheelFL",
+      "diagram": "suspension-front"
     },
     {
       "id": "spring-rear",
@@ -1321,7 +1411,8 @@ window.TIGUAN_DATA = {
       "confidence": "low",
       "location": "На задней стойке",
       "note": "Менять парой, следить за просадкой",
-      "zone": "wheelRL"
+      "zone": "wheelRL",
+      "diagram": "suspension-rear"
     },
     {
       "id": "stab-bushing-front",
@@ -1336,7 +1427,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "stab-bushing-rear",
@@ -1351,14 +1443,15 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-rear"
     },
     {
       "id": "stab-link",
       "name": "Стойка стабилизатора",
       "oem": "5Q0 411 315",
       "system": "suspension",
-      "diagram": "brake-front",
+      "diagram": "suspension-front",
       "zone": "wheelFL",
       "qty": 2,
       "confidence": "high",
@@ -1382,7 +1475,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-rear"
     },
     {
       "id": "steering-rack",
@@ -1400,7 +1494,7 @@ window.TIGUAN_DATA = {
       "name": "Амортизатор передний",
       "oem": "5QF 413 031",
       "system": "suspension",
-      "diagram": "brake-front",
+      "diagram": "suspension-front",
       "zone": "wheelFL",
       "qty": 2,
       "confidence": "low",
@@ -1424,7 +1518,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "замена"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "subframe-bushing",
@@ -1435,7 +1530,8 @@ window.TIGUAN_DATA = {
       "confidence": "low",
       "location": "Под подрамником",
       "note": "Проверять при стуках на неровностях",
-      "zone": "sill"
+      "zone": "sill",
+      "diagram": "suspension-rear"
     },
     {
       "id": "tie-rod",
@@ -1450,7 +1546,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "tie-rod-end",
@@ -1465,14 +1562,15 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "wheel-bearing",
       "name": "Подшипник ступицы передний",
       "oem": "5Q0 407 621",
       "system": "suspension",
-      "diagram": "brake-front",
+      "diagram": "suspension-front",
       "zone": "wheelFL",
       "qty": 2,
       "confidence": "medium",
@@ -2002,7 +2100,8 @@ window.TIGUAN_DATA = {
       "confidence": "low",
       "location": "По центру днища, к заднему редуктору",
       "note": "Проверять люфт и крестовины",
-      "zone": "sill"
+      "zone": "sill",
+      "diagram": "propshaft"
     },
     {
       "id": "selector",
@@ -2014,6 +2113,341 @@ window.TIGUAN_DATA = {
       "location": "В салоне, на тоннеле",
       "note": "Проверять фиксацию и подсветку",
       "zone": "doorFL"
+    },
+    {
+      "id": "dsg-clutch",
+      "name": "Сцепление DSG (пакет)",
+      "oem": "0GC 141 031",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Внутри корпуса КПП, за поддоном",
+      "note": "Мокрое сцепление DQ381, меняется со снятием КПП",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "dsg-oil"
+    },
+    {
+      "id": "dsg-heat-exchanger",
+      "name": "Теплообменник DSG",
+      "oem": "0GC 317 019",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Сбоку корпуса КПП, подключается к контуру ОЖ",
+      "note": "Охлаждает масло DSG; при течи — замена",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "coolant"
+    },
+    {
+      "id": "dsg-oil-pump",
+      "name": "Масляный насос DSG",
+      "oem": "0GC 325 031",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "В корпусе КПП, у поддона",
+      "note": "Давление масла в DSG, ошибки по давлению",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "dsg-oil"
+    },
+    {
+      "id": "gearbox-seal",
+      "name": "Сальник привода КПП",
+      "oem": "02M 301 189",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "На выходе привода из КПП",
+      "note": "Течь масла на привод — менять сразу",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "dsg-oil"
+    },
+    {
+      "id": "propshaft-bearing",
+      "name": "Подвесной подшипник кардана",
+      "oem": "5Q0 521 307",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "По центру карданного вала",
+      "note": "Гул и вибрация на скорости",
+      "diagram": "propshaft",
+      "zone": "sill"
+    },
+    {
+      "id": "rear-diff",
+      "name": "Задний редуктор",
+      "oem": "5Q0 525 010",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Сзади, между задними колёсами",
+      "note": "Масло 1,0 л, интервал 120 тыс. км — код в блоке жидкости ниже",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "rear-diff-oil"
+    },
+    {
+      "id": "haldex-coupling",
+      "name": "Муфта Haldex (4Motion)",
+      "oem": "5Q0 525 554",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Спереди заднего редуктора",
+      "note": "Обслуживается: масло и фильтр каждые 60 тыс. км",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "haldex-oil"
+    },
+    {
+      "id": "haldex-pump",
+      "name": "Насос муфты Haldex",
+      "oem": "0CQ 598 549",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "На корпусе муфты",
+      "note": "Ошибка 4Motion — часто насос или фильтр",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "haldex-oil"
+    },
+    {
+      "id": "rear-diff-seal",
+      "name": "Сальник заднего редуктора",
+      "oem": "02D 525 275",
+      "system": "transmission",
+      "qty": 1,
+      "confidence": "low",
+      "location": "На выходе полуоси",
+      "note": "Потёки масла на редукторе",
+      "diagram": "underbody",
+      "zone": "sill",
+      "fluid": "rear-diff-oil"
+    },
+    {
+      "id": "egt-sensor",
+      "name": "Датчик температуры выхлопных газов",
+      "oem": "06L 906 088",
+      "system": "exhaust",
+      "qty": 1,
+      "confidence": "low",
+      "location": "На приёмной трубе, у турбины",
+      "note": "Влияет на защиту турбины и прожиг",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "id": "exhaust-gasket",
+      "name": "Прокладка приёмной трубы",
+      "oem": "5Q0 253 115",
+      "system": "exhaust",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Между турбиной и приёмной трубой",
+      "note": "Меняется при снятии выхлопа",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "id": "exhaust-hanger",
+      "name": "Подвес глушителя",
+      "oem": "5Q0 253 147",
+      "system": "exhaust",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Резиновые подвесы по тракту",
+      "note": "Проверять трещины и провисание",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "id": "exhaust-clamp",
+      "name": "Хомут глушителя",
+      "oem": "1K0 253 141",
+      "system": "exhaust",
+      "qty": 1,
+      "confidence": "medium",
+      "location": "Соединение секций выхлопа",
+      "note": "Меняется вместе с прокладкой",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "id": "fuel-tank",
+      "name": "Топливный бак",
+      "oem": "5Q0 201 075",
+      "system": "engine",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Под задним сиденьем, между редуктором и порогом",
+      "note": "Насос и фильтр внутри бака",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "id": "underbody-cover",
+      "name": "Защита днища",
+      "oem": "5Q0 825 271",
+      "system": "body",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Пластиковые щиты под двигателем и тоннелем",
+      "note": "Крепится клипсами, снимается для доступа",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "id": "subframe",
+      "name": "Подрамник",
+      "oem": "5Q0 199 315",
+      "system": "suspension",
+      "qty": 1,
+      "confidence": "low",
+      "location": "Под двигателем, несёт рычаги и рейку",
+      "note": "Проверять сайлентблоки и крепления",
+      "diagram": "underbody",
+      "zone": "sill"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Отдельного масла нет — работает на масле КПП. Меняется только с разборкой КПП",
+      "diagram": "underbody",
+      "zone": "sill",
+      "id": "front-diff",
+      "name": "Передний редуктор (в КПП)",
+      "oem": "0GC 409 021",
+      "system": "transmission",
+      "location": "Встроен в корпус КПП DSG, спереди",
+      "fluid": "dsg-oil"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Передаёт момент на кардан; смазывается маслом DSG",
+      "diagram": "underbody",
+      "zone": "sill",
+      "id": "angle-drive",
+      "name": "Угловой редуктор (раздатка)",
+      "oem": "0GC 409 053",
+      "system": "transmission",
+      "location": "На выходе из КПП, к кардану",
+      "fluid": "dsg-oil"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Потёки масла на привод",
+      "diagram": "underbody",
+      "zone": "sill",
+      "id": "front-diff-seal",
+      "name": "Сальник полуоси КПП",
+      "oem": "0GC 409 399",
+      "system": "transmission",
+      "location": "На выходе привода из КПП",
+      "fluid": "dsg-oil"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Люфт и хруст при трогании",
+      "diagram": "propshaft",
+      "zone": "sill",
+      "id": "propshaft-front-joint",
+      "name": "ШРУС кардана передний",
+      "oem": "5Q0 521 103",
+      "system": "transmission",
+      "location": "Передний конец кардана, у КПП"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Проверять пыльник и люфт",
+      "diagram": "propshaft",
+      "zone": "sill",
+      "id": "propshaft-rear-joint",
+      "name": "ШРУС кардана задний",
+      "oem": "5Q0 521 103 A",
+      "system": "transmission",
+      "location": "Задний конец кардана, у редуктора"
+    },
+    {
+      "qty": 12,
+      "confidence": "low",
+      "note": "Одноразовые, тянуть динамометрией",
+      "diagram": "propshaft",
+      "zone": "sill",
+      "id": "propshaft-bolts",
+      "name": "Болты кардана",
+      "oem": "N 911 910 01",
+      "system": "transmission",
+      "location": "Фланцы кардана, по 6 шт."
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Гасит рывки, трескается от времени",
+      "diagram": "propshaft",
+      "zone": "sill",
+      "id": "propshaft-coupling",
+      "name": "Эластичная муфта кардана",
+      "oem": "5Q0 521 331",
+      "system": "transmission",
+      "location": "Между КПП и карданом"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Дребезг на скорости — проверить крепления",
+      "diagram": "propshaft",
+      "zone": "sill",
+      "id": "propshaft-heat-shield",
+      "name": "Теплозащитный экран тоннеля",
+      "oem": "5Q0 825 311",
+      "system": "body",
+      "location": "Над карданом и выхлопом"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "При замене — развал-схождение",
+      "diagram": "suspension-front",
+      "zone": "sill",
+      "id": "knuckle-front",
+      "name": "Поворотный кулак передний",
+      "oem": "5Q0 407 255",
+      "system": "suspension",
+      "location": "Стойка, рычаг и ступица крепятся к кулаку"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Проверять сайлентблоки",
+      "diagram": "suspension-rear",
+      "zone": "sill",
+      "id": "knuckle-rear",
+      "name": "Кулак задний",
+      "oem": "5Q0 505 435",
+      "system": "suspension",
+      "location": "Несёт ступицу и рычаги сзади"
+    },
+    {
+      "qty": 1,
+      "confidence": "low",
+      "note": "Трескается, появляется скрип",
+      "diagram": "suspension-front",
+      "zone": "sill",
+      "id": "spring-pad",
+      "name": "Прокладка пружины",
+      "oem": "5Q0 412 109",
+      "system": "suspension",
+      "location": "Под и над пружиной"
     }
   ],
   "fluids": [

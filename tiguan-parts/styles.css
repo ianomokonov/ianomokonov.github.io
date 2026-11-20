@@ -1059,3 +1059,23 @@ button.sched-item:hover { background: var(--surface-2); }
 
 .si-act.is-check { color: var(--muted); }
 .sched-item.is-fluid .si-act.is-check { color: var(--muted); }
+
+.fluid-list dd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.icon-btn.mini { width: 22px; height: 22px; font-size: 12px; }
+.fluid-changed {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--warn);
+}
+.fluid-changed .orig { font-family: var(--mono); color: var(--muted); text-decoration: line-through; }
+.fluid-changed button { color: var(--cyan); text-decoration: underline; font-size: 11.5px; }
+
+.zonebar {
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(100% - 48px);
+}

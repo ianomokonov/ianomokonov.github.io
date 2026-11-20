@@ -13,7 +13,7 @@ const esc = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const norm = (s) => s.toLowerCase().replace(/ё/g, 'е').replace(/[\s\-·]/g, '');
 
-const LS = { oem: 'tiguan.oem.v1', fav: 'tiguan.fav.v1' };
+const LS = { oem: 'tiguan.oem.v1', fav: 'tiguan.fav.v1', fluid: 'tiguan.fluid.v1' };
 const readJSON = (key, fallback) => {
   try {
     const raw = localStorage.getItem(key);
@@ -48,8 +48,10 @@ const CONF = {
 };
 
 let oemOverrides = readJSON(LS.oem, {});
+let fluidOverrides = readJSON(LS.fluid, {});
 let favorites = new Set(readJSON(LS.fav, []));
 const oemOf = (p) => oemOverrides[p.id] || p.oem;
+const fluidCodeOf = (f) => fluidOverrides[f.id] || f.code;
 const isFav = (id) => favorites.has(id);
 
 /* ------------------------------------------------------------------ */
@@ -268,15 +270,45 @@ function serviceBlock(p) {
 }
 
 function fluidBlock(f) {
+  const code = fluidCodeOf(f);
+  const changed = !!fluidOverrides[f.id];
   return `<div class="fluid">
     <div class="fluid-title">${esc(f.title)}</div>
     <dl class="fluid-list">
       <div><dt>Характеристики</dt><dd>${esc(f.spec)}</dd></div>
-      ${f.code && f.code !== '—' ? `<div><dt>Код</dt><dd class="fluid-code">${esc(f.code)}</dd></div>` : ''}
+      <div data-fluid-row><dt>Код</dt><dd>
+        <span class="fluid-code">${esc(code)}</span>
+        <button type="button" class="icon-btn mini" data-act="fluid-edit" title="Исправить код">✎</button>
+      </dd></div>
       <div><dt>Объём</dt><dd>${esc(f.volume)}</dd></div>
       <div><dt>Замена</dt><dd>${esc(f.interval)}</dd></div>
     </dl>
+    ${changed ? `<div class="fluid-changed">код изменён вручную <span class="orig">${esc(f.code)}</span><button type="button" data-act="fluid-reset">вернуть</button></div>` : ''}
   </div>`;
+}
+
+function startFluidEdit(f) {
+  const row = document.querySelector('[data-fluid-row]');
+  if (!row) return;
+  row.innerHTML = `<dt>Код</dt><dd>
+    <input class="oem-edit" id="fluidInput" value="${esc(fluidCodeOf(f))}" spellcheck="false" autocomplete="off">
+    <button type="button" class="icon-btn" data-act="fluid-save" title="Сохранить">✓</button>
+    <button type="button" class="icon-btn" data-act="fluid-cancel" title="Отмена">✕</button>
+  </dd>`;
+  const input = $('#fluidInput');
+  input.focus();
+  input.select();
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const btn = document.querySelector('[data-act="fluid-save"]');
+      if (btn) btn.click();
+    }
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      renderPanel(current.part);
+    }
+  });
 }
 
 function miniMap(zoneId) {
@@ -313,6 +345,30 @@ $('#panelBody').addEventListener('click', async (e) => {
     toggleFav(p.id);
   } else if (act === 'edit') {
     startOemEdit(p);
+  } else if (act === 'fluid-edit') {
+    const f = FLUIDS.get(p.fluid);
+    if (f) startFluidEdit(f);
+  } else if (act === 'fluid-save') {
+    const f = FLUIDS.get(p.fluid);
+    const input = $('#fluidInput');
+    if (!f || !input) return;
+    const value = input.value.trim().replace(/\s+/g, ' ');
+    if (!value) return;
+    if (value === f.code) delete fluidOverrides[f.id];
+    else fluidOverrides[f.id] = value;
+    writeJSON(LS.fluid, fluidOverrides);
+    renderPanel(p.id);
+    toast('Код сохранён в этом браузере');
+  } else if (act === 'fluid-cancel') {
+    renderPanel(p.id);
+  } else if (act === 'fluid-reset') {
+    const f = FLUIDS.get(p.fluid);
+    if (f) {
+      delete fluidOverrides[f.id];
+      writeJSON(LS.fluid, fluidOverrides);
+      renderPanel(p.id);
+      toast('Вернул исходный код');
+    }
   } else if (act === 'reset') {
     delete oemOverrides[p.id];
     writeJSON(LS.oem, oemOverrides);
@@ -536,7 +592,8 @@ function renderSchedule(km) {
 function scheduleRowHTML(r) {
   const action = r.s.action || 'замена';
   if (r.f) {
-    const meta = r.f.code && r.f.code !== '—' ? `${r.f.code} · ${r.f.volume}` : r.f.volume;
+    const code = fluidCodeOf(r.f);
+    const meta = code && code !== '—' ? `${code} · ${r.f.volume}` : r.f.volume;
     return `<div class="sched-item is-fluid">
       <span class="si-act ${action === 'проверка' ? 'is-check' : ''}">${esc(action)}</span>
       <span class="si-name">${esc(r.f.title)}</span>
@@ -728,6 +785,8 @@ const clock = new THREE.Clock();
 let hoverZone = null;
 let camTween = null;
 let autoSpinWanted = true;
+let groundPlane = null;
+let gridHelper = null;
 
 const HOME = {
   pos: new THREE.Vector3(-5.5, 2.25, 6.1),
@@ -760,7 +819,7 @@ function initThree() {
   controls.minDistance = 4.2;
   controls.maxDistance = 10.5;
   controls.minPolarAngle = 0.32;
-  controls.maxPolarAngle = 1.48;
+  controls.maxPolarAngle = 2.55;
   controls.rotateSpeed = 0.75;
   controls.zoomSpeed = 0.65;
   controls.autoRotate = true;
@@ -794,17 +853,17 @@ function initThree() {
   rim.position.set(2, 4.5, -7);
   scene.add(rim);
 
-  const shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), new THREE.ShadowMaterial({ opacity: 0.4 }));
-  shadowPlane.rotation.x = -Math.PI / 2;
-  shadowPlane.position.y = 0.001;
-  shadowPlane.receiveShadow = true;
-  scene.add(shadowPlane);
+  groundPlane = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), new THREE.ShadowMaterial({ opacity: 0.4 }));
+  groundPlane.rotation.x = -Math.PI / 2;
+  groundPlane.position.y = 0.001;
+  groundPlane.receiveShadow = true;
+  scene.add(groundPlane);
 
-  const grid = new THREE.GridHelper(26, 52, 0x1b3047, 0x0f1c2a);
-  grid.material.transparent = true;
-  grid.material.opacity = 0.5;
-  grid.position.y = 0.002;
-  scene.add(grid);
+  gridHelper = new THREE.GridHelper(26, 52, 0x1b3047, 0x0f1c2a);
+  gridHelper.material.transparent = true;
+  gridHelper.material.opacity = 0.5;
+  gridHelper.position.y = 0.002;
+  scene.add(gridHelper);
 
   loadCar();
 
@@ -916,6 +975,10 @@ function loadCar() {
         }
         if (/headlight/i.test(n)) {
           tag(o, 'headlightL');
+          return;
+        }
+        if (/chassis|car_body_bottom/i.test(n)) {
+          tag(o, 'underbody');
           return;
         }
         if (/tire|hub|brake/i.test(n)) {
@@ -1072,7 +1135,7 @@ function paintZone(zone, on) {
     if (!m.material.emissive) return;
     if (on) {
       m.material.emissive.setHex(0xff4d00);
-      m.material.emissiveIntensity = 0.4;
+      m.material.emissiveIntensity = zone === 'underbody' ? 0.32 : 0.4;
     } else {
       m.material.emissive.setHex(m.userData.baseEmissive);
       m.material.emissiveIntensity = m.userData.baseEmissiveIntensity;
@@ -1127,18 +1190,29 @@ function stopSpinOnInteraction() {
   $('#btnSpin').classList.remove('is-on');
 }
 
-function resetView() {
+function tweenCamera(pos, target, dur = 700) {
   camTween = {
     p0: camera.position.clone(),
-    p1: HOME.pos.clone(),
+    p1: pos.clone(),
     t0: controls.target.clone(),
-    t1: HOME.target.clone(),
+    t1: target.clone(),
     start: performance.now(),
-    dur: 700
+    dur
   };
+}
+
+function resetView() {
+  tweenCamera(HOME.pos, HOME.target);
   autoSpinWanted = true;
   controls.autoRotate = true;
   $('#btnSpin').classList.add('is-on');
+}
+
+function underView() {
+  controls.autoRotate = false;
+  autoSpinWanted = false;
+  $('#btnSpin').classList.remove('is-on');
+  tweenCamera(new THREE.Vector3(0.4, -2.9, 5.6), new THREE.Vector3(0, 0.7, 0), 900);
 }
 
 function stepTween(now) {
@@ -1162,6 +1236,9 @@ function tick(now) {
   clock.getDelta();
   stepTween(now);
   controls.update();
+  const below = camera.position.y < 0.3;
+  if (groundPlane) groundPlane.visible = !below;
+  if (gridHelper) gridHelper.visible = !below;
   if (current.view === 'car') renderer.render(scene, camera);
 }
 
@@ -1170,6 +1247,7 @@ function tick(now) {
 /* ------------------------------------------------------------------ */
 
 $('#btnReset').addEventListener('click', resetView);
+$('#btnUnder').addEventListener('click', underView);
 $('#btnSpin').addEventListener('click', () => {
   autoSpinWanted = !autoSpinWanted;
   controls.autoRotate = autoSpinWanted;
@@ -1180,7 +1258,10 @@ const ZONE_CHIPS = [
   { label: 'Моторный отсек', diagram: 'engine-bay' },
   { label: 'Тормоза и подвеска', diagram: 'brake-front' },
   { label: 'Салон', diagram: 'interior' },
-  { label: 'Передок', diagram: 'body-front' }
+  { label: 'Передок', diagram: 'body-front' },
+  { label: 'Подвеска', diagram: 'suspension-front' },
+  { label: 'Кардан', diagram: 'propshaft' },
+  { label: 'Днище и выхлоп', diagram: 'underbody' }
 ];
 
 $('#zonebar').innerHTML = ZONE_CHIPS.map(

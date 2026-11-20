@@ -296,6 +296,358 @@ window.DIAGRAMS = {
     <text class="caption" x="159" y="482" text-anchor="middle">слева под панелью</text>
   </svg>`,
 
+  /* ============================ ДНИЩЕ ============================ */
+  'underbody': `
+  <svg viewBox="0 0 1000 620" role="img" aria-label="Днище автомобиля: КПП, приводы, выхлоп, редуктор">
+    <rect class="plate" x="60" y="50" width="880" height="520" rx="26"/>
+    <text class="caption" x="500" y="38" text-anchor="middle">зад автомобиля</text>
+    <text class="caption" x="500" y="596" text-anchor="middle">перед автомобиля</text>
+
+    <rect class="ghost" x="120" y="90" width="760" height="440" rx="30"/>
+
+    <!-- колёса -->
+    <rect class="ghost" x="128" y="412" width="86" height="78" rx="14"/>
+    <rect class="ghost" x="786" y="412" width="86" height="78" rx="14"/>
+    <rect class="ghost" x="128" y="120" width="86" height="78" rx="14"/>
+    <rect class="ghost" x="786" y="120" width="86" height="78" rx="14"/>
+
+    <!-- выхлоп -->
+    <g class="hotspot" data-part="downpipe" tabindex="0" role="button" aria-label="Приёмная труба">
+      <rect class="shape" x="320" y="440" width="45" height="70" rx="8"/>
+      <text class="label" x="312" y="470" text-anchor="end" style="font-size:12px">Приёмная</text>
+      <text class="label" x="312" y="485" text-anchor="end" style="font-size:12px">труба</text>
+    </g>
+
+    <g class="hotspot" data-part="catalytic" tabindex="0" role="button" aria-label="Катализатор">
+      <rect class="shape" x="320" y="355" width="45" height="75" rx="8"/>
+      <text class="label" x="312" y="392" text-anchor="end" style="font-size:12px">Катализатор</text>
+    </g>
+
+    <g class="hotspot" data-part="gpf" tabindex="0" role="button" aria-label="Сажевый фильтр GPF">
+      <rect class="shape" x="320" y="270" width="45" height="75" rx="8"/>
+      <text class="label" x="312" y="300" text-anchor="end" style="font-size:12px">Сажевый</text>
+      <text class="label" x="312" y="315" text-anchor="end" style="font-size:12px">фильтр</text>
+    </g>
+
+    <rect class="ghost" x="332" y="180" width="22" height="90" rx="8"/>
+    <g class="hotspot" data-part="muffler" tabindex="0" role="button" aria-label="Глушитель">
+      <rect class="shape" x="300" y="100" width="90" height="70" rx="10"/>
+      <text class="label" x="345" y="140" text-anchor="middle" style="font-size:12.5px">Глушитель</text>
+    </g>
+
+    <!-- датчики выхлопа -->
+    <g class="hotspot" data-part="lambda-front" tabindex="0" role="button" aria-label="Лямбда-зонд передний">
+      <circle class="shape" cx="385" cy="452" r="9"/>
+      <text class="label" x="400" y="456" text-anchor="start" style="font-size:12px">λ</text>
+    </g>
+    <g class="hotspot" data-part="lambda-rear" tabindex="0" role="button" aria-label="Лямбда-зонд задний">
+      <circle class="shape" cx="385" cy="368" r="9"/>
+      <text class="label" x="400" y="372" text-anchor="start" style="font-size:12px">λ</text>
+    </g>
+
+    <!-- КПП -->
+    <rect class="ghost" x="390" y="360" width="220" height="140" rx="20"/>
+    <text class="caption" x="500" y="352" text-anchor="middle">КПП DSG (DQ381)</text>
+
+    <g class="hotspot" data-part="dsg-clutch" tabindex="0" role="button" aria-label="Сцепление DSG">
+      <rect class="shape" x="400" y="368" width="95" height="50" rx="8"/>
+      <text class="label" x="447" y="398" text-anchor="middle" style="font-size:11px">Сцепление</text>
+    </g>
+
+    <g class="hotspot" data-part="mechatronic" tabindex="0" role="button" aria-label="Мехатроник DSG">
+      <rect class="shape" x="502" y="368" width="98" height="50" rx="8"/>
+      <text class="label" x="551" y="398" text-anchor="middle" style="font-size:11px">Мехатроник</text>
+    </g>
+
+    <g class="hotspot" data-part="dsg-filter" tabindex="0" role="button" aria-label="Фильтр DSG">
+      <rect class="shape" x="502" y="428" width="80" height="30" rx="7"/>
+      <text class="label" x="542" y="448" text-anchor="middle" style="font-size:10.5px">Фильтр DSG</text>
+    </g>
+
+    <g class="hotspot" data-part="dsg-heat-exchanger" tabindex="0" role="button" aria-label="Теплообменник DSG">
+      <rect class="shape" x="618" y="400" width="46" height="58" rx="8"/>
+      <line class="leader" x1="664" y1="429" x2="680" y2="429"/>
+      <text class="label" x="686" y="433" text-anchor="start" style="font-size:11.5px">Теплообменник</text>
+    </g>
+
+    <g class="hotspot" data-part="front-diff" tabindex="0" role="button" aria-label="Передний редуктор">
+      <rect class="shape" x="400" y="474" width="82" height="22" rx="6"/>
+      <line class="leader" x1="440" y1="496" x2="440" y2="512"/>
+      <text class="label" x="440" y="528" text-anchor="middle" style="font-size:11px">Передний редуктор</text>
+    </g>
+
+    <g class="hotspot" data-part="angle-drive" tabindex="0" role="button" aria-label="Угловой редуктор (раздатка)">
+      <rect class="shape" x="616" y="468" width="44" height="30" rx="7"/>
+      <line class="leader" x1="660" y1="483" x2="674" y2="483"/>
+      <text class="label" x="680" y="487" text-anchor="start" style="font-size:11px">Раздатка</text>
+    </g>
+
+    <!-- приводы -->
+    <g class="hotspot" data-part="driveshaft-left" tabindex="0" role="button" aria-label="Привод левый">
+      <line class="shape ln-thick" x1="390" y1="432" x2="216" y2="452"/>
+    </g>
+    <g class="hotspot" data-part="driveshaft-right" tabindex="0" role="button" aria-label="Привод правый">
+      <line class="shape ln-thick" x1="610" y1="432" x2="784" y2="452"/>
+    </g>
+
+    <!-- кардан -->
+    <g class="hotspot" data-part="propshaft" tabindex="0" role="button" aria-label="Карданный вал">
+      <rect class="shape" x="480" y="196" width="40" height="150" rx="10"/>
+      <line class="leader" x1="520" y1="270" x2="534" y2="270"/>
+      <text class="label" x="540" y="275" text-anchor="start" style="font-size:12.5px">Карданный вал</text>
+    </g>
+
+    <!-- задний редуктор и Haldex -->
+    <g class="hotspot" data-part="rear-diff" tabindex="0" role="button" aria-label="Задний редуктор">
+      <rect class="shape" x="430" y="120" width="140" height="64" rx="12"/>
+      <text class="label" x="500" y="156" text-anchor="middle" style="font-size:12px">Задний редуктор</text>
+    </g>
+
+    <g class="hotspot" data-part="haldex-coupling" tabindex="0" role="button" aria-label="Муфта Haldex">
+      <rect class="shape" x="445" y="82" width="110" height="30" rx="8"/>
+      <text class="label" x="500" y="102" text-anchor="middle" style="font-size:12.5px">Haldex</text>
+    </g>
+
+    <g class="hotspot" data-part="haldex-filter" tabindex="0" role="button" aria-label="Фильтр Haldex">
+      <rect class="shape" x="400" y="88" width="30" height="24" rx="5"/>
+      <text class="caption" x="415" y="80" text-anchor="middle">фильтр</text>
+    </g>
+
+    <g class="hotspot" data-part="haldex-pump" tabindex="0" role="button" aria-label="Насос Haldex">
+      <circle class="shape" cx="585" cy="98" r="13"/>
+      <text class="label" x="604" y="102" text-anchor="start" style="font-size:11.5px">насос</text>
+    </g>
+
+    <!-- бак -->
+    <g class="hotspot" data-part="fuel-tank" tabindex="0" role="button" aria-label="Топливный бак">
+      <rect class="shape" x="650" y="210" width="160" height="130" rx="16"/>
+      <text class="label" x="730" y="280" text-anchor="middle" style="font-size:12.5px">Топливный бак</text>
+    </g>
+
+  </svg>`,
+  /* ============================ КАРДАН ============================ */
+  'propshaft': `
+  <svg viewBox="0 0 1000 620" role="img" aria-label="Карданный вал: детали и крепёж">
+    <rect class="plate" x="60" y="50" width="880" height="520" rx="26"/>
+    <text class="caption" x="170" y="82" text-anchor="middle">к КПП</text>
+    <text class="caption" x="790" y="82" text-anchor="middle">к заднему редуктору</text>
+
+    <!-- теплозащита -->
+    <g class="hotspot" data-part="propshaft-heat-shield" tabindex="0" role="button" aria-label="Теплозащитный экран">
+      <rect class="shape" x="300" y="150" width="320" height="40" rx="10"/>
+      <text class="label" x="460" y="140" text-anchor="middle" style="font-size:12.5px">Теплозащитный экран</text>
+    </g>
+
+    <!-- передний ШРУС -->
+    <g class="hotspot" data-part="propshaft-front-joint" tabindex="0" role="button" aria-label="ШРУС кардана передний">
+      <circle class="shape" cx="170" cy="300" r="52"/>
+      <circle class="hub" cx="170" cy="300" r="20"/>
+      <text class="label" x="170" y="382" text-anchor="middle" style="font-size:12.5px">ШРУС передний</text>
+    </g>
+
+    <!-- болты -->
+    <g class="hotspot" data-part="propshaft-bolts" tabindex="0" role="button" aria-label="Болты кардана">
+      <circle class="shape" cx="170" cy="238" r="8"/>
+      <circle class="shape" cx="170" cy="362" r="8"/>
+      <circle class="shape" cx="108" cy="300" r="8"/>
+      <circle class="shape" cx="232" cy="300" r="8"/>
+      <line class="leader" x1="120" y1="430" x2="150" y2="372"/>
+      <text class="label" x="114" y="446" text-anchor="middle" style="font-size:12px">болты</text>
+    </g>
+
+    <!-- эластичная муфта -->
+    <g class="hotspot" data-part="propshaft-coupling" tabindex="0" role="button" aria-label="Эластичная муфта кардана">
+      <circle class="shape" cx="258" cy="300" r="32"/>
+      <text class="label" x="258" y="240" text-anchor="middle" style="font-size:12px">Эластичная муфта</text>
+    </g>
+
+    <!-- трубы -->
+    <g class="hotspot" data-part="propshaft" tabindex="0" role="button" aria-label="Карданный вал">
+      <rect class="shape" x="298" y="280" width="180" height="40" rx="12"/>
+      <text class="label" x="388" y="266" text-anchor="middle" style="font-size:12.5px">Труба кардана</text>
+    </g>
+
+    <!-- подвесной подшипник -->
+    <g class="hotspot" data-part="propshaft-bearing" tabindex="0" role="button" aria-label="Подвесной подшипник">
+      <rect class="shape" x="490" y="250" width="60" height="100" rx="12"/>
+      <rect class="ghost" x="500" y="222" width="40" height="28" rx="8"/>
+      <line class="leader" x1="520" y1="350" x2="520" y2="382"/>
+      <text class="label" x="520" y="398" text-anchor="middle" style="font-size:12px">Подвесной подшипник</text>
+    </g>
+
+    <g class="hotspot" data-part="propshaft" tabindex="0" role="button" aria-label="Карданный вал">
+      <rect class="shape" x="560" y="280" width="170" height="40" rx="12"/>
+      <text class="label" x="645" y="266" text-anchor="middle" style="font-size:12.5px">Труба кардана</text>
+    </g>
+
+    <!-- задний ШРУС -->
+    <g class="hotspot" data-part="propshaft-rear-joint" tabindex="0" role="button" aria-label="ШРУС кардана задний">
+      <circle class="shape" cx="790" cy="300" r="52"/>
+      <circle class="hub" cx="790" cy="300" r="20"/>
+      <text class="label" x="790" y="382" text-anchor="middle" style="font-size:12.5px">ШРУС задний</text>
+    </g>
+
+    <text class="caption" x="500" y="470" text-anchor="middle">валы условно раздвинуты · крепёж одноразовый</text>
+  </svg>`,
+
+  /* ======================= ПОДВЕСКА: ПЕРЕД ======================= */
+  'suspension-front': `
+  <svg viewBox="0 0 1000 620" role="img" aria-label="Передняя подвеска: стойка, рычаг, шаровая, сайлентблоки">
+    <rect class="plate" x="60" y="50" width="880" height="520" rx="26"/>
+    <text class="caption" x="86" y="84">колесо снято · вид сбоку</text>
+
+    <!-- кулак и ступица -->
+    <g class="hotspot" data-part="knuckle-front" tabindex="0" role="button" aria-label="Поворотный кулак">
+      <rect class="shape" x="180" y="300" width="130" height="130" rx="18"/>
+      <text class="label" x="190" y="318" text-anchor="start" style="font-size:11px">Кулак</text>
+    </g>
+
+    <g class="hotspot" data-part="wheel-bearing" tabindex="0" role="button" aria-label="Подшипник ступицы">
+      <circle class="shape" cx="245" cy="365" r="48"/>
+      <text class="label" x="245" y="370" text-anchor="middle" style="font-size:12.5px">Ступица</text>
+    </g>
+
+    <!-- опора стойки -->
+    <g class="hotspot" data-part="strut-mount" tabindex="0" role="button" aria-label="Опорный подшипник стойки">
+      <ellipse class="shape" cx="500" cy="120" rx="44" ry="26"/>
+      <text class="label" x="500" y="76" text-anchor="middle" style="font-size:12.5px">Опора стойки</text>
+    </g>
+
+    <!-- стойка -->
+    <g class="hotspot" data-part="strut-front" tabindex="0" role="button" aria-label="Амортизатор передний">
+      <rect class="shape" x="486" y="140" width="30" height="220" rx="12"/>
+      <line class="leader" x1="516" y1="250" x2="556" y2="250"/>
+      <text class="label" x="562" y="255" text-anchor="start" style="font-size:13px">Стойка</text>
+    </g>
+
+    <!-- пружина -->
+    <g class="hotspot" data-part="spring-front" tabindex="0" role="button" aria-label="Пружина передняя">
+      <path class="shape ln" d="M 470 170 q -26 18 0 36 q 26 18 0 36 q -26 18 0 36 q 26 18 0 36 q -26 18 0 30"/>
+      <line class="leader" x1="444" y1="250" x2="424" y2="250"/>
+      <text class="label" x="418" y="255" text-anchor="end" style="font-size:12.5px">Пружина</text>
+    </g>
+
+    <!-- отбойник -->
+    <g class="hotspot" data-part="bump-stop" tabindex="0" role="button" aria-label="Отбойник с пыльником">
+      <rect class="shape" x="470" y="330" width="30" height="30" rx="8"/>
+      <line class="leader" x1="470" y1="345" x2="452" y2="345"/>
+      <text class="label" x="446" y="350" text-anchor="end" style="font-size:12px">Отбойник</text>
+    </g>
+
+    <!-- рычаг -->
+    <g class="hotspot" data-part="control-arm" tabindex="0" role="button" aria-label="Рычаг передней подвески">
+      <path class="shape" d="M 255 425 L 530 460 L 500 515 L 235 480 Z"/>
+      <text class="label" x="380" y="495" text-anchor="middle" style="font-size:12.5px">Рычаг</text>
+    </g>
+
+    <!-- шаровая -->
+    <g class="hotspot" data-part="ball-joint" tabindex="0" role="button" aria-label="Шаровая опора">
+      <circle class="shape" cx="270" cy="440" r="20"/>
+      <line class="leader" x1="270" y1="460" x2="270" y2="530"/>
+      <text class="label" x="270" y="548" text-anchor="middle" style="font-size:12.5px">Шаровая</text>
+    </g>
+
+    <!-- сайлентблоки -->
+    <g class="hotspot" data-part="arm-bushing" tabindex="0" role="button" aria-label="Сайлентблок рычага">
+      <circle class="shape" cx="505" cy="465" r="16"/>
+      <circle class="shape" cx="528" cy="452" r="14"/>
+      <line class="leader" x1="545" y1="460" x2="560" y2="460"/>
+      <text class="label" x="566" y="465" text-anchor="start" style="font-size:12px">Сайлентблоки</text>
+    </g>
+
+    <rect class="ghost" x="520" y="336" width="40" height="28" rx="8"/>
+    <text class="caption" x="540" y="330" text-anchor="middle">рейка</text>
+
+    <!-- рулевая тяга -->
+    <g class="hotspot" data-part="tie-rod" tabindex="0" role="button" aria-label="Рулевая тяга">
+      <line class="shape ln-thick" x1="560" y1="350" x2="700" y2="350"/>
+      <text class="label" x="630" y="330" text-anchor="middle" style="font-size:12.5px">Тяга</text>
+    </g>
+
+    <g class="hotspot" data-part="tie-rod-end" tabindex="0" role="button" aria-label="Наконечник рулевой тяги">
+      <circle class="shape" cx="718" cy="350" r="18"/>
+      <text class="label" x="744" y="355" text-anchor="start" style="font-size:12.5px">Наконечник</text>
+    </g>
+
+    <!-- стабилизатор -->
+    <g class="hotspot" data-part="stab-bushing-front" tabindex="0" role="button" aria-label="Втулка стабилизатора">
+      <rect class="shape" x="415" y="296" width="32" height="22" rx="6"/>
+      <text class="label" x="405" y="312" text-anchor="end" style="font-size:12px">Втулка</text>
+    </g>
+
+    <g class="hotspot" data-part="stab-link" tabindex="0" role="button" aria-label="Стойка стабилизатора">
+      <line class="shape ln-thick" x1="430" y1="318" x2="430" y2="420"/>
+      <text class="label" x="410" y="405" text-anchor="end" style="font-size:12px">Стаб. стойка</text>
+    </g>
+
+    <text class="caption" x="500" y="580" text-anchor="middle">рычаг и стойка показаны условно</text>
+  </svg>`,
+
+  /* ======================= ПОДВЕСКА: ЗАД ======================== */
+  'suspension-rear': `
+  <svg viewBox="0 0 1000 620" role="img" aria-label="Задняя подвеска: рычаги, пружина, амортизатор, втулки">
+    <rect class="plate" x="60" y="50" width="880" height="520" rx="26"/>
+    <text class="caption" x="86" y="84">колесо снято · вид сзади</text>
+
+    <!-- кулак и ступица -->
+    <g class="hotspot" data-part="knuckle-rear" tabindex="0" role="button" aria-label="Кулак задний">
+      <rect class="shape" x="270" y="300" width="130" height="130" rx="18"/>
+      <text class="label" x="335" y="292" text-anchor="middle" style="font-size:12px">Кулак</text>
+    </g>
+
+    <g class="hotspot" data-part="hub-rear" tabindex="0" role="button" aria-label="Ступица задняя">
+      <circle class="shape" cx="335" cy="365" r="48"/>
+      <text class="label" x="335" y="370" text-anchor="middle" style="font-size:12.5px">Ступица</text>
+    </g>
+
+    <!-- рычаг -->
+    <g class="hotspot" data-part="rear-arm" tabindex="0" role="button" aria-label="Задний рычаг">
+      <path class="shape" d="M 330 420 L 620 460 L 590 515 L 310 475 Z"/>
+      <text class="label" x="470" y="487" text-anchor="middle" style="font-size:12.5px">Рычаг</text>
+    </g>
+
+    <!-- пружина -->
+    <g class="hotspot" data-part="spring-rear" tabindex="0" role="button" aria-label="Пружина задняя">
+      <path class="shape ln" d="M 720 200 q -26 18 0 36 q 26 18 0 36 q -26 18 0 36 q 26 18 0 36 q -26 18 0 30"/>
+      <line class="leader" x1="694" y1="290" x2="676" y2="290"/>
+      <text class="label" x="670" y="295" text-anchor="end" style="font-size:12.5px">Пружина</text>
+    </g>
+
+    <!-- амортизатор -->
+    <g class="hotspot" data-part="shock-rear" tabindex="0" role="button" aria-label="Амортизатор задний">
+      <rect class="shape" x="780" y="180" width="28" height="200" rx="12"/>
+      <line class="leader" x1="808" y1="280" x2="826" y2="280"/>
+      <text class="label" x="832" y="285" text-anchor="start" style="font-size:12.5px">Амортизатор</text>
+    </g>
+
+    <!-- отбойник -->
+    <g class="hotspot" data-part="bump-stop" tabindex="0" role="button" aria-label="Отбойник с пыльником">
+      <rect class="shape" x="700" y="350" width="28" height="28" rx="8"/>
+      <line class="leader" x1="700" y1="364" x2="684" y2="364"/>
+      <text class="label" x="678" y="369" text-anchor="end" style="font-size:12px">Отбойник</text>
+    </g>
+
+    <!-- стабилизатор -->
+    <g class="hotspot" data-part="stab-bushing-rear" tabindex="0" role="button" aria-label="Втулка стабилизатора задняя">
+      <rect class="shape" x="545" y="285" width="32" height="22" rx="6"/>
+      <text class="label" x="535" y="301" text-anchor="end" style="font-size:12px">Втулка</text>
+    </g>
+
+    <g class="hotspot" data-part="stab-link-rear" tabindex="0" role="button" aria-label="Стойка стабилизатора задняя">
+      <line class="shape ln-thick" x1="560" y1="308" x2="560" y2="392"/>
+      <line class="leader" x1="560" y1="392" x2="546" y2="404"/>
+      <text class="label" x="540" y="418" text-anchor="end" style="font-size:12px">Стаб. стойка</text>
+    </g>
+
+    <!-- сайлентблок подрамника -->
+    <g class="hotspot" data-part="subframe-bushing" tabindex="0" role="button" aria-label="Сайлентблок подрамника">
+      <circle class="shape" cx="620" cy="530" r="18"/>
+      <text class="label" x="648" y="535" text-anchor="start" style="font-size:12px">Сайлентблок подрамника</text>
+    </g>
+
+    <text class="caption" x="500" y="580" text-anchor="middle">пружина и амортизатор стоят раздельно</text>
+  </svg>`,
+
   /* =============================== ПЕРЕДОК ============================== */
   'body-front': `
   <svg viewBox="0 0 1000 620" role="img" aria-label="Передняя часть автомобиля, бампер снят">
