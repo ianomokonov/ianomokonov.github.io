@@ -1181,14 +1181,14 @@ window.TIGUAN_DATA = {
     {
       "id": "disc-front",
       "name": "Тормозной диск передний",
-      "oem": "5Q0 615 301 F",
+      "oem": "5Q0 615 301 G",
       "system": "brakes",
       "diagram": "brake-front",
       "zone": "wheelFL",
       "qty": 2,
-      "confidence": "medium",
+      "confidence": "high",
       "location": "312×25 мм, вентилируемый, на ступице.",
-      "note": "Минимальная толщина 22 мм. Менять парой.",
+      "note": "340×30, PR 1LA. Менять парами",
       "service": {
         "action": "проверка",
         "everyKm": 60000
@@ -1244,7 +1244,7 @@ window.TIGUAN_DATA = {
       "qty": 4,
       "confidence": "high",
       "location": "В суппорте переднего колеса, датчик износа — на левом колесе.",
-      "note": "Менять комплектом на ось. Диск 312 мм.",
+      "note": "340×30, PR 1LA, комплект 4 шт.",
       "service": {
         "action": "проверка",
         "everyKm": 30000
@@ -2040,12 +2040,12 @@ window.TIGUAN_DATA = {
     {
       "id": "dsg-filter",
       "name": "Фильтр DSG",
-      "oem": "0GC 325 183",
+      "oem": "0BH 325 429 B",
       "system": "transmission",
       "qty": 1,
-      "confidence": "low",
+      "confidence": "high",
       "location": "В корпусе КПП, доступ снизу",
-      "note": "Меняется вместе с маслом DSG",
+      "note": "Для DQ500 (0DL/TUR), меняется с маслом",
       "zone": "sill",
       "service": {
         "everyKm": 60000,
@@ -2056,12 +2056,12 @@ window.TIGUAN_DATA = {
     {
       "id": "dsg-pan-gasket",
       "name": "Прокладка поддона DSG",
-      "oem": "0GC 321 371",
+      "oem": "0BH 321 371 B",
       "system": "transmission",
       "qty": 1,
-      "confidence": "low",
+      "confidence": "high",
       "location": "Поддон КПП, снизу",
-      "note": "Меняется при снятии поддона",
+      "note": "Для DQ500 (0DL/TUR), меняется при снятии поддона",
       "zone": "sill"
     },
     {
@@ -2088,7 +2088,7 @@ window.TIGUAN_DATA = {
       "qty": 1,
       "confidence": "low",
       "location": "В корпусе КПП, под поддоном",
-      "note": "Ремонт или замена в сборе, требуется адаптация",
+      "note": "КПП DQ500 (0DL/TUR): код 0GC — для DQ381, сверить по VIN",
       "zone": "sill"
     },
     {
@@ -2122,7 +2122,7 @@ window.TIGUAN_DATA = {
       "qty": 1,
       "confidence": "low",
       "location": "Внутри корпуса КПП, за поддоном",
-      "note": "Мокрое сцепление DQ381, меняется со снятием КПП",
+      "note": "Мокрое сцепление DQ500 (0DL/TUR). Код 0GC относится к DQ381 — сверить по VIN",
       "diagram": "underbody",
       "zone": "sill",
       "fluid": "dsg-oil"
@@ -2135,7 +2135,7 @@ window.TIGUAN_DATA = {
       "qty": 1,
       "confidence": "low",
       "location": "Сбоку корпуса КПП, подключается к контуру ОЖ",
-      "note": "Охлаждает масло DSG; при течи — замена",
+      "note": "КПП DQ500 (0DL/TUR): код 0GC — для DQ381, сверить по VIN",
       "diagram": "underbody",
       "zone": "sill",
       "fluid": "coolant"
@@ -2148,7 +2148,7 @@ window.TIGUAN_DATA = {
       "qty": 1,
       "confidence": "low",
       "location": "В корпусе КПП, у поддона",
-      "note": "Давление масла в DSG, ошибки по давлению",
+      "note": "КПП DQ500 (0DL/TUR): код 0GC — для DQ381, сверить по VIN",
       "diagram": "underbody",
       "zone": "sill",
       "fluid": "dsg-oil"
@@ -2317,7 +2317,7 @@ window.TIGUAN_DATA = {
     {
       "qty": 1,
       "confidence": "low",
-      "note": "Отдельного масла нет — работает на масле КПП. Меняется только с разборкой КПП",
+      "note": "КПП DQ500 (0DL/TUR): код 0GC — для DQ381, сверить по VIN",
       "diagram": "underbody",
       "zone": "sill",
       "id": "front-diff",
@@ -2343,7 +2343,7 @@ window.TIGUAN_DATA = {
     {
       "qty": 1,
       "confidence": "low",
-      "note": "Потёки масла на привод",
+      "note": "КПП DQ500 (0DL/TUR): код 0GC — для DQ381, сверить по VIN",
       "diagram": "underbody",
       "zone": "sill",
       "id": "front-diff-seal",
@@ -2502,9 +2502,9 @@ window.TIGUAN_DATA = {
       "id": "dsg-oil",
       "title": "Масло DSG (мокрое сцепление)",
       "system": "transmission",
-      "spec": "G 052 529 A2, 7-ступ. DQ381",
+      "spec": "G 052 529 A2, 7-ступ. DQ500 (0DL, код TUR), 7,2 л, менять с фильтром 0BH 325 429 B",
       "code": "G 052 529 A2",
-      "volume": "7,0 л",
+      "volume": "7,2 л",
       "everyKm": 60000,
       "action": "замена",
       "interval": "каждые 60 000 км"

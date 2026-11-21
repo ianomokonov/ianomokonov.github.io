@@ -42,6 +42,9 @@ window.TIGUAN_LOG_SEED = {
   "fluid:dsg-oil": [
     { "id": "s-2023-07-08-dsg", "date": "2023-07-08", "km": 59135 }
   ],
+  "dsg-filter": [
+    { "id": "s-2023-07-08-dsgf", "date": "2023-07-08", "km": 59135 }
+  ],
   "fluid:engine-oil": [
     { "id": "s-2021-03-28-oil", "date": "2021-03-28", "km": 13267 },
     { "id": "s-2021-10-16-oil", "date": "2021-10-16", "km": 28483 },

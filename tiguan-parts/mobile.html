@@ -25,6 +25,7 @@
       <div class="m-tabs" id="tabs">
         <button type="button" data-view="journal" class="is-active">Журнал</button>
         <button type="button" data-view="schedule">Регламент</button>
+        <button type="button" data-view="advice">Советы</button>
       </div>
       <button type="button" class="m-pdf" id="btnPdf" title="Экспорт в PDF">PDF</button>
     </div>
@@ -34,6 +35,15 @@
     <section id="journal" class="m-section">
       <p class="m-hint" id="journalSub"></p>
       <div id="journalBody" class="m-list"></div>
+    </section>
+
+    <section id="advice" class="m-section" hidden>
+      <div class="m-mileage">
+        <label for="mMileage">Текущий пробег</label>
+        <input id="mMileage" type="number" min="0" step="100" inputmode="numeric">
+        <span>км</span>
+      </div>
+      <div id="adviceBody" class="m-list"></div>
     </section>
 
     <section id="schedule" class="m-section" hidden>

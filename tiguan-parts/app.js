@@ -18,7 +18,8 @@ const LS = {
   fav: 'tiguan.fav.v1',
   fluid: 'tiguan.fluid.v1',
   custom: 'tiguan.custom.v1',
-  log: 'tiguan.log.v1'
+  log: 'tiguan.log.v1',
+  mileage: 'tiguan.mileage.v1'
 };
 const readJSON = (key, fallback) => {
   try {
@@ -46,6 +47,14 @@ SYSTEMS.set('fluids', { id: 'fluids', title: 'Жидкости и масла' })
 const DIAGRAM_INFO = new Map(DATA.diagrams.map((d) => [d.id, d]));
 const FLUIDS = new Map((DATA.fluids || []).map((f) => [f.id, f]));
 const ZONES = new Map(DATA.zones.map((z) => [z.id, z]));
+const INSTALL = window.TIGUAN_INSTALL || {};
+const INSTALL_FLUIDS = window.TIGUAN_INSTALL_FLUIDS || {};
+const DIY_LEVELS = {
+  1: ['Можно самому', 'diy-1'],
+  2: ['Нужен инструмент', 'diy-2'],
+  3: ['Сложно', 'diy-3'],
+  4: ['Только сервис', 'diy-4']
+};
 
 const CONF = {
   high: { label: 'сверено', cls: 'high' },
@@ -104,7 +113,7 @@ if (!Array.isArray(deletedIds.custom)) deletedIds.custom = [];
       recs.forEach((r) => {
         if (!r || !r.id || deletedIds.log.includes(r.id)) return;
         if (!logBook[key].some((x) => x.id === r.id)) {
-          logBook[key].push({ id: r.id, date: r.date, km: Number(r.km) || 0 });
+          logBook[key].push({ id: r.id, date: r.date, km: Number(r.km) || 0, note: r.note || '' });
         }
       });
     });
@@ -119,19 +128,38 @@ const allParts = () => DATA.parts.concat(customParts, FLUID_PARTS);
 let oemOverrides = readJSON(LS.oem, {});
 let fluidOverrides = readJSON(LS.fluid, {});
 let favorites = new Set(readJSON(LS.fav, []));
+let mileage = Number(readJSON(LS.mileage, 122900)) || 122900;
+let deferred = readJSON('tiguan.deferred.v1', {});
+
+function nextServiceKm() {
+  return Math.floor(mileage / 15000) * 15000 + 15000;
+}
 const fluidCodeOf = (f) => fluidOverrides[f.id] || f.code;
 const oemOf = (p) => (p.isFluid ? fluidCodeOf(FLUIDS.get(p.fluidId)) : oemOverrides[p.id] || p.oem);
 const isFav = (id) => favorites.has(id);
 
 const logOf = (key) => logBook[key] || [];
 
-function addLog(key, date, km) {
+function addLog(key, date, km, note) {
   if (!logBook[key]) logBook[key] = [];
   logBook[key].push({
     id: `l${Date.now()}${Math.random().toString(16).slice(2, 6)}`,
     date,
-    km: Number(km)
+    km: Number(km),
+    note: String(note || '').trim()
   });
+  writeJSON(LS.log, logBook);
+  if (deferred[key]) {
+    delete deferred[key];
+    writeJSON('tiguan.deferred.v1', deferred);
+  }
+}
+
+function updateLog(key, id, patch) {
+  const rec = logOf(key).find((r) => r.id === id);
+  if (!rec) return;
+  Object.assign(rec, patch);
+  if (!rec.note) delete rec.note;
   writeJSON(LS.log, logBook);
 }
 
@@ -176,6 +204,7 @@ function parseRoute() {
   if (a === 'p' && b) return { view: 'part', part: b };
   if (a === 'catalog') return { view: 'catalog', system: b || null };
   if (a === 'schedule') return { view: 'schedule', km: b ? Number(b) : null };
+  if (a === 'advice') return { view: 'advice' };
   if (a === 'fav') return { view: 'favorites' };
   return { view: 'car' };
 }
@@ -216,6 +245,11 @@ function route() {
     setView('schedule');
     renderPanel(null);
     renderSchedule(current.km);
+  } else if (view === 'advice') {
+    current = { view: 'advice', diagram: null, part: null, system: null };
+    setView('advice');
+    renderPanel(null);
+    renderAdvice();
   } else if (view === 'catalog' || view === 'favorites') {
     current = { view, diagram: null, part: null, system: view === 'favorites' ? null : system };
     setView('catalog');
@@ -244,6 +278,7 @@ function setView(name) {
   $('#schema').hidden = name !== 'diagram';
   $('#catalog').hidden = name !== 'catalog';
   $('#schedule').hidden = name !== 'schedule';
+  $('#advice').hidden = name !== 'advice';
   if (name === 'car') {
     hideTip();
     requestAnimationFrame(resize);
@@ -341,6 +376,7 @@ function cardHTML(p) {
       <div><dt>Где искать</dt><dd>${esc(p.location || '—')}</dd></div>
     </dl>
     ${serviceBlock(p)}
+    ${installBlock(p)}
     ${logSection(p)}
     ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
     ${fluid ? fluidBlock(fluid) : ''}
@@ -350,6 +386,31 @@ function cardHTML(p) {
       ${isCustom ? `<button type="button" class="btn" data-act="custom-edit">Изменить</button><button type="button" class="btn btn-danger" data-act="custom-del">Удалить</button>` : ''}
       ${drawn || p.diagram ? `<button type="button" class="btn btn-primary" data-act="diagram">${drawn ? 'Показать на схеме' : 'Схема узла'}</button>` : ''}
     </div>`;
+}
+
+function installBlock(p) {
+  const data = p.isFluid ? INSTALL_FLUIDS[p.fluidId] : INSTALL[p.id];
+  if (!data) return '';
+  const lvl = DIY_LEVELS[data.level] || DIY_LEVELS[2];
+  const href =
+    data.link ||
+    `https://www.youtube.com/results?search_query=${encodeURIComponent('Tiguan 2 замена ' + p.name)}`;
+
+  return `<div class="install">
+    <div class="install-top">
+      <span class="diy ${lvl[1]}">${lvl[0]}</span>
+      ${data.time ? `<span class="install-time">${esc(data.time)}</span>` : ''}
+    </div>
+    ${
+      data.tools && data.tools.length
+        ? `<div class="install-tools"><span class="install-label">Инструменты</span>${data.tools
+            .map((t) => `<span class="install-tool">${esc(t)}</span>`)
+            .join('')}</div>`
+        : ''
+    }
+    ${data.steps ? `<p class="install-steps">${esc(data.steps)}</p>` : ''}
+    <a class="install-link" href="${href}" target="_blank" rel="noopener noreferrer">Видео и инструкции →</a>
+  </div>`;
 }
 
 function fluidCardHTML(p) {
@@ -375,6 +436,7 @@ function fluidCardHTML(p) {
       <div><dt>Объём</dt><dd>${esc(f.volume)}</dd></div>
       <div><dt>Интервал</dt><dd>${esc(f.interval)}</dd></div>
     </dl>
+    ${installBlock(p)}
     ${logSection(p)}
     <div class="panel-actions">
       <button type="button" class="btn" data-act="fluids">Все жидкости</button>
@@ -392,10 +454,16 @@ function logSection(p) {
       recs.length
         ? recs
             .map(
-              (r) => `<div class="log-row">
-        <span class="log-date">${fmtDate(r.date)}</span>
-        <span class="log-km">${fmtKm(r.km)}</span>
-        <button type="button" class="icon-btn mini" data-act="log-del" data-id="${r.id}" title="Удалить запись">✕</button>
+              (r) => `<div class="log-item" data-rid="${r.id}">
+        <div class="log-row">
+          <span class="log-date">${fmtDate(r.date)}</span>
+          <span class="log-km">${fmtKm(r.km)}</span>
+          <span class="log-actions">
+            <button type="button" class="icon-btn mini" data-act="log-edit" data-id="${r.id}" title="Изменить запись">✎</button>
+            <button type="button" class="icon-btn mini" data-act="log-del" data-id="${r.id}" title="Удалить запись">✕</button>
+          </span>
+        </div>
+        ${r.note ? `<div class="log-note">${esc(r.note)}</div>` : ''}
       </div>`
             )
             .join('')
@@ -406,6 +474,8 @@ function logSection(p) {
       <input type="number" id="logKm" min="0" step="1000" placeholder="Пробег, км" aria-label="Пробег">
       <button type="button" class="btn" data-act="log-add">Добавить</button>
     </div>
+    <input type="text" class="log-note-input" id="logNote" maxlength="120"
+      placeholder="Комментарий: какая запчасть" aria-label="Комментарий">
   </div>`;
 }
 
@@ -558,10 +628,46 @@ $('#panelBody').addEventListener('click', async (e) => {
       toast('Укажите дату и пробег');
       return;
     }
-    addLog(p.id, dateEl.value, km);
+    const noteEl = $('#logNote');
+    addLog(p.id, dateEl.value, km, noteEl ? noteEl.value : '');
     renderPanel(p.id);
     renderCatalog(current.system, current.view === 'favorites');
     toast('Замена добавлена');
+  } else if (act === 'log-edit') {
+    const rec = logOf(p.id).find((r) => r.id === btn.dataset.id);
+    const item = btn.closest('.log-item');
+    if (!rec || !item) return;
+    item.innerHTML = `<div class="log-edit">
+      <input type="date" id="logEditDate" value="${rec.date}" aria-label="Дата">
+      <input type="number" id="logEditKm" min="0" step="1000" value="${rec.km}" aria-label="Пробег">
+      <input type="text" id="logEditNote" maxlength="120" placeholder="Комментарий: какая запчасть" value="${esc(rec.note || '')}" aria-label="Комментарий">
+      <div class="log-edit-actions">
+        <button type="button" class="icon-btn mini" data-act="log-save" data-id="${rec.id}" title="Сохранить">✓</button>
+        <button type="button" class="icon-btn mini" data-act="log-cancel" title="Отмена">✕</button>
+      </div>
+    </div>`;
+    const noteInput = $('#logEditNote');
+    if (noteInput) noteInput.focus();
+  } else if (act === 'log-save') {
+    const dateEl = $('#logEditDate');
+    const kmEl = $('#logEditKm');
+    const noteEl = $('#logEditNote');
+    if (!dateEl || !kmEl) return;
+    const km = Number(kmEl.value);
+    if (!dateEl.value || !km) {
+      toast('Укажите дату и пробег');
+      return;
+    }
+    updateLog(p.id, btn.dataset.id, {
+      date: dateEl.value,
+      km,
+      note: (noteEl ? noteEl.value : '').trim()
+    });
+    renderPanel(p.id);
+    renderCatalog(current.system, current.view === 'favorites');
+    toast('Запись обновлена');
+  } else if (act === 'log-cancel') {
+    renderPanel(p.id);
   } else if (act === 'log-del') {
     delLog(p.id, btn.dataset.id);
     renderPanel(p.id);
@@ -933,6 +1039,10 @@ $('#modal').addEventListener('click', (e) => {
   if (e.target.closest('[data-act="cp-cancel"]')) closeModal();
   if (e.target.closest('[data-act="cp-save"]')) savePartForm();
   if (e.target.closest('[data-act="seed-close"]')) closeModal();
+  if (e.target.closest('[data-act="mileage-cancel"]')) closeModal();
+  if (e.target.closest('[data-act="mileage-save"]')) saveMileage();
+  if (e.target.closest('[data-act="adv-cancel"]')) closeModal();
+  if (e.target.closest('[data-act="adv-save"]')) saveLogAdd();
   if (e.target.closest('[data-act="seed-copy"]')) {
     const box = $('#seedBox');
     if (box) {
@@ -948,7 +1058,7 @@ function exportPdf() {
   const rows = [];
   allParts().forEach((p) => {
     logOf(p.id).forEach((r) => {
-      rows.push({ km: Number(r.km) || 0, date: r.date, name: p.name, code: oemOf(p), kind: p.isFluid ? 'жидкость' : 'деталь' });
+      rows.push({ km: Number(r.km) || 0, date: r.date, name: p.name, code: oemOf(p), kind: p.isFluid ? 'жидкость' : 'деталь', note: r.note || '' });
     });
   });
   rows.sort((a, b) => a.km - b.km || String(a.date).localeCompare(String(b.date)));
@@ -966,12 +1076,12 @@ function exportPdf() {
       <section class="print-group">
         <h2>${fmtKm(km)}</h2>
         <table>
-          <thead><tr><th>Дата</th><th>Деталь / жидкость</th><th>Номер / код</th><th>Тип</th></tr></thead>
+          <thead><tr><th>Дата</th><th>Деталь / жидкость</th><th>Номер / код</th><th>Тип</th><th>Комментарий</th></tr></thead>
           <tbody>
             ${items
               .map(
                 (r) =>
-                  `<tr><td>${fmtDate(r.date)}</td><td>${esc(r.name)}</td><td class="mono">${esc(r.code)}</td><td>${r.kind}</td></tr>`
+                  `<tr><td>${fmtDate(r.date)}</td><td>${esc(r.name)}</td><td class="mono">${esc(r.code)}</td><td>${r.kind}</td><td>${esc(r.note || '')}</td></tr>`
               )
               .join('')}
           </tbody>
@@ -1004,12 +1114,16 @@ function exportSeed() {
       seed[key] = recs
         .slice()
         .sort((a, b) => Number(a.km) - Number(b.km) || String(a.date).localeCompare(String(b.date)))
-        .map((r) => ({ id: r.id, date: r.date, km: Number(r.km) || 0 }));
+        .map((r) => {
+          const out = { id: r.id, date: r.date, km: Number(r.km) || 0 };
+          if (r.note) out.note = r.note;
+          return out;
+        });
     });
 
   const entries = Object.keys(seed).map((key) => {
     const rows = seed[key]
-      .map((r) => `    { "id": ${JSON.stringify(r.id)}, "date": ${JSON.stringify(r.date)}, "km": ${r.km} }`)
+      .map((r) => `    { "id": ${JSON.stringify(r.id)}, "date": ${JSON.stringify(r.date)}, "km": ${r.km}${r.note ? `, "note": ${JSON.stringify(r.note)}` : ''} }`)
       .join(',\n');
     return `  ${JSON.stringify(key)}: [\n${rows}\n  ]`;
   });
@@ -1146,6 +1260,260 @@ $('#scheduleBody').addEventListener('click', (e) => {
 /*  хлебные крошки, вкладки                                            */
 /* ------------------------------------------------------------------ */
 
+function renderMileage() {
+  const el = $('#mileageValue');
+  if (el) el.textContent = Number(mileage).toLocaleString('ru-RU');
+}
+
+function editMileage() {
+  openModal(`<h3>Текущий пробег</h3>
+    <p class="modal-note">От пробега считаются рекомендации и остаток до следующей замены. Сохраняется в этом браузере.</p>
+    <div class="form"><label>Пробег, км<input id="mileageInput" type="number" min="0" step="100" value="${mileage}"></label></div>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-act="mileage-cancel">Отмена</button>
+      <button type="button" class="btn btn-primary" data-act="mileage-save">Сохранить</button>
+    </div>`);
+  const input = $('#mileageInput');
+  if (input) {
+    input.focus();
+    input.select();
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveMileage();
+    });
+  }
+}
+
+function saveMileage() {
+  const input = $('#mileageInput');
+  if (!input) return;
+  const value = Number(input.value);
+  if (!value || value < 0) {
+    toast('Укажите пробег');
+    return;
+  }
+  mileage = value;
+  writeJSON(LS.mileage, mileage);
+  renderMileage();
+  closeModal();
+  if (current.view === 'advice') renderAdvice();
+  toast('Пробег обновлён');
+}
+
+function adviceItems() {
+  const items = [];
+  const lastRec = (key) =>
+    logOf(key)
+      .slice()
+      .sort((a, b) => (Number(b.km) || 0) - (Number(a.km) || 0) || String(b.date || '').localeCompare(String(a.date || '')))[0] ||
+    null;
+
+  const add = (key, name, opts) => {
+    const last = lastRec(key);
+    const base = last ? Number(last.km) || 0 : 0;
+    let next = null;
+
+    if (opts.atKm && opts.atKm.length) {
+      const list = opts.atKm.slice().sort((a, b) => a - b);
+      next = list.find((k) => k > base) || null;
+    } else if (opts.everyKm) {
+      next = last ? base + opts.everyKm : opts.firstAtKm || opts.everyKm;
+    }
+
+    if (!next) return;
+    const due = next - mileage;
+    // без записи показываем только то, что уже пора или пора на ближайшем ТО
+    if (!last && due > 15000) return;
+
+    let status = due <= 0 ? 'overdue' : due <= 15000 ? 'soon' : 'ok';
+    let deferredUntil = 0;
+
+    if (status === 'overdue' && deferred[key]) {
+      if (mileage < deferred[key]) {
+        status = 'soon';
+        deferredUntil = deferred[key];
+      } else {
+        delete deferred[key];
+        writeJSON('tiguan.deferred.v1', deferred);
+      }
+    }
+
+    items.push({
+      key,
+      name,
+      next,
+      last,
+      due,
+      system: opts.system || '',
+      isFluid: key.indexOf('fluid:') === 0,
+      deferredUntil,
+      status
+    });
+  };
+
+  DATA.parts.forEach((p) => {
+    const s = p.service;
+    if (!s) return;
+    if (s.atKm && s.atKm.length) add(p.id, p.name, { atKm: s.atKm, system: p.system });
+    else if (s.everyKm) add(p.id, p.name, { everyKm: s.everyKm, firstAtKm: s.firstAtKm, system: p.system });
+  });
+
+  (DATA.fluids || []).forEach((f) => {
+    if (f.everyKm) add(`fluid:${f.id}`, f.title, { everyKm: f.everyKm, firstAtKm: f.everyKm, system: 'fluids' });
+  });
+
+  return items;
+}
+
+function renderAdvice() {
+  const items = adviceItems();
+  const prio = (i) => (i.isFluid ? 0 : ['brakes', 'engine', 'transmission'].indexOf(i.system) >= 0 ? 1 : 2);
+  const overdue = items.filter((i) => i.status === 'overdue').sort((a, b) => prio(a) - prio(b) || a.due - b.due);
+  const soon = items.filter((i) => i.status === 'soon').sort((a, b) => prio(a) - prio(b) || a.due - b.due);
+  const ok = items.filter((i) => i.status === 'ok').sort((a, b) => a.due - b.due);
+
+  $('#adviceSub').textContent = `Пробег ${fmtKm(mileage)} · расчёт по интервалам и вашему журналу замен`;
+  $('#adviceSummary').innerHTML = `
+    <div class="adv-stat is-bad"><b>${overdue.length}</b><span>просрочено</span></div>
+    <div class="adv-stat is-warn"><b>${soon.length}</b><span>скоро</span></div>
+    <div class="adv-stat"><b>${ok.length}</b><span>в порядке</span></div>`;
+
+  const row = (i) => {
+    const label = i.deferredUntil
+      ? `отложено до ТО ${fmtKm(i.deferredUntil)}`
+      : i.status === 'overdue'
+        ? `просрочено на ${fmtKm(-i.due)}`
+        : `через ${fmtKm(i.due)}`;
+    const last = i.last
+      ? `последняя: ${fmtDate(i.last.date)} · ${fmtKm(i.last.km)}`
+      : 'замены в журнале нет';
+    const next = i.deferredUntil
+      ? `по регламенту на ${fmtKm(i.next)}`
+      : !i.last
+        ? `по регламенту на ${fmtKm(i.next)}`
+        : `следующая на ${fmtKm(i.next)}`;
+    return `<div class="adv-row is-${i.status}" data-key="${i.key}" role="button" tabindex="0">
+      <span class="adv-info">
+        <span class="adv-name">${esc(i.name)}</span>
+        <span class="adv-last">${last}</span>
+      </span>
+      <span class="adv-plan">
+        <span class="adv-badge">${label}</span>
+        <span class="adv-next">${next}</span>
+        <span class="adv-actions">
+          ${
+            i.deferredUntil
+              ? `<button type="button" class="adv-mini" data-undefer="${i.key}">Вернуть</button>`
+              : i.status === 'overdue'
+                ? `<button type="button" class="adv-mini" data-defer="${i.key}" title="Отложить до следующего ТО">До ТО</button>`
+                : ''
+          }
+          <button type="button" class="adv-add" data-add="${i.key}">＋ Запись</button>
+        </span>
+      </span>
+    </div>`;
+  };
+
+  const section = (title, list, note) =>
+    list.length
+      ? `<section class="adv-section"><h3>${title} <span>${list.length}</span></h3>${
+          note ? `<p class="adv-note">${note}</p>` : ''
+        }${list.map(row).join('')}</section>`
+      : '';
+
+  let html = '';
+  if (!items.length) {
+    html = '<p class="catalog-empty">Нет данных по интервалам.</p>';
+  } else {
+    html += section('Просрочено', overdue);
+    html += section('Скоро (до следующего ТО)', soon);
+    if (ok.length) {
+      html += section('Дальше по плану', ok.slice(0, 10));
+      if (ok.length > 10) {
+        html += `<p class="adv-note">…и ещё ${ok.length - 10} позиций в порядке — они появятся в списке по мере приближения.</p>`;
+      }
+    }
+    if (!overdue.length && !soon.length) {
+      html = '<p class="adv-hint">Просроченных работ нет — всё по плану.</p>' + html;
+    }
+  }
+  $('#adviceBody').innerHTML = html;
+}
+
+$('#adviceBody').addEventListener('click', (e) => {
+  const defer = e.target.closest('[data-defer]');
+  if (defer) {
+    e.stopPropagation();
+    const key = defer.dataset.defer;
+    deferred[key] = nextServiceKm();
+    writeJSON('tiguan.deferred.v1', deferred);
+    renderAdvice();
+    toast(`Отложено до ТО ${fmtKm(nextServiceKm())}`);
+    return;
+  }
+  const undefer = e.target.closest('[data-undefer]');
+  if (undefer) {
+    e.stopPropagation();
+    delete deferred[undefer.dataset.undefer];
+    writeJSON('tiguan.deferred.v1', deferred);
+    renderAdvice();
+    toast('Отложенность снята');
+    return;
+  }
+  const add = e.target.closest('[data-add]');
+  if (add) {
+    e.stopPropagation();
+    openLogAdd(add.dataset.add);
+    return;
+  }
+  const row = e.target.closest('[data-key]');
+  if (row) go(`#/p/${row.dataset.key}`);
+});
+
+function openLogAdd(key) {
+  const p = PARTS.get(key);
+  if (!p) return;
+  openModal(`<h3>Добавить замену</h3>
+    <p class="modal-note">${esc(p.name)} · ${esc(oemOf(p))}</p>
+    <div class="form">
+      <label>Дата<input type="date" id="advDate" value="${todayISO()}"></label>
+      <label>Пробег, км<input type="number" id="advKm" min="0" step="100" value="${mileage}"></label>
+      <label>Комментарий<input type="text" id="advNote" maxlength="120" placeholder="какая запчасть (необязательно)"></label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-act="adv-cancel">Отмена</button>
+      <button type="button" class="btn btn-primary" data-act="adv-save" data-key="${key}">Добавить</button>
+    </div>`);
+  const km = $('#advKm');
+  if (km) {
+    km.focus();
+    km.select();
+  }
+}
+
+function saveLogAdd() {
+  const btn = document.querySelector('[data-act="adv-save"]');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  const dateEl = $('#advDate');
+  const kmEl = $('#advKm');
+  const noteEl = $('#advNote');
+  if (!dateEl || !kmEl) return;
+  const km = Number(kmEl.value);
+  if (!dateEl.value || !km) {
+    toast('Укажите дату и пробег');
+    return;
+  }
+  addLog(key, dateEl.value, km, noteEl ? noteEl.value : '');
+  closeModal();
+  if (current.view === 'advice') renderAdvice();
+  renderCatalog(current.system, current.view === 'favorites');
+  toast('Замена добавлена');
+}
+
+$('#mileageBtn').addEventListener('click', editMileage);
+$('#adviceMileageBtn').addEventListener('click', editMileage);
+renderMileage();
+
 function renderCrumbs() {
   const items = [`<button type="button" data-crumb="car">Tiguan II</button>`];
 
@@ -1157,6 +1525,8 @@ function renderCrumbs() {
   } else if (current.view === 'catalog') {
     items.push(`<span class="sep">›</span><span class="current">${esc(current.system ? SYSTEMS.get(current.system).title : 'Каталог')}</span>`);
     if (current.part) items.push(`<span class="sep">›</span><span class="current">${esc(PARTS.get(current.part).name)}</span>`);
+  } else if (current.view === 'advice') {
+    items.push(`<span class="sep">›</span><span class="current">Рекомендации</span>`);
   } else if (current.view === 'favorites') {
     items.push(`<span class="sep">›</span><span class="current">Избранное</span>`);
   }
@@ -1172,14 +1542,15 @@ $('#crumbs').addEventListener('click', (e) => {
 });
 
 function syncTabs() {
-  const map = { car: 'car', diagram: 'car', catalog: 'catalog', favorites: 'favorites', schedule: 'schedule' };
+  const map = { car: 'car', diagram: 'car', catalog: 'catalog', favorites: 'favorites', schedule: 'schedule', advice: 'advice' };
   $$('#tabs button').forEach((b) => b.classList.toggle('is-active', b.dataset.view === map[current.view]));
 }
 
 $$('#tabs button').forEach((b) => {
   b.addEventListener('click', () => {
     const v = b.dataset.view;
-    go(v === 'car' ? '#/car' : v === 'catalog' ? '#/catalog' : v === 'schedule' ? '#/schedule' : '#/fav');
+    const map = { car: '#/car', catalog: '#/catalog', schedule: '#/schedule', advice: '#/advice', favorites: '#/fav' };
+    go(map[v] || '#/car');
   });
 });
 

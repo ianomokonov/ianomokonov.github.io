@@ -1269,3 +1269,206 @@ button.sched-item:hover { background: var(--surface-2); }
 }
 
 a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+
+/* ---------- комментарий к замене ---------- */
+
+.log-item { padding: 2px 0; border-bottom: 1px dashed rgba(35, 50, 70, 0.6); }
+.log-item .log-row { padding: 6px 0 2px; border-bottom: 0; }
+.log-note {
+  margin: 0 0 6px;
+  color: #9fb6cd;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.log-note-input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0d1a26;
+  color: var(--text);
+  font-size: 12.5px;
+}
+.log-edit { display: grid; gap: 6px; padding: 8px 0; }
+.log-edit input {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0d1a26;
+  color: var(--text);
+  font-size: 12.5px;
+}
+.log-edit-actions { display: flex; justify-content: flex-end; gap: 6px; }
+
+.log-actions { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; }
+.log-actions .icon-btn { margin-left: 0; }
+
+/* ---------- инструкция по замене ---------- */
+
+.install {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: #0a1119;
+}
+.install-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.diy { padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.diy-1 { background: rgba(79, 209, 139, 0.14); color: #7fe3b0; }
+.diy-2 { background: rgba(255, 200, 87, 0.12); color: #ffd479; }
+.diy-3 { background: rgba(255, 122, 47, 0.12); color: #ff9a5c; }
+.diy-4 { background: rgba(255, 107, 107, 0.12); color: #ff8f8f; }
+.install-time { margin-left: auto; color: var(--muted); font-size: 12px; }
+.install-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 8px; }
+.install-label { margin-right: 4px; color: var(--muted); font-size: 11px; }
+.install-tool {
+  padding: 2px 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  color: #bcd0e4;
+  font-size: 11px;
+}
+.install-steps { margin: 0 0 8px; color: #c9d8e8; font-size: 12.5px; line-height: 1.5; }
+.install-link { color: var(--cyan); font-size: 12px; text-decoration: none; }
+.install-link:hover { text-decoration: underline; }
+
+/* ---------- пробег и рекомендации ---------- */
+
+.mileage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0d1a26;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.mileage:hover { border-color: #33506e; }
+.mileage-edit { color: var(--muted); font-size: 10px; }
+
+.advice {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 26px 36px 60px;
+  background: var(--bg);
+}
+.advice-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 980px;
+  margin: 0 auto 16px;
+}
+.advice-head h2 { margin: 0 0 6px; font-size: 23px; font-weight: 650; }
+.advice-summary {
+  display: flex;
+  gap: 10px;
+  max-width: 980px;
+  margin: 0 auto 18px;
+}
+.adv-stat {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.adv-stat b { display: block; font-family: var(--mono); font-size: 22px; }
+.adv-stat span { color: var(--muted); font-size: 12px; }
+.adv-stat.is-bad b { color: var(--bad); }
+.adv-stat.is-warn b { color: var(--warn); }
+.adv-section { max-width: 980px; margin: 0 auto 18px; }
+.adv-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.adv-section h3 span {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.adv-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 11px;
+  background: var(--surface);
+  text-align: left;
+}
+.adv-row:hover { border-color: #33506e; background: var(--surface-2); }
+.adv-row.is-overdue { border-left: 3px solid var(--bad); }
+.adv-row.is-soon { border-left: 3px solid var(--warn); }
+.adv-info { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 3px; }
+.adv-name { font-size: 14px; font-weight: 600; }
+.adv-last { color: var(--muted); font-size: 12px; }
+.adv-plan { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; }
+.adv-badge { font-size: 12px; font-weight: 600; }
+.is-overdue .adv-badge { color: var(--bad); }
+.is-soon .adv-badge { color: var(--warn); }
+.is-ok .adv-badge { color: var(--muted); }
+.adv-next { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.adv-hint {
+  max-width: 980px;
+  margin: 0 auto 16px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: rgba(79, 209, 139, 0.08);
+  color: #9fe3c0;
+  font-size: 13px;
+}
+
+.adv-stat.is-unknown b { color: var(--cyan); }
+.adv-row.is-unknown { border-left: 3px solid rgba(91, 192, 255, 0.5); }
+.is-unknown .adv-badge { color: var(--cyan); }
+.adv-note {
+  max-width: 980px;
+  margin: -8px auto 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.adv-row[role="button"] { cursor: pointer; }
+.adv-add {
+  margin-top: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #0d1a26;
+  color: var(--text);
+  font-size: 11.5px;
+}
+.adv-add:hover { border-color: var(--accent); color: var(--accent); }
+
+.adv-actions { display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; }
+.adv-mini {
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #0d1a26;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.adv-mini:hover { border-color: var(--warn); color: var(--warn); }

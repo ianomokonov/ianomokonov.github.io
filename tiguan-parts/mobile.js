@@ -86,7 +86,7 @@
     if (deleted.log.indexOf(r.id) >= 0) return;
     if (!logBook[key]) logBook[key] = [];
     if (!logBook[key].some(function (x) { return x.id === r.id; })) {
-      logBook[key].push({ id: r.id, date: r.date, km: Number(r.km) || 0 });
+      logBook[key].push({ id: r.id, date: r.date, km: Number(r.km) || 0, note: r.note || '' });
     }
   }
 
@@ -106,6 +106,7 @@
         name: p.name,
         code: codeOf(p),
         kind: p.isFluid ? 'жидкость' : 'деталь',
+        note: r.note || '',
         system: p.system
       });
     });
@@ -160,6 +161,7 @@
                 '<span class="m-row-date">' + fmtDate(r.date) + '</span>' +
                 '<span class="m-row-code">' + esc(r.code) + '</span>' +
                 '</div>' +
+                (r.note ? '<div class="m-row-note">' + esc(r.note) + '</div>' : '') +
                 '</div>'
               );
             })
@@ -204,6 +206,94 @@
     });
     return out;
   }
+
+  /* ---------- рекомендации ---------- */
+  var LS_MILEAGE = 'tiguan.mileage.v1';
+  var mileage = Number(readJSON(LS_MILEAGE, 122900)) || 122900;
+
+  function adviceItems() {
+    var items = [];
+    function lastRec(key) {
+      var recs = (logBook[key] || []).slice().sort(function (a, b) {
+        return (Number(b.km) || 0) - (Number(a.km) || 0) || String(b.date || '').localeCompare(String(a.date || ''));
+      });
+      return recs[0] || null;
+    }
+    function add(key, name, opts) {
+      var last = lastRec(key);
+      var base = last ? Number(last.km) || 0 : 0;
+      var next = null;
+      if (opts.atKm && opts.atKm.length) {
+        var list = opts.atKm.slice().sort(function (a, b) { return a - b; });
+        next = list.find(function (k) { return k > base; }) || null;
+      } else if (opts.everyKm) {
+        next = last ? base + opts.everyKm : opts.firstAtKm || opts.everyKm;
+      }
+      if (!next) return;
+      var due = next - mileage;
+      if (!last && due > 15000) return;
+      items.push({
+        key: key,
+        name: name,
+        next: next,
+        last: last,
+        due: due,
+        status: due <= 0 ? 'overdue' : due <= 15000 ? 'soon' : 'ok'
+      });
+    }
+    DATA.parts.forEach(function (p) {
+      var s = p.service;
+      if (!s) return;
+      if (s.atKm && s.atKm.length) add(p.id, p.name, { atKm: s.atKm });
+      else if (s.everyKm) add(p.id, p.name, { everyKm: s.everyKm, firstAtKm: s.firstAtKm });
+    });
+    (DATA.fluids || []).forEach(function (f) {
+      if (f.everyKm) add('fluid:' + f.id, f.title, { everyKm: f.everyKm, firstAtKm: f.everyKm });
+    });
+    return items;
+  }
+
+  function renderAdvice() {
+    var items = adviceItems();
+    var overdue = items.filter(function (i) { return i.status === 'overdue'; }).sort(function (a, b) { return a.due - b.due; });
+    var soon = items.filter(function (i) { return i.status === 'soon'; }).sort(function (a, b) { return a.due - b.due; });
+    var ok = items.filter(function (i) { return i.status === 'ok'; }).sort(function (a, b) { return a.due - b.due; });
+
+    function row(i) {
+      var badge = i.status === 'overdue' ? 'просрочено на ' + fmtKm(-i.due) : 'через ' + fmtKm(i.due);
+      var last = i.last ? 'последняя: ' + fmtDate(i.last.date) + ' · ' + fmtKm(i.last.km) : 'замены в журнале нет';
+      var next = i.last ? 'следующая на ' + fmtKm(i.next) : 'по регламенту на ' + fmtKm(i.next);
+      return (
+        '<div class="m-adv is-' + i.status + '">' +
+        '<div class="m-adv-top"><span class="m-adv-name">' + esc(i.name) + '</span>' +
+        '<span class="m-adv-badge">' + badge + '</span></div>' +
+        '<div class="m-adv-meta">' + last + ' · ' + next + '</div>' +
+        '</div>'
+      );
+    }
+
+    document.getElementById('adviceBody').innerHTML =
+      '<p class="m-hint">Пробег ' + fmtKm(mileage) + ' · просрочено: ' + overdue.length + ', скоро: ' + soon.length + ', в порядке: ' + ok.length + '</p>' +
+      (overdue.length ? '<div class="m-adv-title">Просрочено</div>' + overdue.map(row).join('') : '') +
+      (soon.length ? '<div class="m-adv-title">Скоро</div>' + soon.map(row).join('') : '') +
+      (ok.length ? '<div class="m-adv-title">В порядке</div>' + ok.slice(0, 10).map(row).join('') : '') +
+      (!items.length ? '<p class="m-empty">Нет данных по интервалам.</p>' : '');
+  }
+
+  var mMileage = document.getElementById('mMileage');
+  if (mMileage) {
+    mMileage.value = mileage;
+    mMileage.addEventListener('change', function () {
+      var v = Number(mMileage.value);
+      if (!v || v < 0) return;
+      mileage = v;
+      try {
+        localStorage.setItem(LS_MILEAGE, JSON.stringify(mileage));
+      } catch (e) {}
+      renderAdvice();
+    });
+  }
+  renderAdvice();
 
   var kmRow = document.getElementById('kmRow');
   var scheduleBody = document.getElementById('scheduleBody');
@@ -252,8 +342,9 @@
     });
     document.getElementById('journal').hidden = btn.dataset.view !== 'journal';
     document.getElementById('schedule').hidden = btn.dataset.view !== 'schedule';
+    document.getElementById('advice').hidden = btn.dataset.view !== 'advice';
     var sub = document.querySelector('.m-brand small');
-    if (sub) sub.textContent = btn.dataset.view === 'schedule' ? 'регламент ТО' : 'журнал замен';
+    if (sub) sub.textContent = btn.dataset.view === 'schedule' ? 'регламент ТО' : btn.dataset.view === 'advice' ? 'рекомендации' : 'журнал замен';
     window.scrollTo(0, 0);
   });
 
@@ -273,10 +364,10 @@
             return (
               '<section class="print-group">' +
               '<h2>' + fmtKm(km) + '</h2>' +
-              '<table><thead><tr><th>Дата</th><th>Деталь / жидкость</th><th>Номер / код</th></tr></thead><tbody>' +
+              '<table><thead><tr><th>Дата</th><th>Деталь / жидкость</th><th>Номер / код</th><th>Комментарий</th></tr></thead><tbody>' +
               items
                 .map(function (r) {
-                  return '<tr><td>' + fmtDate(r.date) + '</td><td>' + esc(r.name) + '</td><td class="mono">' + esc(r.code) + '</td></tr>';
+                  return '<tr><td>' + fmtDate(r.date) + '</td><td>' + esc(r.name) + '</td><td class="mono">' + esc(r.code) + '</td><td>' + esc(r.note || '') + '</td></tr>';
                 })
                 .join('') +
               '</tbody></table></section>'

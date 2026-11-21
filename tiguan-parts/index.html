@@ -26,6 +26,9 @@
         <small>разбор по деталям</small>
       </span>
       <span class="vin" title="VIN скрыт намеренно">XW8ZZZ5N*****1080</span>
+      <button type="button" class="mileage" id="mileageBtn" title="Изменить текущий пробег">
+        <span id="mileageValue">122 900</span> км <span class="mileage-edit">✎</span>
+      </button>
     </div>
 
     <div class="search" role="search">
@@ -39,6 +42,7 @@
       <button type="button" data-view="car">3D-модель</button>
       <button type="button" data-view="catalog">Каталог</button>
       <button type="button" data-view="schedule">Регламент</button>
+      <button type="button" data-view="advice">Рекомендации</button>
       <button type="button" data-view="favorites">Избранное</button>
     </nav>
   </header>
@@ -96,6 +100,18 @@
       <div class="schedule-body" id="scheduleBody"></div>
     </section>
 
+    <section id="advice" class="advice" hidden>
+      <div class="advice-head">
+        <div>
+          <h2>Рекомендации</h2>
+          <p class="muted" id="adviceSub"></p>
+        </div>
+        <button type="button" class="btn" id="adviceMileageBtn">Изменить пробег</button>
+      </div>
+      <div class="advice-summary" id="adviceSummary"></div>
+      <div id="adviceBody"></div>
+    </section>
+
     <section id="catalog" class="catalog" hidden>
       <div class="catalog-head">
         <div>
@@ -124,6 +140,7 @@
   <!-- данные и схемы — обычные скрипты, поэтому работают и по file:// -->
   <script src="models/tiguan-data.js"></script>
   <script src="data/log-seed.js"></script>
+  <script src="data/install.js"></script>
   <script src="data/parts.js"></script>
   <script src="diagrams.js"></script>
 
