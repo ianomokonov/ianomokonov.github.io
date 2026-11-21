@@ -58,6 +58,10 @@ window.TIGUAN_DATA = {
         {
           "id": "underbody",
           "title": "Днище и выхлоп"
+        },
+        {
+          "id": "engine-hardware",
+          "title": "ГРМ и опоры"
         }
       ]
     },
@@ -69,6 +73,10 @@ window.TIGUAN_DATA = {
         {
           "id": "engine-bay",
           "title": "Моторный отсек"
+        },
+        {
+          "id": "engine-hardware",
+          "title": "ГРМ и опоры"
         }
       ]
     },
@@ -147,6 +155,21 @@ window.TIGUAN_DATA = {
         {
           "id": "suspension-front",
           "title": "Передняя подвеска"
+        }
+      ]
+    },
+    {
+      "id": "engine-hardware",
+      "title": "ГРМ и опоры двигателя",
+      "subtitle": "Цепь, натяжитель, успокоитель, PCV и опоры двигателя/КПП.",
+      "related": [
+        {
+          "id": "engine-bay",
+          "title": "Моторный отсек"
+        },
+        {
+          "id": "engine-drive",
+          "title": "Ремень и навесное"
         }
       ]
     }
@@ -421,7 +444,8 @@ window.TIGUAN_DATA = {
           180000
         ],
         "action": "замена"
-      }
+      },
+      "diagram": "engine-hardware"
     },
     {
       "id": "chain-tensioner",
@@ -438,7 +462,8 @@ window.TIGUAN_DATA = {
           180000
         ],
         "action": "замена"
-      }
+      },
+      "diagram": "engine-hardware"
     },
     {
       "id": "charcoal-canister",
@@ -521,7 +546,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 150000,
         "action": "проверка"
-      }
+      },
+      "diagram": "engine-hardware"
     },
     {
       "id": "engine-mount-right",
@@ -536,7 +562,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 150000,
         "action": "проверка"
-      }
+      },
+      "diagram": "engine-hardware"
     },
     {
       "id": "evap-valve",
@@ -562,7 +589,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 60000,
         "action": "замена"
-      }
+      },
+      "diagram": "underbody"
     },
     {
       "id": "fuel-pump",
@@ -766,10 +794,10 @@ window.TIGUAN_DATA = {
       "qty": 1,
       "confidence": "high",
       "location": "Сверху двигателя, в корпусе под пластиковой крышкой, рядом со щупом.",
-      "note": "Меняется с маслом: 5,7 л 5W-30 с допуском VW 504 00 / 507 00. Крышка затягивается 25 Н·м.",
+      "note": "Меняется с маслом каждые 7 500 км: 5,7 л 5W-30 с допуском VW 504 00 / 507 00. Крышка затягивается 25 Н·м.",
       "service": {
         "action": "замена",
-        "everyKm": 15000
+        "everyKm": 7500
       },
       "fluid": "engine-oil"
     },
@@ -820,7 +848,8 @@ window.TIGUAN_DATA = {
         "everyKm": 120000,
         "action": "проверка"
       },
-      "fluid": "engine-oil"
+      "fluid": "engine-oil",
+      "diagram": "engine-hardware"
     },
     {
       "id": "spark-plug",
@@ -899,7 +928,8 @@ window.TIGUAN_DATA = {
         ],
         "action": "замена"
       },
-      "fluid": "engine-oil"
+      "fluid": "engine-oil",
+      "diagram": "engine-hardware"
     },
     {
       "id": "trans-mount",
@@ -914,7 +944,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 150000,
         "action": "проверка"
-      }
+      },
+      "diagram": "engine-hardware"
     },
     {
       "id": "turbo",
@@ -998,7 +1029,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 60000,
         "action": "проверка"
-      }
+      },
+      "diagram": "engine-bay"
     },
     {
       "id": "heater-core",
@@ -1037,7 +1069,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 150000,
         "action": "проверка"
-      }
+      },
+      "diagram": "body-front"
     },
     {
       "id": "radiator-hose-lower",
@@ -1053,7 +1086,8 @@ window.TIGUAN_DATA = {
         "everyKm": 120000,
         "action": "проверка"
       },
-      "fluid": "coolant"
+      "fluid": "coolant",
+      "diagram": "body-front"
     },
     {
       "id": "radiator-hose-upper",
@@ -1069,7 +1103,8 @@ window.TIGUAN_DATA = {
         "everyKm": 120000,
         "action": "проверка"
       },
-      "fluid": "coolant"
+      "fluid": "coolant",
+      "diagram": "body-front"
     },
     {
       "id": "water-pump",
@@ -1153,7 +1188,8 @@ window.TIGUAN_DATA = {
         "everyKm": 120000,
         "action": "проверка"
       },
-      "fluid": "brake-fluid"
+      "fluid": "brake-fluid",
+      "diagram": "suspension-rear"
     },
     {
       "id": "caliper-front",
@@ -1209,7 +1245,8 @@ window.TIGUAN_DATA = {
         "everyKm": 60000,
         "action": "проверка"
       },
-      "fluid": "brake-fluid"
+      "fluid": "brake-fluid",
+      "diagram": "suspension-rear"
     },
     {
       "id": "epb-motor",
@@ -1265,7 +1302,8 @@ window.TIGUAN_DATA = {
         "everyKm": 30000,
         "action": "проверка"
       },
-      "fluid": "brake-fluid"
+      "fluid": "brake-fluid",
+      "diagram": "suspension-rear"
     },
     {
       "id": "wear-sensor",
@@ -1280,7 +1318,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 30000,
         "action": "проверка"
-      }
+      },
+      "diagram": "brake-front"
     },
     {
       "id": "arm-bushing",
@@ -1605,7 +1644,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "interior"
     },
     {
       "id": "cabin-filter",
@@ -1797,7 +1837,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 30000,
         "action": "замена"
-      }
+      },
+      "diagram": "body-front"
     },
     {
       "id": "ac-compressor",
@@ -1950,7 +1991,8 @@ window.TIGUAN_DATA = {
           150000
         ],
         "action": "замена"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "washer-pump",
@@ -1987,7 +2029,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 30000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "cv-inner",
@@ -2013,7 +2056,8 @@ window.TIGUAN_DATA = {
       "service": {
         "everyKm": 120000,
         "action": "проверка"
-      }
+      },
+      "diagram": "suspension-front"
     },
     {
       "id": "driveshaft-left",
@@ -2317,7 +2361,7 @@ window.TIGUAN_DATA = {
     {
       "qty": 1,
       "confidence": "low",
-      "note": "КПП DQ500 (0DL/TUR): код 0GC — для DQ381, сверить по VIN",
+      "note": "Передний дифференциал внутри КПП: своего масла нет, омывается маслом DSG. Отдельно обслуживается раздатка — см. «Масло раздатки»",
       "diagram": "underbody",
       "zone": "sill",
       "id": "front-diff",
@@ -2330,7 +2374,7 @@ window.TIGUAN_DATA = {
     {
       "qty": 1,
       "confidence": "low",
-      "note": "Передаёт момент на кардан; смазывается маслом DSG",
+      "note": "Своё масло 0,9 л G 052 145 S2, меняется отдельно от КПП (пробки справа под правым ШРУСом)",
       "diagram": "underbody",
       "zone": "sill",
       "id": "angle-drive",
@@ -2494,9 +2538,9 @@ window.TIGUAN_DATA = {
       "spec": "5W-30, допуск VW 504 00 / 507 00 (LongLife III)",
       "code": "G 052 195 M2",
       "volume": "5,7 л",
-      "everyKm": 15000,
+      "everyKm": 7500,
       "action": "замена",
-      "interval": "каждые 15 000 км или раз в год"
+      "interval": "каждые 7 500 км или раз в год"
     },
     {
       "id": "dsg-oil",
@@ -2563,6 +2607,17 @@ window.TIGUAN_DATA = {
       "everyKm": 60000,
       "action": "обслуживание",
       "interval": "раз в 2 года"
+    },
+    {
+      "id": "transfer-oil",
+      "title": "Масло раздатки (угловой редуктор)",
+      "system": "transmission",
+      "spec": "G 052 145 S2, 75W-90, 0,9 л",
+      "code": "G 052 145 S2",
+      "volume": "0,9 л",
+      "everyKm": 60000,
+      "action": "замена",
+      "interval": "каждые 60 000 км (или 80–100 тыс. по состоянию)"
     }
   ]
 };

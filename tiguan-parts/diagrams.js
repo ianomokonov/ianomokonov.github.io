@@ -108,6 +108,12 @@ window.DIAGRAMS = {
       <text class="label" x="182" y="466" text-anchor="middle" style="font-size:13.5px">ОЖ</text>
     </g>
 
+    <g class="hotspot" data-part="expansion-cap" tabindex="0" role="button" aria-label="Крышка расширительного бачка">
+      <circle class="shape" cx="215" cy="420" r="10"/>
+      <line class="leader" x1="225" y1="420" x2="240" y2="420"/>
+      <text class="label" x="244" y="424" text-anchor="start" style="font-size:10.5px">Крышка</text>
+    </g>
+
     <!-- горловина омывателя: справа у передка -->
     <circle class="ghost" cx="855" cy="470" r="20"/>
     <text class="caption" x="855" y="508" text-anchor="middle">омыватель</text>
@@ -218,6 +224,12 @@ window.DIAGRAMS = {
       <text class="label" x="202" y="491" text-anchor="end" style="font-size:13.5px">Датчик ABS</text>
     </g>
 
+    <g class="hotspot" data-part="wear-sensor" tabindex="0" role="button" aria-label="Датчик износа колодок">
+      <circle class="shape" cx="560" cy="392" r="10"/>
+      <line class="leader" x1="560" y1="402" x2="560" y2="416"/>
+      <text class="label" x="560" y="430" text-anchor="middle" style="font-size:10.5px">Датчик износа</text>
+    </g>
+
     <!-- стойка -->
     <g class="hotspot" data-part="strut-front" tabindex="0" role="button" aria-label="Амортизатор передний">
       <ellipse class="shape" cx="772" cy="120" rx="48" ry="24"/>
@@ -287,6 +299,11 @@ window.DIAGRAMS = {
       <text class="label" x="757" y="400" text-anchor="middle" style="font-size:13px">Салонный фильтр</text>
     </g>
     <text class="caption" x="757" y="440" text-anchor="middle">за ящиком</text>
+
+    <g class="hotspot" data-part="cabin-blower" tabindex="0" role="button" aria-label="Моторчик печки">
+      <circle class="shape" cx="700" cy="480" r="34"/>
+      <text class="label" x="700" y="484" text-anchor="middle" style="font-size:10px">Мотор печки</text>
+    </g>
 
     <!-- OBD -->
     <g class="hotspot" data-part="obd-port" tabindex="0" role="button" aria-label="Разъём OBD-II">
@@ -424,6 +441,11 @@ window.DIAGRAMS = {
       <text class="label" x="730" y="280" text-anchor="middle" style="font-size:12.5px">Топливный бак</text>
     </g>
 
+    <g class="hotspot" data-part="fuel-filter" tabindex="0" role="button" aria-label="Топливный фильтр">
+      <rect class="shape" x="650" y="352" width="70" height="26" rx="8"/>
+      <text class="label" x="685" y="396" text-anchor="middle" style="font-size:10.5px">Топливный фильтр</text>
+    </g>
+
   </svg>`,
   /* ============================ КАРДАН ============================ */
   'propshaft': `
@@ -505,6 +527,24 @@ window.DIAGRAMS = {
     <g class="hotspot" data-part="wheel-bearing" tabindex="0" role="button" aria-label="Подшипник ступицы">
       <circle class="shape" cx="245" cy="365" r="48"/>
       <text class="label" x="245" y="370" text-anchor="middle" style="font-size:12.5px">Ступица</text>
+    </g>
+
+    <line class="ghost" x1="140" y1="365" x2="197" y2="365" stroke-width="12"/>
+
+    <g class="hotspot" data-part="cv-outer" tabindex="0" role="button" aria-label="ШРУС наружный">
+      <circle class="shape" cx="205" cy="365" r="12"/>
+      <line class="leader" x1="193" y1="355" x2="176" y2="340"/>
+      <text class="label" x="172" y="336" text-anchor="end" style="font-size:10px">ШРУС</text>
+    </g>
+
+    <g class="hotspot" data-part="cv-boot" tabindex="0" role="button" aria-label="Пыльник ШРУСа">
+      <rect class="shape" x="148" y="355" width="40" height="20" rx="8"/>
+      <text class="label" x="168" y="390" text-anchor="middle" style="font-size:10px">Пыльник</text>
+    </g>
+
+    <g class="hotspot" data-part="tpms-sensor" tabindex="0" role="button" aria-label="Датчик давления в шинах">
+      <circle class="shape" cx="245" cy="317" r="10"/>
+      <text class="label" x="245" y="302" text-anchor="middle" style="font-size:10px">TPMS</text>
     </g>
 
     <!-- опора стойки -->
@@ -600,6 +640,24 @@ window.DIAGRAMS = {
       <text class="label" x="335" y="370" text-anchor="middle" style="font-size:12.5px">Ступица</text>
     </g>
 
+    <circle class="ghost" cx="335" cy="365" r="58" stroke-dasharray="5 6"/>
+
+    <g class="hotspot" data-part="disc-rear" tabindex="0" role="button" aria-label="Тормозной диск задний">
+      <circle class="shape" cx="405" cy="355" r="14"/>
+      <line class="leader" x1="419" y1="355" x2="432" y2="355"/>
+      <text class="label" x="436" y="359" text-anchor="start" style="font-size:10.5px">Диск</text>
+    </g>
+
+    <g class="hotspot" data-part="pads-rear" tabindex="0" role="button" aria-label="Тормозные колодки задние">
+      <rect class="shape" x="405" y="380" width="24" height="30" rx="6"/>
+      <text class="label" x="435" y="400" text-anchor="start" style="font-size:10.5px">Колодки</text>
+    </g>
+
+    <g class="hotspot" data-part="brake-hose-rear" tabindex="0" role="button" aria-label="Тормозной шланг задний">
+      <path class="shape ln" d="M 405 425 L 428 445"/>
+      <text class="label" x="434" y="452" text-anchor="start" style="font-size:10.5px">Шланг</text>
+    </g>
+
     <!-- рычаг -->
     <g class="hotspot" data-part="rear-arm" tabindex="0" role="button" aria-label="Задний рычаг">
       <path class="shape" d="M 330 420 L 620 460 L 590 515 L 310 475 Z"/>
@@ -658,7 +716,28 @@ window.DIAGRAMS = {
     <path class="ghost" d="M 150 178 L 850 178 L 850 505 Q 850 540 812 540 L 188 540 Q 150 540 150 505 Z"/>
     <path class="ghost" d="M 300 96 L 700 96 L 758 166 L 242 166 Z"/>
     <text class="caption" x="500" y="132" text-anchor="middle">лобовое стекло</text>
+
+    <g class="hotspot" data-part="wipers" tabindex="0" role="button" aria-label="Щётки стеклоочистителя">
+      <line class="shape ln-thick" x1="320" y1="158" x2="540" y2="148"/>
+      <line class="shape ln-thick" x1="470" y1="162" x2="660" y2="152"/>
+      <text class="label" x="700" y="160" text-anchor="start" style="font-size:10.5px">Щётки</text>
+    </g>
     <rect class="ghost" x="160" y="176" width="680" height="20" rx="8"/>
+
+    <g class="hotspot" data-part="radiator-fan" tabindex="0" role="button" aria-label="Вентилятор радиатора">
+      <circle class="shape" cx="215" cy="355" r="20"/>
+      <text class="label" x="215" y="392" text-anchor="middle" style="font-size:9.5px">Вентилятор</text>
+    </g>
+
+    <g class="hotspot" data-part="radiator-hose-upper" tabindex="0" role="button" aria-label="Патрубок радиатора верхний">
+      <rect class="shape" x="740" y="336" width="110" height="12" rx="6"/>
+      <text class="label" x="795" y="330" text-anchor="middle" style="font-size:9.5px">Патрубок верх</text>
+    </g>
+
+    <g class="hotspot" data-part="radiator-hose-lower" tabindex="0" role="button" aria-label="Патрубок радиатора нижний">
+      <rect class="shape" x="740" y="356" width="110" height="12" rx="6"/>
+      <text class="label" x="795" y="384" text-anchor="middle" style="font-size:9.5px">Патрубок низ</text>
+    </g>
 
     <!-- бампер -->
     <g class="hotspot" data-part="bumper-front" tabindex="0" role="button" aria-label="Бампер передний">
@@ -705,6 +784,64 @@ window.DIAGRAMS = {
       <line x1="410" y1="226" x2="590" y2="226" stroke="#2e4156" stroke-width="3"/>
       <line x1="410" y1="246" x2="590" y2="246" stroke="#2e4156" stroke-width="3"/>
       <text class="label" x="500" y="278" text-anchor="middle" style="font-size:13.5px">Решётка</text>
+    </g>
+  </svg>`,
+
+  /* ======================= ДВИГАТЕЛЬ: ГРМ И ОПОРЫ ======================= */
+  'engine-hardware': `
+  <svg viewBox="0 0 1000 620" role="img" aria-label="Двигатель: цепь ГРМ, натяжитель, успокоитель, PCV и опоры">
+    <rect class="plate" x="60" y="50" width="880" height="520" rx="26"/>
+    <text class="caption" x="86" y="84">вид спереди · крышка ГРМ снята условно</text>
+
+    <!-- блок -->
+    <rect class="ghost" x="300" y="150" width="380" height="330" rx="24"/>
+
+    <!-- крышка ГРМ -->
+    <rect class="ghost" x="205" y="175" width="95" height="300" rx="16"/>
+    <text class="caption" x="252" y="500" text-anchor="middle" style="font-size:11px">крышка ГРМ</text>
+
+    <!-- цепь -->
+    <g class="hotspot" data-part="timing-chain" tabindex="0" role="button" aria-label="Цепь ГРМ">
+      <path class="shape" d="M 236 200 q 34 40 0 80 q -34 40 0 80 q 34 40 0 80" fill="none" stroke-width="9"/>
+      <text class="label" x="198" y="196" text-anchor="end" style="font-size:11px">Цепь</text>
+    </g>
+
+    <!-- успокоитель -->
+    <g class="hotspot" data-part="chain-guide" tabindex="0" role="button" aria-label="Успокоитель цепи">
+      <rect class="shape" x="300" y="235" width="14" height="110" rx="6"/>
+      <line class="leader" x1="314" y1="245" x2="330" y2="235"/>
+      <text class="label" x="334" y="239" text-anchor="start" style="font-size:11px">Успокоитель</text>
+    </g>
+
+    <!-- натяжитель -->
+    <g class="hotspot" data-part="chain-tensioner" tabindex="0" role="button" aria-label="Натяжитель цепи ГРМ">
+      <rect class="shape" x="300" y="365" width="30" height="60" rx="8"/>
+      <line class="leader" x1="330" y1="395" x2="345" y2="395"/>
+      <text class="label" x="349" y="399" text-anchor="start" style="font-size:11px">Натяжитель</text>
+    </g>
+
+    <!-- PCV -->
+    <g class="hotspot" data-part="pcv-valve" tabindex="0" role="button" aria-label="Маслоотделитель PCV">
+      <circle class="shape" cx="490" cy="138" r="22"/>
+      <line class="leader" x1="490" y1="116" x2="490" y2="100"/>
+      <text class="label" x="490" y="92" text-anchor="middle" style="font-size:11px">PCV</text>
+    </g>
+
+    <!-- опоры двигателя -->
+    <g class="hotspot" data-part="engine-mount-left" tabindex="0" role="button" aria-label="Опора двигателя левая">
+      <rect class="shape" x="120" y="280" width="58" height="90" rx="14"/>
+      <text class="label" x="149" y="270" text-anchor="middle" style="font-size:10.5px">Опора ДВС</text>
+    </g>
+
+    <g class="hotspot" data-part="engine-mount-right" tabindex="0" role="button" aria-label="Опора двигателя правая">
+      <rect class="shape" x="812" y="280" width="58" height="90" rx="14"/>
+      <text class="label" x="841" y="270" text-anchor="middle" style="font-size:10.5px">Опора ДВС</text>
+    </g>
+
+    <!-- опора КПП -->
+    <g class="hotspot" data-part="trans-mount" tabindex="0" role="button" aria-label="Опора КПП">
+      <rect class="shape" x="440" y="505" width="120" height="46" rx="12"/>
+      <text class="label" x="500" y="533" text-anchor="middle" style="font-size:11px">Опора КПП</text>
     </g>
   </svg>`,
 };

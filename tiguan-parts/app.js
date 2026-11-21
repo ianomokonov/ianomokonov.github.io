@@ -19,7 +19,8 @@ const LS = {
   fluid: 'tiguan.fluid.v1',
   custom: 'tiguan.custom.v1',
   log: 'tiguan.log.v1',
-  mileage: 'tiguan.mileage.v1'
+  mileage: 'tiguan.mileage.v1',
+  conf: 'tiguan.conf.v1'
 };
 const readJSON = (key, fallback) => {
   try {
@@ -126,6 +127,7 @@ rebuildParts();
 const allParts = () => DATA.parts.concat(customParts, FLUID_PARTS);
 
 let oemOverrides = readJSON(LS.oem, {});
+let confOverrides = readJSON(LS.conf, {});
 let fluidOverrides = readJSON(LS.fluid, {});
 let favorites = new Set(readJSON(LS.fav, []));
 let mileage = Number(readJSON(LS.mileage, 122900)) || 122900;
@@ -136,6 +138,7 @@ function nextServiceKm() {
 }
 const fluidCodeOf = (f) => fluidOverrides[f.id] || f.code;
 const oemOf = (p) => (p.isFluid ? fluidCodeOf(FLUIDS.get(p.fluidId)) : oemOverrides[p.id] || p.oem);
+const confOf = (p) => CONF[confOverrides[p.id] || p.confidence] || CONF.medium;
 const isFav = (id) => favorites.has(id);
 
 const logOf = (key) => logBook[key] || [];
@@ -351,7 +354,7 @@ function cardHTML(p) {
 
   const oem = oemOf(p);
   const changed = !!oemOverrides[p.id];
-  const conf = CONF[p.confidence] || CONF.medium;
+  const conf = confOf(p);
   const sys = SYSTEMS.get(p.system);
   const fluid = p.fluid ? FLUIDS.get(p.fluid) : null;
   const drawn = !!document.querySelector(`#schemaBody [data-part="${p.id}"]`);
@@ -359,7 +362,7 @@ function cardHTML(p) {
 
   return `
     <div class="card-head">
-      <span class="badge badge-${conf.cls}">${conf.label}</span>
+      <button type="button" class="badge badge-${conf.cls} conf-btn" data-act="conf" title="Изменить достоверность">${conf.label}</button>
       <button type="button" class="icon-btn ${isFav(p.id) ? 'is-on' : ''}" data-act="fav" title="В избранное">★</button>
       <button type="button" class="icon-btn" data-act="close" title="Закрыть (Esc)">✕</button>
     </div>
@@ -593,6 +596,8 @@ $('#panelBody').addEventListener('click', async (e) => {
     toast('Номер скопирован');
   } else if (act === 'fav') {
     toggleFav(p.id);
+  } else if (act === 'conf') {
+    openConfidence(p);
   } else if (act === 'edit') {
     startOemEdit(p);
   } else if (act === 'fluid-edit') {
@@ -605,7 +610,11 @@ $('#panelBody').addEventListener('click', async (e) => {
     const value = input.value.trim().replace(/\s+/g, ' ');
     if (!value) return;
     if (value === f.code) delete fluidOverrides[f.id];
-    else fluidOverrides[f.id] = value;
+    else {
+      fluidOverrides[f.id] = value;
+      confOverrides[p.id] = 'high';
+      writeJSON(LS.conf, confOverrides);
+    }
     writeJSON(LS.fluid, fluidOverrides);
     renderPanel(p.id);
     toast('Код сохранён в этом браузере');
@@ -683,7 +692,11 @@ $('#panelBody').addEventListener('click', async (e) => {
     const value = input.value.trim().replace(/\s+/g, ' ');
     if (!value) return;
     if (value === f.code) delete fluidOverrides[f.id];
-    else fluidOverrides[f.id] = value;
+    else {
+      fluidOverrides[f.id] = value;
+      confOverrides[p.id] = 'high';
+      writeJSON(LS.conf, confOverrides);
+    }
     writeJSON(LS.fluid, fluidOverrides);
     renderPanel(p.id);
     toast('Код сохранён в этом браузере');
@@ -714,7 +727,9 @@ $('#panelBody').addEventListener('click', async (e) => {
     go('#/catalog/fluids');
   } else if (act === 'reset') {
     delete oemOverrides[p.id];
+    delete confOverrides[p.id];
     writeJSON(LS.oem, oemOverrides);
+    writeJSON(LS.conf, confOverrides);
     renderPanel(p.id);
     renderCatalog(current.system, current.view === 'favorites');
     toast('Вернул исходный номер');
@@ -724,6 +739,32 @@ $('#panelBody').addEventListener('click', async (e) => {
     if (p.diagram) go(`#/d/${p.diagram}/${p.id}`);
   }
 });
+
+function openConfidence(p) {
+  const cur = confOverrides[p.id] || p.confidence;
+  const options = [
+    ['high', 'сверено', 'подтверждён по VIN, счёту или каталогу'],
+    ['medium', 'вероятно', 'похоже на правду, лучше проверить'],
+    ['low', 'проверить', 'не подтверждён']
+  ];
+
+  openModal(`<h3>Достоверность кода</h3>
+    <p class="modal-note">${esc(p.name)}</p>
+    <div class="conf-options">
+      ${options
+        .map(
+          ([value, label, desc]) =>
+            `<button type="button" class="conf-opt${cur === value ? ' is-active' : ''}" data-act="conf-set" data-value="${value}" data-key="${p.id}">
+              <span class="badge badge-${value}">${label}</span>
+              <small>${desc}</small>
+            </button>`
+        )
+        .join('')}
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-act="conf-cancel">Отмена</button>
+    </div>`);
+}
 
 function startOemEdit(p) {
   const row = $('[data-oem-row]');
@@ -741,7 +782,11 @@ function startOemEdit(p) {
     const value = input.value.trim().replace(/\s+/g, ' ');
     if (!value) return;
     if (value === p.oem) delete oemOverrides[p.id];
-    else oemOverrides[p.id] = value;
+    else {
+      oemOverrides[p.id] = value;
+      confOverrides[p.id] = 'high';
+      writeJSON(LS.conf, confOverrides);
+    }
     writeJSON(LS.oem, oemOverrides);
     renderPanel(p.id);
     if (!$('#searchResults').hidden) refreshSearch();
@@ -805,9 +850,15 @@ function partCardHTML(p) {
       : `${esc(SYSTEMS.get(p.system).title)}${changed ? ' · номер изменён' : ''}`;
   const recs = logOf(p.id).length;
 
+  const conf = confOf(p);
+
   return `<div class="part-card ${isFluid ? 'is-fluid' : ''}" role="button" tabindex="0" data-part="${p.id}">
     <span class="pc-name">${esc(p.name)}</span>
-    <span class="pc-oem">${esc(oemOf(p))}</span>
+    <span class="pc-oem-row">
+      <code class="pc-oem">${esc(oemOf(p))}</code>
+      <span class="pc-dot is-${conf.cls}" title="${conf.label}" aria-label="Достоверность: ${conf.label}"></span>
+      <button type="button" class="pc-copy" data-copy-code="${p.id}" title="Скопировать код">⧉</button>
+    </span>
     <span class="pc-system">${status}</span>
     ${p.service ? `<span class="pc-service">${esc(p.service.action || 'замена')} ${p.service.atKm ? 'на ' + p.service.atKm.map(fmtKm).join(', ') : p.service.everyKm ? 'каждые ' + fmtKm(p.service.everyKm) : ''}</span>` : ''}
     ${recs ? `<span class="pc-log">замен: ${recs}</span>` : ''}
@@ -890,6 +941,17 @@ $('#catalogBody').addEventListener('click', (e) => {
     if (open) collapsedGroups.delete(id);
     else collapsedGroups.add(id);
     writeJSON('tiguan.collapsed.v1', [...collapsedGroups]);
+    return;
+  }
+
+  const copyBtn = e.target.closest('[data-copy-code]');
+  if (copyBtn) {
+    e.stopPropagation();
+    const p = PARTS.get(copyBtn.dataset.copyCode);
+    if (p) {
+      copyText(oemOf(p));
+      toast('Код скопирован');
+    }
     return;
   }
 
@@ -1043,6 +1105,21 @@ $('#modal').addEventListener('click', (e) => {
   if (e.target.closest('[data-act="mileage-save"]')) saveMileage();
   if (e.target.closest('[data-act="adv-cancel"]')) closeModal();
   if (e.target.closest('[data-act="adv-save"]')) saveLogAdd();
+  if (e.target.closest('[data-act="adv-code-cancel"]')) closeModal();
+  if (e.target.closest('[data-act="adv-code-save"]')) saveAdviceCode();
+  if (e.target.closest('[data-act="conf-cancel"]')) closeModal();
+  if (e.target.closest('[data-act="conf-set"]')) {
+    const btn = e.target.closest('[data-act="conf-set"]');
+    const key = btn.dataset.key;
+    const value = btn.dataset.value;
+    if (!CONF[value]) return;
+    confOverrides[key] = value;
+    writeJSON(LS.conf, confOverrides);
+    closeModal();
+    if (current.part === key) renderPanel(key);
+    renderCatalog(current.system, current.view === 'favorites');
+    toast('Достоверность обновлена');
+  }
   if (e.target.closest('[data-act="seed-copy"]')) {
     const box = $('#seedBox');
     if (box) {
@@ -1161,7 +1238,7 @@ window.addEventListener('afterprint', () => {
 /*  регламент ТО                                                       */
 /* ------------------------------------------------------------------ */
 
-const KM_STEP = 15000;
+const KM_STEP = 7500;
 const KM_MAX = 250000;
 const KM_POINTS = Array.from({ length: Math.floor(KM_MAX / KM_STEP) }, (_, i) => (i + 1) * KM_STEP);
 
@@ -1343,6 +1420,8 @@ function adviceItems() {
       next,
       last,
       due,
+      code: opts.code || '',
+      fluidId: opts.fluidId || '',
       system: opts.system || '',
       isFluid: key.indexOf('fluid:') === 0,
       deferredUntil,
@@ -1353,12 +1432,12 @@ function adviceItems() {
   DATA.parts.forEach((p) => {
     const s = p.service;
     if (!s) return;
-    if (s.atKm && s.atKm.length) add(p.id, p.name, { atKm: s.atKm, system: p.system });
-    else if (s.everyKm) add(p.id, p.name, { everyKm: s.everyKm, firstAtKm: s.firstAtKm, system: p.system });
+    if (s.atKm && s.atKm.length) add(p.id, p.name, { atKm: s.atKm, system: p.system, code: oemOf(p) });
+    else if (s.everyKm) add(p.id, p.name, { everyKm: s.everyKm, firstAtKm: s.firstAtKm, system: p.system, code: oemOf(p) });
   });
 
   (DATA.fluids || []).forEach((f) => {
-    if (f.everyKm) add(`fluid:${f.id}`, f.title, { everyKm: f.everyKm, firstAtKm: f.everyKm, system: 'fluids' });
+    if (f.everyKm) add(`fluid:${f.id}`, f.title, { everyKm: f.everyKm, firstAtKm: f.everyKm, system: 'fluids', code: fluidCodeOf(f), fluidId: f.id });
   });
 
   return items;
@@ -1394,6 +1473,11 @@ function renderAdvice() {
     return `<div class="adv-row is-${i.status}" data-key="${i.key}" role="button" tabindex="0">
       <span class="adv-info">
         <span class="adv-name">${esc(i.name)}</span>
+        <span class="adv-code${i.isFluid ? (fluidOverrides[i.fluidId] ? ' is-changed' : '') : oemOverrides[i.key] ? ' is-changed' : ''}">
+          <code>${esc(i.code || '—')}</code>
+          <button type="button" class="adv-icon" data-copy="${i.key}" title="Скопировать код">⧉</button>
+          <button type="button" class="adv-icon" data-edit-code="${i.key}" title="Исправить код">✎</button>
+        </span>
         <span class="adv-last">${last}</span>
       </span>
       <span class="adv-plan">
@@ -1440,6 +1524,24 @@ function renderAdvice() {
 }
 
 $('#adviceBody').addEventListener('click', (e) => {
+  const copyBtn = e.target.closest('[data-copy]');
+  if (copyBtn) {
+    e.stopPropagation();
+    const item = adviceItems().find((i) => i.key === copyBtn.dataset.copy);
+    if (item) {
+      copyText(item.code || '');
+      toast('Код скопирован');
+    }
+    return;
+  }
+
+  const editBtn = e.target.closest('[data-edit-code]');
+  if (editBtn) {
+    e.stopPropagation();
+    openAdviceCode(editBtn.dataset.editCode);
+    return;
+  }
+
   const defer = e.target.closest('[data-defer]');
   if (defer) {
     e.stopPropagation();
@@ -1488,6 +1590,61 @@ function openLogAdd(key) {
     km.focus();
     km.select();
   }
+}
+
+function openAdviceCode(key) {
+  const item = adviceItems().find((i) => i.key === key);
+  if (!item) return;
+  openModal(`<h3>Код детали</h3>
+    <p class="modal-note">${esc(item.name)}</p>
+    <div class="form"><label>Номер / код<input id="advCodeInput" value="${esc(item.code || '')}" spellcheck="false" autocomplete="off"></label></div>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-act="adv-code-cancel">Отмена</button>
+      <button type="button" class="btn btn-primary" data-act="adv-code-save" data-key="${key}">Сохранить</button>
+    </div>`);
+  const input = $('#advCodeInput');
+  if (input) {
+    input.focus();
+    input.select();
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveAdviceCode();
+    });
+  }
+}
+
+function saveAdviceCode() {
+  const btn = document.querySelector('[data-act="adv-code-save"]');
+  const input = $('#advCodeInput');
+  if (!btn || !input) return;
+  const key = btn.dataset.key;
+  const value = input.value.trim().replace(/\s+/g, ' ');
+  if (!value) return;
+
+  if (key.indexOf('fluid:') === 0) {
+    const f = FLUIDS.get(key.slice(6));
+    if (!f) return;
+    if (value === f.code) delete fluidOverrides[f.id];
+    else {
+      fluidOverrides[f.id] = value;
+      confOverrides[p.id] = 'high';
+      writeJSON(LS.conf, confOverrides);
+    }
+    writeJSON(LS.fluid, fluidOverrides);
+  } else {
+    const p = PARTS.get(key);
+    if (!p) return;
+    if (value === p.oem) delete oemOverrides[p.id];
+    else {
+      oemOverrides[p.id] = value;
+      confOverrides[p.id] = 'high';
+      writeJSON(LS.conf, confOverrides);
+    }
+    writeJSON(LS.oem, oemOverrides);
+  }
+
+  closeModal();
+  renderAdvice();
+  toast('Код сохранён');
 }
 
 function saveLogAdd() {

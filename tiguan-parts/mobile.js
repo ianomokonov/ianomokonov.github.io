@@ -183,7 +183,7 @@
   });
 
   /* ---------- регламент ---------- */
-  var KM_STEP = 15000;
+  var KM_STEP = 7500;
   var KM_MAX = 250000;
   var KM_POINTS = [];
   for (var km = KM_STEP; km <= KM_MAX; km += KM_STEP) KM_POINTS.push(km);
