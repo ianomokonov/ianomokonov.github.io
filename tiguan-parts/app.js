@@ -1376,6 +1376,10 @@ function saveMileage() {
   toast('Пробег обновлён');
 }
 
+function advicePriority(i) {
+  return i.isFluid ? 0 : ['brakes', 'engine', 'transmission'].indexOf(i.system) >= 0 ? 1 : 2;
+}
+
 function adviceItems() {
   const items = [];
   const lastRec = (key) =>
@@ -1445,9 +1449,8 @@ function adviceItems() {
 
 function renderAdvice() {
   const items = adviceItems();
-  const prio = (i) => (i.isFluid ? 0 : ['brakes', 'engine', 'transmission'].indexOf(i.system) >= 0 ? 1 : 2);
-  const overdue = items.filter((i) => i.status === 'overdue').sort((a, b) => prio(a) - prio(b) || a.due - b.due);
-  const soon = items.filter((i) => i.status === 'soon').sort((a, b) => prio(a) - prio(b) || a.due - b.due);
+  const overdue = items.filter((i) => i.status === 'overdue').sort((a, b) => advicePriority(a) - advicePriority(b) || a.due - b.due);
+  const soon = items.filter((i) => i.status === 'soon').sort((a, b) => advicePriority(a) - advicePriority(b) || a.due - b.due);
   const ok = items.filter((i) => i.status === 'ok').sort((a, b) => a.due - b.due);
 
   $('#adviceSub').textContent = `Пробег ${fmtKm(mileage)} · расчёт по интервалам и вашему журналу замен`;
@@ -1522,6 +1525,40 @@ function renderAdvice() {
   }
   $('#adviceBody').innerHTML = html;
 }
+
+function exportAdvicePdf() {
+  const items = adviceItems();
+  const overdue = items.filter((i) => i.status === 'overdue').sort((a, b) => advicePriority(a) - advicePriority(b) || a.due - b.due);
+  const soon = items.filter((i) => i.status === 'soon').sort((a, b) => advicePriority(a) - advicePriority(b) || a.due - b.due);
+
+  const row = (i) => {
+    const status =
+      i.status === 'overdue' ? `просрочено на ${fmtKm(-i.due)}` : `через ${fmtKm(i.due)}`;
+    const last = i.last ? `${fmtDate(i.last.date)} · ${fmtKm(i.last.km)}` : 'нет записи';
+    return `<tr><td>${esc(i.name)}</td><td class="mono">${esc(i.code || '—')}</td><td>${status}</td><td>${last}</td><td>${fmtKm(i.next)}</td></tr>`;
+  };
+
+  const section = (title, list) =>
+    list.length
+      ? `<section class="print-group"><h2>${title}</h2>
+        <table>
+          <thead><tr><th>Деталь / жидкость</th><th>Код</th><th>Статус</th><th>Последняя замена</th><th>Следующая</th></tr></thead>
+          <tbody>${list.map(row).join('')}</tbody>
+        </table></section>`
+      : '';
+
+  const body = section('Просрочено', overdue) + section('Скоро', soon);
+  $('#printArea').innerHTML = `<div class="print-doc">
+    <h1>Tiguan II — рекомендации</h1>
+    <p class="print-meta">VIN ${esc(DATA.vehicle.vin)} · пробег ${fmtKm(mileage)} · сформировано ${fmtDate(todayISO())}</p>
+    ${body || '<p>Просроченных и ближайших работ нет.</p>'}
+  </div>`;
+
+  document.body.classList.add('printing');
+  setTimeout(() => window.print(), 120);
+}
+
+$('#advicePdfBtn').addEventListener('click', exportAdvicePdf);
 
 $('#adviceBody').addEventListener('click', (e) => {
   const copyBtn = e.target.closest('[data-copy]');

@@ -1541,3 +1541,5 @@ a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 .conf-opt:hover { border-color: #33506e; }
 .conf-opt.is-active { border-color: var(--accent); }
 .conf-opt small { color: var(--muted); font-size: 11.5px; }
+
+.advice-actions { display: flex; gap: 8px; }
